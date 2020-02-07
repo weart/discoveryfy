@@ -1,0 +1,10 @@
+###> phalcon ###
+/app/cache/
+/config/development/
+
+###> composer ###
+/vendor/
+
+###> jwt ###
+/config/secrets/prod/prod.decrypt.private.php
+/config/jwt/*.pem

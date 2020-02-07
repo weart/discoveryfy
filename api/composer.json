@@ -1,0 +1,23 @@
+{
+    "name": "weart/discoveryfy",
+    "description": "Create collaborative playlists in Spotify with your friends and colleagues and rate the songs",
+    "keywords": ["spotify", "playlist", "vote", "rate", "phalcon", "postgres", "json:api", "jwt"],
+    "homepage": "https://api.discoveryfy.fabri.cat",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Contributors",
+            "homepage": "https://github.com/weart/discoveryfy/graphs/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "ext-pdo": "*",
+        "ext-phalcon": "^4.0.0"
+    },
+    "require-dev": {
+        "phalcon/devtools": "v4.*",
+        "phalcon/ide-stubs": "^4.0.0"
+    }
+}

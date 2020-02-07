@@ -1,0 +1,58 @@
+version: '3.4'
+
+services:
+  api:
+    container_name: api
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "9000:9000"
+    build:
+      context: ./api
+#      target: api_php
+    volumes:
+      - ./api:/var/www:rw
+#      - ./api:/var/www:rw,cached
+#      - ./api/public:/var/www/html:rw
+#      - ~/.docker-kikdev/logs/:/var/log/apache2/:cached
+    depends_on:
+      - db
+#    links:
+#      - db
+    network_mode: "host"
+#    networks:
+#      - discoveryfy
+
+  db:
+    container_name: db
+    # in production, we may want to use a managed database service
+    image: postgres:10-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      # use a bind-mounted host directory, because we never want to lose our data!
+      - ./docker/db/data:/var/lib/postgresql:rw
+#      - ~/.docker-kikdev/mysql/:/var/lib/mysql
+    env_file:
+      - .env.local
+    ports:
+      - "5432:5432"
+#    networks:
+#      discoveryfy:
+#        aliases:
+#          - db
+
+#redis?
+
+#volumes:
+#  db-data: {}
+
+#networks:
+#  discoveryfy:
+#    external:
+#      name: discoveryfy
