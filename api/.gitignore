@@ -8,3 +8,9 @@
 ###> jwt ###
 /config/secrets/prod/prod.decrypt.private.php
 /config/jwt/*.pem
+
+###> phalcon/json-api
+.env
+phinx.php
+tests/_output/
+vendor/
