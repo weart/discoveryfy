@@ -8,3 +8,9 @@
 ###> jwt ###
 /config/secrets/prod/prod.decrypt.private.php
 /config/jwt/*.pem
+
+###> tests ###
+/tests/_output/
+
+###> phinx (migrations)
+/phinx.php
