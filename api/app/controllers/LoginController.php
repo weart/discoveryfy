@@ -46,6 +46,15 @@ class LoginController extends Controller
     {
         $username = $this->request->getPost('username', Filter::FILTER_STRING);
         $password = $this->request->getPost('password', Filter::FILTER_STRING);
+        $filter = new Filter();
+        $json = json_decode($this->request->getRawBody(),true);
+//        $json = $this->request->getJsonRawBody(true);
+        if (!$username && isset($json['username'])) {
+            $username = $filter->sanitize( $json['username'], 'string');
+        }
+        if (!$password && isset($json['password'])) {
+            $password = $filter->sanitize( $json['password'], 'string');
+        }
         /** @var Users|false $user */
         $user     = $this->getUserByUsernameAndPassword($this->config, $this->cache, $username, $password);
 

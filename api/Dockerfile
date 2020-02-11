@@ -33,13 +33,13 @@ RUN apt-get upgrade -y && apt-get update -y \
         tzdata \
 
     # install mysql
-#    && docker-php-ext-install pdo_mysql \
-#    && docker-php-ext-install mysqli \
-#    && docker-php-ext-enable mysqli \
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install mysqli \
+    && docker-php-ext-enable mysqli \
     # install postgres
-        libpq-dev \
-#        libpq-dev postgresql-dev \
-    && docker-php-ext-install pdo pdo_pgsql \
+#        libpq-dev \
+##        libpq-dev postgresql-dev \
+#    && docker-php-ext-install pdo pdo_pgsql \
 
     # install imagick
 #    && apt-get install -y libmagickwand-dev --no-install-recommends \

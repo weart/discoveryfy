@@ -43,7 +43,8 @@ class FunctionsCest
     public function checkEnvurlWithUrl(UnitTester $I)
     {
         $I->assertEquals(
-            'http://api.phalcon.ld/companies/1',
+            'https://api.discoveryfy.fabri.cat/companies/1',
+//            'http://api.phalcon.ld/companies/1',
             appUrl(Relationships::COMPANIES, 1)
         );
     }

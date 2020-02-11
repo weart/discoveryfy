@@ -87,10 +87,10 @@ class AddIndividualsTable extends AbstractMigration
             ->addIndex('ind_name_last')
             ->save();
 
-//        $this->execute(
-//            'ALTER TABLE co_individuals ' .
-//            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
-//        );
+        $this->execute(
+            'ALTER TABLE co_individuals ' .
+            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
+        );
     }
 
     public function down()

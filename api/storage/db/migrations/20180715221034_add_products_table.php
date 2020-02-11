@@ -60,10 +60,10 @@ class AddProductsTable extends AbstractMigration
             ->addIndex('prd_price')
             ->save();
 
-//        $this->execute(
-//            'ALTER TABLE co_products ' .
-//            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
-//        );
+        $this->execute(
+            'ALTER TABLE co_products ' .
+            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
+        );
     }
 
     public function down()

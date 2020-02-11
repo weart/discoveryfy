@@ -30,20 +30,28 @@ services:
   db:
     container_name: db
     # in production, we may want to use a managed database service
-    image: postgres:10-alpine
+#    image: postgres:10-alpine
+    image: mysql:5.7
     restart: always
     volumes:
       # use a bind-mounted host directory, because we never want to lose our data!
-      - ./api/storage/db/data:/var/lib/postgresql/data:rw
+      #Postgresql
+#      - ./api/storage/db/data:/var/lib/postgresql/data:rw
 #      - ./api/storage/db/data:/var/lib/postgresql/data/pgdata:rw
 #      - ./api/storage/db/data:/var/lib/postgresql:rw
 #      - ./docker/db/data:/var/lib/postgresql:rw
-#      - ~/.docker-kikdev/mysql/:/var/lib/mysql
+      # Mysql
+      - db_data:/var/lib/mysql
     env_file:
       - ./.env
       - ./.env.local
-    ports:
-      - "5432:5432"
+    ports: # <Port exposed> : < MySQL Port running inside container>
+      #Postgresql
+#      - "5432:5432"
+      # Mysql
+      - "3306:3306"
+    expose: # Opens port 3306 on the container
+      - '3306'
 #    networks:
 #      discoveryfy:
 #        aliases:
@@ -51,8 +59,8 @@ services:
 
 #redis?
 
-#volumes:
-#  db-data: {}
+volumes:
+  db_data: {}
 
 #networks:
 #  discoveryfy:

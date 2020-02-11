@@ -22,7 +22,7 @@ class AutoloaderCest
         $I->assertNotEquals(false, getenv('APP_TIMEZONE'));
         $I->assertNotEquals(false, getenv('CACHE_PREFIX'));
         $I->assertNotEquals(false, getenv('CACHE_LIFETIME'));
-        $I->assertNotEquals(false, getenv('DATA_API_MYSQL_NAME'));
+        $I->assertNotEquals(false, getenv('MYSQL_DATABASE'));
         $I->assertNotEquals(false, getenv('LOGGER_DEFAULT_FILENAME'));
         $I->assertNotEquals(false, getenv('VERSION'));
 

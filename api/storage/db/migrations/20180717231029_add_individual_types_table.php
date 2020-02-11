@@ -37,10 +37,10 @@ class AddIndividualTypesTable extends AbstractMigration
             ->addIndex('idt_name')
             ->save();
 
-//        $this->execute(
-//            'ALTER TABLE co_individual_types ' .
-//            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
-//        );
+        $this->execute(
+            'ALTER TABLE co_individual_types ' .
+            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
+        );
     }
 
     public function down()
