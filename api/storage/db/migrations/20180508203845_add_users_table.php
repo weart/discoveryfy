@@ -48,10 +48,10 @@ class AddUsersTable extends AbstractMigration
             ->addIndex('usr_password')
             ->save();
 
-        $this->execute(
-            'ALTER TABLE co_users ' .
-            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
-        );
+//        $this->execute(
+//            'ALTER TABLE co_users ' .
+//            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
+//        );
     }
 
     public function down()

@@ -9,8 +9,11 @@
 /config/secrets/prod/prod.decrypt.private.php
 /config/jwt/*.pem
 
-###> phalcon/json-api
+###> tests ###
+/tests/_output/
+
+###> phinx (migrations)
+/phinx.php
+
+###> environment files
 .env
-phinx.php
-tests/_output/
-vendor/

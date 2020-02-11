@@ -23,23 +23,25 @@ services:
     network_mode: "host"
 #    networks:
 #      - discoveryfy
+    env_file:
+      - ./.env
+      - ./.env.local
 
   db:
     container_name: db
     # in production, we may want to use a managed database service
     image: postgres:10-alpine
     restart: always
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       # use a bind-mounted host directory, because we never want to lose our data!
-      - ./docker/db/data:/var/lib/postgresql:rw
+      - ./api/storage/db/data:/var/lib/postgresql/data:rw
+#      - ./api/storage/db/data:/var/lib/postgresql/data/pgdata:rw
+#      - ./api/storage/db/data:/var/lib/postgresql:rw
+#      - ./docker/db/data:/var/lib/postgresql:rw
 #      - ~/.docker-kikdev/mysql/:/var/lib/mysql
     env_file:
-      - .env.local
+      - ./.env
+      - ./.env.local
     ports:
       - "5432:5432"
 #    networks:

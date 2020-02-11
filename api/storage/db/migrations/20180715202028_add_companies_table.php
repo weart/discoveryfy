@@ -56,10 +56,10 @@ class AddCompaniesTable extends AbstractMigration
             ->addIndex('com_city')
             ->save();
 
-        $this->execute(
-            'ALTER TABLE co_companies ' .
-            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
-        );
+//        $this->execute(
+//            'ALTER TABLE co_companies ' .
+//            'CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
+//        );
     }
 
     public function down()

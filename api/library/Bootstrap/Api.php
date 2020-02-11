@@ -39,7 +39,7 @@ class Api extends AbstractBootstrap
     public function setup()
     {
         $this->container = new FactoryDefault();
-        $this->providers = require appPath('api/config/providers.php');
+        $this->providers = require appPath('app/config/providers.php');
 
         parent::setup();
     }

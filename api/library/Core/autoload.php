@@ -20,7 +20,7 @@ require __DIR__ . '/functions.php';
 $loader     = new Loader();
 $namespaces = [
     'Phalcon\Api'                 => appPath('/library'),
-    'Phalcon\Api\Api\Controllers' => appPath('/api/controllers'),
+    'Phalcon\Api\Api\Controllers' => appPath('/app/controllers'),
     'Phalcon\Api\Cli\Tasks'       => appPath('/cli/tasks'),
     'Phalcon\Api\Tests'           => appPath('/tests'),
 ];
@@ -34,4 +34,5 @@ $loader->register();
 require appPath('/vendor/autoload.php');
 
 // Load environment
-(new Dotenv(appPath()))->overload();
+(Dotenv::create(appPath()))->overload();
+

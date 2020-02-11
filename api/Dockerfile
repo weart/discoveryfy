@@ -52,7 +52,8 @@ RUN apt-get upgrade -y && apt-get update -y \
 
     # install zip
     && apt-get update -y \
-    && apt-get install -y zlib1g-dev unzip \
+    && apt-get install -y zlib1g-dev libzip-dev unzip \
+    && docker-php-ext-configure zip --with-libzip \
     && docker-php-ext-install zip \
     && docker-php-ext-enable zip \
 
@@ -112,11 +113,18 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 # copy app
 WORKDIR /var/www
-COPY ./app ./app
-COPY ./public ./public
-COPY ./vendor ./vendor
-COPY composer.json composer.lock ./
-COPY .htaccess index.html ./
+COPY --chown=www-data:www-data ./app ./app
+COPY --chown=www-data:www-data ./cli ./cli
+COPY --chown=www-data:www-data ./library ./library
+COPY --chown=www-data:www-data ./public ./public
+COPY --chown=www-data:www-data ./vendor ./vendor
+COPY --chown=www-data:www-data ./tests ./tests
+COPY --chown=www-data:www-data composer.json composer.lock codeception.yml ./
+COPY --chown=www-data:www-data .htaccess index.html .env phinx.php psalm.xml.dist ./
+# Apache user (www-data) should be able to write into storage/logs folder
+#RUN chown www-data:www-data /var/www
+RUN usermod -u 1000 www-data \
+ && groupmod -g 1000 www-data
 #RUN ls -alh /var/www
 
 # install composer
@@ -131,10 +139,10 @@ RUN set -eux; \
 #    ; \
 #    composer run-script --no-dev post-install-cmd
 
-# install phalcon devtools
+# install phalcon devtools (in composer)
 #ln -s ~/devtools/phalcon.php /usr/bin/phalcon
 #chmod ugo+x /usr/bin/phalcon
-#php composer.phar install
+# phalcon/devtools  v4.0.1  requires  psy/psysh (~0.9)
 # psy/psysh suggests installing ext-pcntl (Enabling the PCNTL extension makes PsySH a lot happier :))
 
 # upgrade machine & clean

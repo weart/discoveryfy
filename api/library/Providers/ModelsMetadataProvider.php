@@ -16,7 +16,9 @@ use Phalcon\Cache\AdapterFactory;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Mvc\Model\MetaData\Libmemcached;
+use Phalcon\Mvc\Model\MetaData\Memory;
 use Phalcon\Storage\SerializerFactory;
+use function Phalcon\Api\Core\appPath;
 use function Phalcon\Api\Core\envValue;
 
 class ModelsMetadataProvider implements ServiceProviderInterface
@@ -29,25 +31,29 @@ class ModelsMetadataProvider implements ServiceProviderInterface
         $container->setShared(
             'modelsMetadata',
             function () {
-                $backOptions = [
-                    'servers'  => [
-                        0 => [
-                            'host'   => envValue('DATA_API_MEMCACHED_HOST', '127.0.0.1'),
-                            'port'   => envValue('DATA_API_MEMCACHED_PORT', 11211),
-                            'weight' => envValue('DATA_API_MEMCACHED_WEIGHT', 100),
-                        ],
-                    ],
-                    'client'   => [
-                        \Memcached::OPT_PREFIX_KEY => 'api-',
-                    ],
-                    'lifetime' => 3600,
-                    'prefix'   => 'metadata-',
-                ];
-
-                $serializer = new SerializerFactory();
-                $adapterFactor = new AdapterFactory($serializer);
-
-                return new Libmemcached($adapterFactor, $backOptions);
+//                $backOptions = [
+//                    'servers'  => [
+//                        0 => [
+//                            'host'   => envValue('DATA_API_MEMCACHED_HOST', '127.0.0.1'),
+//                            'port'   => envValue('DATA_API_MEMCACHED_PORT', 11211),
+//                            'weight' => envValue('DATA_API_MEMCACHED_WEIGHT', 100),
+//                        ],
+//                    ],
+//                    'client'   => [
+//                        \Memcached::OPT_PREFIX_KEY => 'api-',
+//                    ],
+//                    'lifetime' => 3600,
+//                    'prefix'   => 'metadata-',
+//                ];
+//
+//                $serializer = new SerializerFactory();
+//                $adapterFactor = new AdapterFactory($serializer);
+//
+//                return new Libmemcached($adapterFactor, $backOptions);
+                return new Memory([
+                    'cacheDir' => appPath('storage/cache/data/'),
+                    'prefix'   => 'data-',
+                ]);
             }
         );
     }

@@ -12,7 +12,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Providers;
 
-use Phalcon\Db\Adapter\Pdo\Mysql;
+//use Phalcon\Db\Adapter\Pdo\Mysql;
+use Phalcon\Db\Adapter\Pdo\Postgresql;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use function Phalcon\Api\Core\envValue;
@@ -28,15 +29,16 @@ class DatabaseProvider implements ServiceProviderInterface
             'db',
             function () {
                 $options = [
-                    'host'       => envValue('DATA_API_MYSQL_HOST', 'localhost'),
-                    'username'   => envValue('DATA_API_MYSQL_USER', 'nanobox'),
-                    'password'   => envValue('DATA_API_MYSQL_PASS', ''),
-                    'dbname'     => envValue('DATA_API_MYSQL_NAME', 'gonano'),
+                    'host'       => envValue('POSTGRES_HOST', 'localhost'),
+                    'dbname'     => envValue('POSTGRES_DB', 'db_local'),
+                    'username'   => envValue('POSTGRES_USER', 'db_user'),
+                    'password'   => envValue('POSTGRES_PASSWORD', 'db_password'),
                 ];
 
-                $connection = new Mysql($options);
+//                $connection = new Mysql($options);
+                $connection = new Postgresql($options);
                 // Set everything to UTF8
-                $connection->execute('SET NAMES utf8mb4', []);
+//                if(mysql) $connection->execute('SET NAMES utf8mb4', []);
 
                 return $connection;
             }

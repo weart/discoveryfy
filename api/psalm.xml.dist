@@ -9,9 +9,10 @@
     autoloader="vendor/autoload.php"
 >
     <projectFiles>
-        <directory name="api" />
+        <directory name="app" />
         <directory name="cli" />
         <directory name="library" />
+        <directory name="public" />
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>

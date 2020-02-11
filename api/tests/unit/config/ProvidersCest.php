@@ -18,7 +18,7 @@ class ProvidersCest
 {
     public function checkApiProviders(UnitTester $I)
     {
-        $providers = require(appPath('api/config/providers.php'));
+        $providers = require(appPath('app/config/providers.php'));
 
         $I->assertEquals(ConfigProvider::class, $providers[0]);
         $I->assertEquals(LoggerProvider::class, $providers[1]);
