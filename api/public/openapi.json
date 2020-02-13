@@ -1,0 +1,4448 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Discoveryfy",
+    "version": "0.2.0",
+    "description": "Create collaborative playlists in Spotify with your friends and colleagues and rate the songs",
+    "contact": {
+      "name": "Leninux",
+      "url": "https://discoveryfy.fabri.cat"
+    },
+    "license": {
+      "name": "GNU GPLv3",
+      "url": "https://www.gnu.org/licenses/gpl.txt"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.discoveryfy.fabri.cat"
+    }
+  ],
+  "paths": {
+    "/users/{user_uuid}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User.Read.Jsonld"
+                }
+              }
+            },
+            "description": "User resource response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "user.get",
+        "summary": "Retrieves a User"
+      },
+      "put": {
+        "requestBody": {
+          "description": "Only the updated information of the User.",
+          "content": {
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/User.Modify"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User.Modify"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/User.Modify"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "Subject"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User.Read.Jsonld"
+                }
+              }
+            },
+            "description": "User resource updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "user.put",
+        "summary": "Update the user information"
+      },
+      "parameters": [
+        {
+          "name": "user_uuid",
+          "description": "User UUID",
+          "schema": {
+            "$ref": "#/components/schemas/User.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/sessions/{session_uuid}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Session.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Session resource response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "session.get",
+        "summary": "Retrieves a Session resource."
+      },
+      "put": {
+        "requestBody": {
+          "description": "The updated Session resource",
+          "content": {
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Session.Modify"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Session.Modify"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Session.Modify"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Subject"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Session.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Session resource updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "session.put",
+        "summary": "Replaces the name of the Session."
+      },
+      "parameters": [
+        {
+          "name": "session_uuid",
+          "description": "Session UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Session.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/groups/{group_uuid}": {
+      "summary": "One group of users",
+      "get": {
+        "tags": [
+          "Group"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Group.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Group resource response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "group.get",
+        "summary": "Get one group information"
+      },
+      "put": {
+        "requestBody": {
+          "description": "The updated Group resource",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Group.Write"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Group.Write"
+              }
+            },
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Group.Write"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "Group"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Group.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Group resource updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "group.put",
+        "summary": "Modify one group"
+      },
+      "delete": {
+        "tags": [
+          "Group"
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/Resource.Deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "group.delete",
+        "summary": "Delete one group"
+      },
+      "parameters": [
+        {
+          "name": "group_uuid",
+          "description": "Group UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Group.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/groups/{group_uuid}/members/{user_uuid}": {
+      "summary": "Modify the membership of a user in a group",
+      "get": {
+        "tags": [
+          "Group"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Member.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Member.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Member.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Membership resource response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "member.get",
+        "summary": "Get the group membership information of one user"
+      },
+      "put": {
+        "requestBody": {
+          "description": "The updated Membership resource",
+          "content": {
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Member.Write"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Member.Write"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Member.Write"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Group"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Member.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Member.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Member.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Membership resource updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "member.put",
+        "summary": "Modify the rol of one user in a group"
+      },
+      "delete": {
+        "tags": [
+          "Group"
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/Resource.Deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "member.delete",
+        "summary": "Delete the group membership of one user"
+      },
+      "parameters": [
+        {
+          "name": "group_uuid",
+          "description": "Group UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Group.UUID"
+          },
+          "in": "path",
+          "required": true
+        },
+        {
+          "name": "user_uuid",
+          "description": "User UUID",
+          "schema": {
+            "$ref": "#/components/schemas/User.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/groups/{group_uuid}/members": {
+      "summary": "List of the members of one Group",
+      "get": {
+        "tags": [
+          "Group"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "schema": {
+              "$ref": "#/components/schemas/Page"
+            },
+            "in": "query",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Member.Read"
+                  }
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Member.Read"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "required": [
+                    "hydra:member"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "hydra:member": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Member.Read.Jsonld"
+                      }
+                    },
+                    "hydra:totalItems": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "hydra:view": {
+                      "type": "object",
+                      "properties": {
+                        "@id": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "@type": {
+                          "type": "string"
+                        },
+                        "hydra:first": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "hydra:last": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "hydra:next": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "hydra:search": {
+                      "type": "object",
+                      "properties": {
+                        "@type": {
+                          "type": "string"
+                        },
+                        "hydra:template": {
+                          "type": "string"
+                        },
+                        "hydra:variableRepresentation": {
+                          "type": "string"
+                        },
+                        "hydra:mapping": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "@type": {
+                                "type": "string"
+                              },
+                              "variable": {
+                                "type": "string"
+                              },
+                              "property": {
+                                "type": "string"
+                              },
+                              "required": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Membership collection response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "members.list",
+        "summary": ""
+      },
+      "parameters": [
+        {
+          "name": "group_uuid",
+          "description": "Group UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Group.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/login": {
+      "summary": "This must be the first call to the API in order to obtain a valid JWT token for call all the other endpoints",
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CSRF"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CSRF"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CSRF",
+                  "required": [
+                    "csrf"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "@context": {
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "@id": {
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "@type": {
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "csrf": {
+                      "$ref": "#/components/schemas/CSRF"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "CSRF Token"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "operationId": "session.create.csrf",
+        "summary": "Get one valid CSRF token",
+        "description": "This is the first mandatory call, in order to do a valid call to POST /login with a CSRF token"
+      },
+      "post": {
+        "requestBody": {
+          "description": "Optional, if provided must be an object with username & password keys.",
+          "content": {
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login.Request"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login.Request"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login.Request"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Subject"
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Login.Response"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Login.Response"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Login.Response.Jsonld"
+                }
+              }
+            },
+            "links": {
+              "GetSessionItem": {
+                "operationId": "session.get",
+                "parameters": {
+                  "id": "$response.body#/session_uuid"
+                },
+                "description": "The `session_uuid` value returned in the response can be used as the `session_uuid` parameter in `GET /sessions/{session_uuid}`."
+              }
+            },
+            "description": "Session resource created"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "csrf": []
+          }
+        ],
+        "operationId": "session.create",
+        "summary": "If username & password is provided, try to authenticate an user to the api. Otherwise a anon session will be created."
+      }
+    },
+    "/groups": {
+      "summary": "Group of Users",
+      "get": {
+        "tags": [
+          "Group"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "schema": {
+              "$ref": "#/components/schemas/Page"
+            },
+            "in": "query",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Group.Read"
+                  }
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Group.Read"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "required": [
+                    "hydra:member"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "hydra:member": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Group.Read.Jsonld"
+                      }
+                    },
+                    "hydra:totalItems": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "hydra:view": {
+                      "type": "object",
+                      "properties": {
+                        "@id": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "@type": {
+                          "type": "string"
+                        },
+                        "hydra:first": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "hydra:last": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "hydra:next": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "hydra:search": {
+                      "type": "object",
+                      "properties": {
+                        "@type": {
+                          "type": "string"
+                        },
+                        "hydra:template": {
+                          "type": "string"
+                        },
+                        "hydra:variableRepresentation": {
+                          "type": "string"
+                        },
+                        "hydra:mapping": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "@type": {
+                                "type": "string"
+                              },
+                              "variable": {
+                                "type": "string"
+                              },
+                              "property": {
+                                "type": "string"
+                              },
+                              "required": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Group collection response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "group.list",
+        "summary": "Return all public groups, and if the current session has an user attached, the groups of the current user."
+      },
+      "post": {
+        "requestBody": {
+          "description": "The new Group resource",
+          "content": {
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Group.Write"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Group.Write"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Group.Write"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Group"
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group.Read.Jsonld"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Group.Read"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              }
+            },
+            "links": {
+              "GetGroupItem": {
+                "operationId": "group.get",
+                "parameters": {
+                  "id": "$response.body#/id"
+                },
+                "description": "The `id` value returned in the response can be used as the `group_uuid` parameter in `GET /groups/{group_uuid}`."
+              }
+            },
+            "description": "Group resource created"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "operationId": "group.create",
+        "summary": "Create new Group"
+      }
+    },
+    "/groups/{group_uuid}/polls": {
+      "get": {
+        "tags": [
+          "Poll",
+          "Group"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "schema": {
+              "$ref": "#/components/schemas/Page"
+            },
+            "in": "query",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Poll.Read"
+                  }
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Poll.Read"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "required": [
+                    "hydra:member"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "hydra:member": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Poll.Read.Jsonld"
+                      }
+                    },
+                    "hydra:totalItems": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "hydra:view": {
+                      "type": "object",
+                      "properties": {
+                        "@id": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "@type": {
+                          "type": "string"
+                        },
+                        "hydra:first": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "hydra:last": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "hydra:next": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "hydra:search": {
+                      "type": "object",
+                      "properties": {
+                        "@type": {
+                          "type": "string"
+                        },
+                        "hydra:template": {
+                          "type": "string"
+                        },
+                        "hydra:variableRepresentation": {
+                          "type": "string"
+                        },
+                        "hydra:mapping": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "@type": {
+                                "type": "string"
+                              },
+                              "variable": {
+                                "type": "string"
+                              },
+                              "property": {
+                                "type": "string"
+                              },
+                              "required": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Poll collection response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "groups.polls.list",
+        "summary": "Retrieves the polls of one group"
+      },
+      "post": {
+        "requestBody": {
+          "description": "The new Poll resource",
+          "content": {
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Poll.Write"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Poll.Write"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Poll.Write"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Poll.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Poll.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Poll.Read"
+                }
+              }
+            },
+            "links": {
+              "GetPollItem": {
+                "operationId": "poll.get",
+                "parameters": {
+                  "poll_uuid": "$response.body#/poll_uuid"
+                },
+                "description": "The `poll_uuid` value returned in the response can be used as the `poll_uuid` parameter in `GET /polls/{poll_uuid}`."
+              }
+            },
+            "description": "Poll resource created"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "poll.create",
+        "summary": "Create one new poll inside a group"
+      },
+      "parameters": [
+        {
+          "name": "group_uuid",
+          "description": "Group UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Group.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/polls": {
+      "summary": "Get all public polls, and if the current session has a user attached, the polls where the user has accesss",
+      "get": {
+        "tags": [
+          "Poll"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "schema": {
+              "$ref": "#/components/schemas/Page"
+            },
+            "in": "query",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Poll.Read"
+                  }
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Poll.Read"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "required": [
+                    "hydra:member"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "hydra:member": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Poll.Read.Jsonld"
+                      }
+                    },
+                    "hydra:totalItems": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "hydra:view": {
+                      "type": "object",
+                      "properties": {
+                        "@id": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "@type": {
+                          "type": "string"
+                        },
+                        "hydra:first": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "hydra:last": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        },
+                        "hydra:next": {
+                          "format": "iri-reference",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "hydra:search": {
+                      "type": "object",
+                      "properties": {
+                        "@type": {
+                          "type": "string"
+                        },
+                        "hydra:template": {
+                          "type": "string"
+                        },
+                        "hydra:variableRepresentation": {
+                          "type": "string"
+                        },
+                        "hydra:mapping": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "@type": {
+                                "type": "string"
+                              },
+                              "variable": {
+                                "type": "string"
+                              },
+                              "property": {
+                                "type": "string"
+                              },
+                              "required": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Poll collection response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "poll.list",
+        "summary": "Get all public polls, and if the current session has a user attached, the polls where the user has accesss"
+      }
+    },
+    "/polls/{poll_uuid}": {
+      "get": {
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Poll.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Poll.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Poll.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Poll resource response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "poll.get",
+        "summary": "Get information about one Poll"
+      },
+      "put": {
+        "requestBody": {
+          "description": "The updated Poll resource",
+          "content": {
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Poll.Write"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Poll.Write"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Poll.Write"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Poll.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Poll.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Poll.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Poll resource updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "poll.put",
+        "summary": "Modify the configuration of one Poll"
+      },
+      "delete": {
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/Resource.Deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "poll.delete",
+        "summary": "Delete one Poll"
+      },
+      "parameters": [
+        {
+          "name": "poll_uuid",
+          "description": "Poll UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Poll.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/polls/{poll_uuid}/tracks": {
+      "post": {
+        "requestBody": {
+          "description": "The new Track resource",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Track.Write"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Track.Write"
+              }
+            },
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Track.Write"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Track.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Track.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Track.Read.Jsonld"
+                }
+              }
+            },
+            "links": {
+              "GetPollItem": {
+                "operationId": "poll.get",
+                "parameters": {
+                  "id": "$response.body#/id"
+                },
+                "description": "The `id` value returned in the response can be used as the `id` parameter in `GET /polls/{poll_uuid}`."
+              }
+            },
+            "description": "Track resource created"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "track.create",
+        "summary": "Add one new Track into one Poll"
+      },
+      "parameters": [
+        {
+          "name": "poll_uuid",
+          "description": "Poll UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Poll.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/polls/{poll_uuid}/tracks/{track_uuid}": {
+      "put": {
+        "requestBody": {
+          "description": "The updated Track resource",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Track.Write"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Track.Write"
+              }
+            },
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Track.Write"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Poll.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Track.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Poll.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Poll resource updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "track.put",
+        "summary": "Modify the Track information"
+      },
+      "delete": {
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/Resource.Deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "track.delete",
+        "summary": "Delete the Track from a Poll"
+      },
+      "parameters": [
+        {
+          "name": "poll_uuid",
+          "description": "Poll UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Poll.UUID"
+          },
+          "in": "path",
+          "required": true
+        },
+        {
+          "name": "track_uuid",
+          "description": "Track UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Track.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/polls/{poll_uuid}/tracks/{track_uuid}/rate": {
+      "put": {
+        "requestBody": {
+          "description": "The Rate resource",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rate.Write"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rate.Write"
+              }
+            },
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rate.Write"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rate.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Rate.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rate.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Poll resource updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "rate.put",
+        "summary": "Rate one Track"
+      },
+      "delete": {
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "204": {
+            "description": "Poll resource deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "rate.delete",
+        "summary": "Delete the rate of one Track"
+      },
+      "parameters": [
+        {
+          "name": "poll_uuid",
+          "description": "Poll UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Poll.UUID"
+          },
+          "in": "path",
+          "required": true
+        },
+        {
+          "name": "track_uuid",
+          "description": "Track UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Track.UUID"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/register": {
+      "summary": "Create one new user in the platform. A GET request must be done for a valid CSRF token before the POST request.",
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CSRF"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CSRF"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CSRF",
+                  "required": [
+                    "csrf"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "@context": {
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "@id": {
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "@type": {
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "csrf": {
+                      "$ref": "#/components/schemas/CSRF"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "CSRF Token"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "operationId": "user.create.csrf",
+        "summary": "Get one valid CSRF token",
+        "description": "This is the first mandatory call, in order to do a valid call to POST /register with a CSRF token"
+      },
+      "post": {
+        "requestBody": {
+          "description": "The new User resource",
+          "content": {
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/User.Write"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User.Write"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/User.Write"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "Subject"
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User.Read"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User.Read"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User.Read.Jsonld"
+                }
+              }
+            },
+            "links": {
+              "GetUser": {
+                "operationId": "user.get",
+                "parameters": {
+                  "id": "$response.body#/id"
+                },
+                "description": "The `id` value returned in the response can be used as the `id` parameter in `GET /users/{user_uuid}`."
+              }
+            },
+            "description": "User created"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "csrf": []
+          }
+        ],
+        "operationId": "user.create",
+        "summary": "Create one new user in the platform"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CSRF": {
+        "description": "Cross-site request forgery, also known as one-click attack or session riding and abbreviated as CSRF or XSRF, is a type of malicious exploit of a website where unauthorized commands are transmitted from a user that the web application trusts. There are many ways in which a malicious website can transmit such commands; specially-crafted image tags, hidden forms, and JavaScript XMLHttpRequests, for example, can all work without the user's interaction or even knowledge. Unlike cross-site scripting (XSS), which exploits the trust a user has for a particular site, CSRF exploits the trust that a site has in a user's browser.",
+        "type": "string",
+        "example": "QmVPVUNxRit5WThmUjJBMVJGNmxpZz09"
+      },
+      "UUID": {
+        "description": "A universally unique identifier (UUID) is a 128-bit number used to identify information in computer systems.",
+        "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "type": "string",
+        "example": "9fea1130-479a-44be-bcf6-d10030b76c4b"
+      },
+      "User.UUID": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "User entity unique identifier"
+      },
+      "Session.UUID": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "User entity unique identifier"
+      },
+      "Group.UUID": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "User entity unique identifier"
+      },
+      "Poll.UUID": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "User entity unique identifier"
+      },
+      "Track.UUID": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "User entity unique identifier"
+      },
+      "JWT": {
+        "description": "JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object.",
+        "pattern": "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$",
+        "type": "string",
+        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.2gSBz9EOsQRN9I-3iSxJoFt7NtgV6Rm0IL6a8CAwl3Q"
+      },
+      "Session.Read": {
+        "description": "Current session, is mandatory in order to use the API.",
+        "required": [
+          "id",
+          "created-at"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The session Id",
+            "readOnly": true
+          },
+          "name": {
+            "description": "The name of the user in this session, only used when this session is not attached to a user",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/agent"
+            }
+          },
+          "created-at": {
+            "format": "date-time",
+            "description": "The creation date of this session",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/startTime"
+            }
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/AuthorizeAction"
+        },
+        "example": {
+          "id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
+          "created-at": "2020-02-13T13:35:20-05:00",
+          "name": "Leninux"
+        }
+      },
+      "Login.Request": {
+        "title": "Root Type for LoginRequest",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "format": "password",
+            "type": "string"
+          }
+        },
+        "example": {
+          "username": "xxx",
+          "password": "xxx"
+        }
+      },
+      "Login.Response": {
+        "description": "",
+        "required": [
+          "JWT",
+          "session"
+        ],
+        "type": "object",
+        "properties": {
+          "JWT": {
+            "$ref": "#/components/schemas/JWT",
+            "description": ""
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session.Read",
+            "description": ""
+          },
+          "user": {
+            "$ref": "#/components/schemas/User.Read",
+            "description": "Optional, only if username & password are provided and valid."
+          }
+        },
+        "example": {
+          "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.2gSBz9EOsQRN9I-3iSxJoFt7NtgV6Rm0IL6a8CAwl3Q",
+          "session": {
+            "id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
+            "created-at": "2020-02-13T13:35:20-05:00",
+            "name": "Leninux"
+          }
+        }
+      },
+      "Jsonapi.Data": {
+        "description": "The document’s “primary data”",
+        "type": "object"
+      },
+      "Jsonapi.Meta": {
+        "description": "Non-standard meta-information",
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "format": "date-time",
+            "description": "Timestamp when server generated the response ",
+            "type": "string"
+          },
+          "hash": {
+            "description": "Request unique identifier",
+            "type": "string"
+          }
+        },
+        "example": "\"meta\": {\n    \"timestamp\": \"2020-02-13T13:35:20-05:00\",\n    \"hash\": \"e6d4d57162ae0f220c8649ae50a2b79fd1cb2c60\"\n}"
+      },
+      "Error": {
+        "description": "Describe an error in the platform",
+        "required": [
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "http code",
+            "type": "integer"
+          },
+          "title": {
+            "description": "Identify a general type of problem",
+            "type": "string"
+          },
+          "detail": {
+            "description": "Description of the error",
+            "type": "string"
+          }
+        },
+        "example": {
+          "status": 400,
+          "title": "Invalid Attribute",
+          "detail": "First name must contain at least three characters."
+        }
+      },
+      "Errors": {
+        "description": "Array of errors",
+        "required": [
+          "errors"
+        ],
+        "type": "object",
+        "properties": {
+          "errors": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Errors.Jsonld": {
+        "description": "@ToDo",
+        "required": [
+          "errors"
+        ],
+        "type": "object",
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/Errors.Jsonld.Context",
+            "description": ""
+          },
+          "errors": {
+            "$ref": "#/components/schemas/Errors",
+            "description": ""
+          }
+        },
+        "example": {
+          "@context": {
+            "errors": {
+              "error": {
+                "@type": "@id"
+              }
+            }
+          },
+          "errors": [
+            {
+              "status": 400,
+              "title": "Invalid Attribute",
+              "detail": "First name must contain at least three characters."
+            }
+          ]
+        }
+      },
+      "Errors.Jsonld.Context": {
+        "description": "@ToDo",
+        "type": "object"
+      },
+      "Login.Response.Jsonld": {
+        "description": "",
+        "required": [
+          "JWT",
+          "session",
+          "context"
+        ],
+        "type": "object",
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/Login.Response.Jsonld.Context",
+            "description": ""
+          },
+          "JWT": {
+            "$ref": "#/components/schemas/JWT",
+            "description": ""
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session.Read",
+            "description": ""
+          },
+          "user": {
+            "$ref": "#/components/schemas/User.Read",
+            "description": "Optional, only if username & password are provided and valid."
+          }
+        },
+        "example": {
+          "@context": {
+            "jwt": {
+              "@type": "@id"
+            },
+            "session": {
+              "@type": "@id"
+            }
+          },
+          "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.2gSBz9EOsQRN9I-3iSxJoFt7NtgV6Rm0IL6a8CAwl3Q",
+          "session": {
+            "id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
+            "created-at": "2020-02-13T13:35:20-05:00",
+            "name": "Leninux"
+          }
+        }
+      },
+      "Login.Response.Jsonld.Context": {
+        "description": "@ToDo",
+        "type": "object"
+      },
+      "User.Write": {
+        "description": "",
+        "required": [
+          "username",
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "description": "The name of the user",
+            "type": "string"
+          },
+          "email": {
+            "description": "The email of the user",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/email"
+            }
+          },
+          "enabled": {
+            "description": "Flag indicating if the user is active",
+            "type": "boolean"
+          },
+          "language": {
+            "description": "Language of the app",
+            "enum": [
+              "en",
+              "es",
+              "ca"
+            ],
+            "type": "string"
+          },
+          "theme": {
+            "description": "Theme of the app",
+            "type": "string"
+          },
+          "password": {
+            "format": "password",
+            "description": "The password of the user in plain text",
+            "type": "string"
+          },
+          "public-email": {
+            "description": "Is the email of this user visible to anyone?",
+            "type": "boolean"
+          },
+          "public-visibility": {
+            "description": "Is this user visible to anyone?",
+            "type": "boolean"
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Person"
+        }
+      },
+      "User.Read": {
+        "description": "@ToDo: Add sessions?",
+        "required": [
+          "id",
+          "username",
+          "email",
+          "created-at",
+          "updated-at"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The user UUID",
+            "readOnly": true
+          },
+          "username": {
+            "description": "The name of the user",
+            "type": "string"
+          },
+          "email": {
+            "description": "The email of the user",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/email"
+            }
+          },
+          "language": {
+            "description": "Language of the app",
+            "enum": [
+              "en",
+              "es",
+              "ca"
+            ]
+          },
+          "theme": {
+            "description": "Theme of the app",
+            "type": "string"
+          },
+          "public-email": {
+            "description": "Is the email of this user visible to anyone?",
+            "type": "boolean"
+          },
+          "public-visibility": {
+            "description": "Is this user visible to anyone?",
+            "type": "boolean"
+          },
+          "created-at": {
+            "format": "date-time",
+            "description": "The creation date of this user",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/startTime"
+            }
+          },
+          "updated-at": {
+            "format": "date-time",
+            "description": "The last modification date of this user",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/dateModified"
+            }
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Person"
+        }
+      },
+      "User.Read.Jsonld": {
+        "description": "",
+        "required": [
+          "username",
+          "enabled",
+          "email",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The entity Id",
+            "readOnly": true
+          },
+          "username": {
+            "description": "The name of the user",
+            "type": "string"
+          },
+          "email": {
+            "description": "The email of the user",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/email"
+            }
+          },
+          "enabled": {
+            "description": "Flag indicating if the user is active",
+            "type": "boolean"
+          },
+          "language": {
+            "description": "Language of the app",
+            "enum": [
+              "en",
+              "es",
+              "ca"
+            ]
+          },
+          "theme": {
+            "description": "Theme of the app",
+            "type": "string"
+          },
+          "created-at": {
+            "format": "date-time",
+            "description": "The creation date of this user",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/startTime"
+            }
+          },
+          "public-email": {
+            "description": "Is the email of this user visible to anyone?",
+            "type": "boolean"
+          },
+          "public-visibility": {
+            "description": "Is this user visible to anyone?",
+            "type": "boolean"
+          },
+          "updated-at": {
+            "format": "date-time",
+            "description": "The last modification date of this user",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/dateModified"
+            }
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Person"
+        }
+      },
+      "User.Modify": {
+        "description": "",
+        "required": [],
+        "type": "object",
+        "properties": {
+          "username": {
+            "description": "The name of the user",
+            "type": "string"
+          },
+          "email": {
+            "description": "The email of the user",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/email"
+            }
+          },
+          "enabled": {
+            "description": "Flag indicating if the user is active",
+            "type": "boolean"
+          },
+          "language": {
+            "description": "Language of the app",
+            "enum": [
+              "en",
+              "es",
+              "ca"
+            ],
+            "type": "string"
+          },
+          "theme": {
+            "description": "Theme of the app",
+            "type": "string"
+          },
+          "password": {
+            "format": "password",
+            "description": "The password of the user in plain text",
+            "type": "string"
+          },
+          "public-email": {
+            "description": "Is the email of this user visible to anyone?",
+            "type": "boolean"
+          },
+          "public-visibility": {
+            "description": "Is this user visible to anyone?",
+            "type": "boolean"
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Person"
+        }
+      },
+      "Session.Modify": {
+        "description": "",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "The name of the user in this session, only used when this session is not attached to a user",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/agent"
+            }
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/AuthorizeAction"
+        }
+      },
+      "Session.Read.Jsonld": {
+        "description": "",
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The entity Id",
+            "readOnly": true
+          },
+          "name": {
+            "description": "The name of the user in this session, only used when this session is not attached to a user",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/agent"
+            }
+          },
+          "created-at": {
+            "format": "date-time",
+            "description": "The creation date of this session",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/startTime"
+            }
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/AuthorizeAction"
+        }
+      },
+      "Track.Read": {
+        "description": "Track",
+        "required": [
+          "artist",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "artist": {
+            "description": "The name of the artist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/byArtist"
+            }
+          },
+          "name": {
+            "description": "The name of the track",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/name"
+            }
+          },
+          "proposalDate": {
+            "format": "date-time",
+            "description": "The proposal date of this track",
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyUriRaw": {
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyImages": {
+            "description": "All the images from the Spotify track",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "externalDocs": {
+              "url": "http://schema.org/image"
+            }
+          },
+          "youtubeUri": {
+            "description": "Youtube resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "poll": {
+            "format": "iri-reference",
+            "description": "The poll where track is participating",
+            "type": "string"
+          },
+          "session": {
+            "format": "iri-reference",
+            "description": "The Session who suggest this Track, used in anonymous sessions",
+            "type": "string"
+          },
+          "user": {
+            "format": "iri-reference",
+            "description": "The User who suggest this Track",
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/MusicRecording"
+        }
+      },
+      "Track.Read.Jsonld": {
+        "description": "Track",
+        "required": [
+          "artist",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "artist": {
+            "description": "The name of the artist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/byArtist"
+            }
+          },
+          "name": {
+            "description": "The name of the track",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/name"
+            }
+          },
+          "proposalDate": {
+            "format": "date-time",
+            "description": "The proposal date of this track",
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyUriRaw": {
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyImages": {
+            "description": "All the images from the Spotify track",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "externalDocs": {
+              "url": "http://schema.org/image"
+            }
+          },
+          "youtubeUri": {
+            "description": "Youtube resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "poll": {
+            "format": "iri-reference",
+            "description": "The poll where track is participating",
+            "type": "string"
+          },
+          "session": {
+            "format": "iri-reference",
+            "description": "The Session who suggest this Track, used in anonymous sessions",
+            "type": "string"
+          },
+          "user": {
+            "format": "iri-reference",
+            "description": "The User who suggest this Track",
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/MusicRecording"
+        }
+      },
+      "Poll.Read": {
+        "description": "Poll / Election / Referendum",
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "description": "The name of the poll, this value is also the name showed in the Spotify playlist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/text"
+            }
+          },
+          "description": {
+            "description": "The description of the poll, this value is also the description showed in the Spotify playlist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/text"
+            }
+          },
+          "spotifyPlaylistImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "externalDocs": {
+              "url": "http://schema.org/image"
+            }
+          },
+          "spotifyPlaylistPublic": {
+            "description": "If true the playlist will be public, if false it will be private.",
+            "type": "boolean"
+          },
+          "spotifyPlaylistCollaborative": {
+            "description": "If true, the playlist will become collaborative and other users\nwill be able to modify the playlist in their Spotify client.\nNote: You can only set collaborative to true on non-public playlists.",
+            "type": "boolean"
+          },
+          "spotifyPlaylistUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyPlaylistUriRaw": {
+            "description": "Return the raw spotify_playlist_uri value",
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyWinnerPlaylistUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyWinnerPlaylistUriRaw": {
+            "description": "Return the raw spotify_winner_playlist_uri value",
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyHistoricPlaylistUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyHistoricPlaylistUriRaw": {
+            "description": "Return the raw spotify_historic_playlist_uri value",
+            "type": "string",
+            "readOnly": true
+          },
+          "startDate": {
+            "format": "date-time",
+            "description": "The start date of this poll",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/datePublished"
+            }
+          },
+          "endDate": {
+            "format": "date-time",
+            "description": "The end date of this poll",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/expires"
+            }
+          },
+          "restartDate": {
+            "description": "String with a crontab style restart command. If setted, this poll is never closed,\nthe winner song goes to winner playlist and the others to the historic playlist.",
+            "type": "string"
+          },
+          "publicVisibility": {
+            "description": "Is this poll visible to anyone or only to the members of the group?",
+            "type": "boolean"
+          },
+          "publicVotes": {
+            "description": "Are the votes public meanwhile the poll is active?",
+            "type": "boolean"
+          },
+          "anonCanVote": {
+            "description": "Can anyone vote into this poll or only the members of the group?",
+            "type": "boolean"
+          },
+          "whoCanAddTrack": {
+            "writeOnly": true,
+            "description": "Who can add tracks into this poll?\nnull => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone",
+            "type": "integer"
+          },
+          "anonVotesMaxRating": {
+            "description": "All the ratings given by a anonymous user to this poll can't excede this number",
+            "type": "integer"
+          },
+          "userVotesMaxRating": {
+            "description": "All the ratings given by a member to this poll can't excede this number",
+            "type": "integer"
+          },
+          "multipleUserTracks": {
+            "description": "Can one user add more than one track to this poll?",
+            "type": "boolean"
+          },
+          "multipleAnonTracks": {
+            "description": "Can an anonymous user add more than one track to this poll?",
+            "type": "boolean"
+          },
+          "group": {
+            "format": "iri-reference",
+            "description": "The group owner of this poll",
+            "type": "string"
+          },
+          "numTracks": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "tracks": {
+            "description": "Available tracks for this poll",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            }
+          },
+          "tracksRaw": {
+            "$ref": "#/components/schemas/Collection",
+            "readOnly": true
+          },
+          "trackOrderByVoted": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "votes": {
+            "description": "Available votes for this poll",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            }
+          },
+          "numVotes": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "votesRaw": {
+            "$ref": "#/components/schemas/Collection",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Question"
+        }
+      },
+      "Poll.Read.Jsonld": {
+        "description": "Poll / Election / Referendum",
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "description": "The name of the poll, this value is also the name showed in the Spotify playlist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/text"
+            }
+          },
+          "description": {
+            "description": "The description of the poll, this value is also the description showed in the Spotify playlist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/text"
+            }
+          },
+          "spotifyPlaylistImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "externalDocs": {
+              "url": "http://schema.org/image"
+            }
+          },
+          "spotifyPlaylistPublic": {
+            "description": "If true the playlist will be public, if false it will be private.",
+            "type": "boolean"
+          },
+          "spotifyPlaylistCollaborative": {
+            "description": "If true, the playlist will become collaborative and other users\nwill be able to modify the playlist in their Spotify client.\nNote: You can only set collaborative to true on non-public playlists.",
+            "type": "boolean"
+          },
+          "spotifyPlaylistUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyPlaylistUriRaw": {
+            "description": "Return the raw spotify_playlist_uri value",
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyWinnerPlaylistUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyWinnerPlaylistUriRaw": {
+            "description": "Return the raw spotify_winner_playlist_uri value",
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyHistoricPlaylistUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyHistoricPlaylistUriRaw": {
+            "description": "Return the raw spotify_historic_playlist_uri value",
+            "type": "string",
+            "readOnly": true
+          },
+          "startDate": {
+            "format": "date-time",
+            "description": "The start date of this poll",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/datePublished"
+            }
+          },
+          "endDate": {
+            "format": "date-time",
+            "description": "The end date of this poll",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/expires"
+            }
+          },
+          "restartDate": {
+            "description": "String with a crontab style restart command. If setted, this poll is never closed,\nthe winner song goes to winner playlist and the others to the historic playlist.",
+            "type": "string"
+          },
+          "publicVisibility": {
+            "description": "Is this poll visible to anyone or only to the members of the group?",
+            "type": "boolean"
+          },
+          "publicVotes": {
+            "description": "Are the votes public meanwhile the poll is active?",
+            "type": "boolean"
+          },
+          "anonCanVote": {
+            "description": "Can anyone vote into this poll or only the members of the group?",
+            "type": "boolean"
+          },
+          "whoCanAddTrack": {
+            "writeOnly": true,
+            "description": "Who can add tracks into this poll?\nnull => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone",
+            "type": "integer"
+          },
+          "anonVotesMaxRating": {
+            "description": "All the ratings given by a anonymous user to this poll can't excede this number",
+            "type": "integer"
+          },
+          "userVotesMaxRating": {
+            "description": "All the ratings given by a member to this poll can't excede this number",
+            "type": "integer"
+          },
+          "multipleUserTracks": {
+            "description": "Can one user add more than one track to this poll?",
+            "type": "boolean"
+          },
+          "multipleAnonTracks": {
+            "description": "Can an anonymous user add more than one track to this poll?",
+            "type": "boolean"
+          },
+          "group": {
+            "format": "iri-reference",
+            "description": "The group owner of this poll",
+            "type": "string"
+          },
+          "numTracks": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "tracks": {
+            "description": "Available tracks for this poll",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            }
+          },
+          "tracksRaw": {
+            "$ref": "#/components/schemas/Collection:jsonld",
+            "readOnly": true
+          },
+          "trackOrderByVoted": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "votes": {
+            "description": "Available votes for this poll",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            }
+          },
+          "numVotes": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "votesRaw": {
+            "$ref": "#/components/schemas/Collection:jsonld",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Question"
+        }
+      },
+      "Group.Read": {
+        "description": "An group such as a school, NGO, corporation, club, etc.",
+        "required": [
+          "name",
+          "publicVisibility",
+          "publicMembership"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "DateTime when this object is created",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/foundingDate"
+            }
+          },
+          "name": {
+            "description": "The name of the group",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/name"
+            }
+          },
+          "publicVisibility": {
+            "description": "Is this group public and can be seen be anyone?",
+            "type": "boolean"
+          },
+          "publicMembership": {
+            "description": "Can anyone be part of this group? Or an invitation is required?",
+            "type": "boolean"
+          },
+          "whoCanCreatePolls": {
+            "writeOnly": true,
+            "type": "integer"
+          },
+          "numMemberships": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "memberships": {
+            "description": "Members in this group",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "membershipsRaw": {
+            "$ref": "#/components/schemas/Collection",
+            "readOnly": true
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "membersRaw": {
+            "$ref": "#/components/schemas/Collection",
+            "readOnly": true
+          },
+          "numPolls": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "polls": {
+            "description": "Polls in this group",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            }
+          },
+          "pollsRaw": {
+            "$ref": "#/components/schemas/Collection",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Group"
+        }
+      },
+      "Group.Read.Jsonld": {
+        "description": "An group such as a school, NGO, corporation, club, etc.",
+        "required": [
+          "name",
+          "publicVisibility",
+          "publicMembership"
+        ],
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "DateTime when this object is created",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/foundingDate"
+            }
+          },
+          "name": {
+            "description": "The name of the group",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/name"
+            }
+          },
+          "publicVisibility": {
+            "description": "Is this group public and can be seen be anyone?",
+            "type": "boolean"
+          },
+          "publicMembership": {
+            "description": "Can anyone be part of this group? Or an invitation is required?",
+            "type": "boolean"
+          },
+          "whoCanCreatePolls": {
+            "writeOnly": true,
+            "type": "integer"
+          },
+          "numMemberships": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "memberships": {
+            "description": "Members in this group",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "membershipsRaw": {
+            "$ref": "#/components/schemas/Collection:jsonld",
+            "readOnly": true
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "membersRaw": {
+            "$ref": "#/components/schemas/Collection:jsonld",
+            "readOnly": true
+          },
+          "numPolls": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "polls": {
+            "description": "Polls in this group",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            }
+          },
+          "pollsRaw": {
+            "$ref": "#/components/schemas/Collection:jsonld",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Group"
+        }
+      },
+      "Group.Write": {
+        "description": "An group such as a school, NGO, corporation, club, etc.",
+        "required": [
+          "name",
+          "public-visibility",
+          "public-membership",
+          "who-can-create-polls"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "The name of the group",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/name"
+            }
+          },
+          "public-visibility": {
+            "description": "Is this group public and can be seen be anyone?",
+            "type": "boolean"
+          },
+          "public-membership": {
+            "description": "Can anyone be part of this group? Or an invitation is required?",
+            "type": "boolean"
+          },
+          "who-can-create-polls": {
+            "description": "Can anyone create a new poll?",
+            "type": "integer"
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Group"
+        }
+      },
+      "Jsonapi.Version": {
+        "description": "String indicating the highest JSON API version supported",
+        "required": [
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "description": "String indicating the highest JSON API version supported",
+            "type": "string"
+          }
+        },
+        "example": {
+          "version": "1.0"
+        }
+      },
+      "Page": {
+        "description": "The page number",
+        "default": 1,
+        "type": "integer"
+      },
+      "Member.Read": {
+        "description": "A member of an Group",
+        "required": [
+          "rol"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "rol": {
+            "description": "Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;",
+            "type": "integer"
+          },
+          "member": {
+            "format": "iri-reference",
+            "description": "User in this group",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/member"
+            }
+          },
+          "group": {
+            "format": "iri-reference",
+            "description": "Group where this user belong",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/hostingGroup"
+            }
+          },
+          "created-at": {
+            "format": "date-time",
+            "description": "DateTime when this object is created",
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/ProgramMembership"
+        }
+      },
+      "Member.Read.Jsonld": {
+        "description": "A member of an Group",
+        "required": [
+          "rol"
+        ],
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "DateTime when this object is created",
+            "type": "string",
+            "readOnly": true
+          },
+          "rol": {
+            "description": "Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;",
+            "type": "integer"
+          },
+          "member": {
+            "format": "iri-reference",
+            "description": "User in this group",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/member"
+            }
+          },
+          "group": {
+            "format": "iri-reference",
+            "description": "Group where this user belong",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/hostingGroup"
+            }
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/ProgramMembership"
+        }
+      },
+      "Member.Write": {
+        "description": "Modify the rol of an User in a Group",
+        "required": [
+          "rol"
+        ],
+        "type": "object",
+        "properties": {
+          "rol": {
+            "description": "Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;",
+            "type": "integer"
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/ProgramMembership"
+        }
+      },
+      "Poll.Write": {
+        "description": "Poll / Election / Referendum",
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "description": "The name of the poll, this value is also the name showed in the Spotify playlist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/text"
+            }
+          },
+          "description": {
+            "description": "The description of the poll, this value is also the description showed in the Spotify playlist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/text"
+            }
+          },
+          "spotifyPlaylistImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "externalDocs": {
+              "url": "http://schema.org/image"
+            }
+          },
+          "spotifyPlaylistPublic": {
+            "description": "If true the playlist will be public, if false it will be private.",
+            "type": "boolean"
+          },
+          "spotifyPlaylistCollaborative": {
+            "description": "If true, the playlist will become collaborative and other users\nwill be able to modify the playlist in their Spotify client.\nNote: You can only set collaborative to true on non-public playlists.",
+            "type": "boolean"
+          },
+          "spotifyPlaylistUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyPlaylistUriRaw": {
+            "description": "Return the raw spotify_playlist_uri value",
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyWinnerPlaylistUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyWinnerPlaylistUriRaw": {
+            "description": "Return the raw spotify_winner_playlist_uri value",
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyHistoricPlaylistUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyHistoricPlaylistUriRaw": {
+            "description": "Return the raw spotify_historic_playlist_uri value",
+            "type": "string",
+            "readOnly": true
+          },
+          "startDate": {
+            "format": "date-time",
+            "description": "The start date of this poll",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/datePublished"
+            }
+          },
+          "endDate": {
+            "format": "date-time",
+            "description": "The end date of this poll",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/expires"
+            }
+          },
+          "restartDate": {
+            "description": "String with a crontab style restart command. If setted, this poll is never closed,\nthe winner song goes to winner playlist and the others to the historic playlist.",
+            "type": "string"
+          },
+          "publicVisibility": {
+            "description": "Is this poll visible to anyone or only to the members of the group?",
+            "type": "boolean"
+          },
+          "publicVotes": {
+            "description": "Are the votes public meanwhile the poll is active?",
+            "type": "boolean"
+          },
+          "anonCanVote": {
+            "description": "Can anyone vote into this poll or only the members of the group?",
+            "type": "boolean"
+          },
+          "whoCanAddTrack": {
+            "writeOnly": true,
+            "description": "Who can add tracks into this poll?\nnull => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone",
+            "type": "integer"
+          },
+          "anonVotesMaxRating": {
+            "description": "All the ratings given by a anonymous user to this poll can't excede this number",
+            "type": "integer"
+          },
+          "userVotesMaxRating": {
+            "description": "All the ratings given by a member to this poll can't excede this number",
+            "type": "integer"
+          },
+          "multipleUserTracks": {
+            "description": "Can one user add more than one track to this poll?",
+            "type": "boolean"
+          },
+          "multipleAnonTracks": {
+            "description": "Can an anonymous user add more than one track to this poll?",
+            "type": "boolean"
+          },
+          "group": {
+            "format": "iri-reference",
+            "description": "The group owner of this poll",
+            "type": "string"
+          },
+          "numTracks": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "tracks": {
+            "description": "Available tracks for this poll",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            }
+          },
+          "tracksRaw": {
+            "$ref": "#/components/schemas/Collection",
+            "readOnly": true
+          },
+          "trackOrderByVoted": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "votes": {
+            "description": "Available votes for this poll",
+            "type": "array",
+            "items": {
+              "format": "iri-reference",
+              "type": "string"
+            }
+          },
+          "numVotes": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "votesRaw": {
+            "$ref": "#/components/schemas/Collection",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Question"
+        }
+      },
+      "Track.Write": {
+        "description": "Track",
+        "required": [
+          "artist",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "artist": {
+            "description": "The name of the artist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/byArtist"
+            }
+          },
+          "name": {
+            "description": "The name of the track",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/name"
+            }
+          },
+          "proposalDate": {
+            "format": "date-time",
+            "description": "The proposal date of this track",
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyUri": {
+            "description": "Spotify resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotifyUriRaw": {
+            "type": "string",
+            "readOnly": true
+          },
+          "spotifyImages": {
+            "description": "All the images from the Spotify track",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "externalDocs": {
+              "url": "http://schema.org/image"
+            }
+          },
+          "youtubeUri": {
+            "description": "Youtube resource identifier",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "poll": {
+            "format": "iri-reference",
+            "description": "The poll where track is participating",
+            "type": "string"
+          },
+          "session": {
+            "format": "iri-reference",
+            "description": "The Session who suggest this Track, used in anonymous sessions",
+            "type": "string"
+          },
+          "user": {
+            "format": "iri-reference",
+            "description": "The User who suggest this Track",
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/MusicRecording"
+        }
+      },
+      "Rate.Read": {
+        "description": "Vote / Rating",
+        "required": [
+          "rating"
+        ],
+        "type": "object",
+        "properties": {
+          "rating": {
+            "description": "The rating of this vote",
+            "type": "integer",
+            "externalDocs": {
+              "url": "http://schema.org/ratingValue"
+            }
+          },
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "The creation date of this vote",
+            "type": "string",
+            "readOnly": true
+          },
+          "poll": {
+            "format": "iri-reference",
+            "description": "The poll this vote is about",
+            "type": "string"
+          },
+          "track": {
+            "format": "iri-reference",
+            "description": "The track this vote is about",
+            "type": "string"
+          },
+          "session": {
+            "format": "iri-reference",
+            "type": "string"
+          },
+          "user": {
+            "format": "iri-reference",
+            "description": "The user who emit this vote, optional",
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Rating"
+        }
+      },
+      "Rate.Read.Jsonld": {
+        "description": "Vote / Rating",
+        "required": [
+          "rating"
+        ],
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "rating": {
+            "description": "The rating of this vote",
+            "type": "integer",
+            "externalDocs": {
+              "url": "http://schema.org/ratingValue"
+            }
+          },
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "The creation date of this vote",
+            "type": "string",
+            "readOnly": true
+          },
+          "poll": {
+            "format": "iri-reference",
+            "description": "The poll this vote is about",
+            "type": "string"
+          },
+          "track": {
+            "format": "iri-reference",
+            "description": "The track this vote is about",
+            "type": "string"
+          },
+          "session": {
+            "format": "iri-reference",
+            "type": "string"
+          },
+          "user": {
+            "format": "iri-reference",
+            "description": "The user who emit this vote, optional",
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Rating"
+        }
+      },
+      "Rate.Write": {
+        "description": "Vote / Rating",
+        "required": [
+          "rating"
+        ],
+        "type": "object",
+        "properties": {
+          "rating": {
+            "description": "The rating of this vote",
+            "type": "integer",
+            "externalDocs": {
+              "url": "http://schema.org/ratingValue"
+            }
+          },
+          "id": {
+            "format": "uuid",
+            "description": "The entity Id",
+            "type": "string",
+            "readOnly": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "The creation date of this vote",
+            "type": "string",
+            "readOnly": true
+          },
+          "poll": {
+            "format": "iri-reference",
+            "description": "The poll this vote is about",
+            "type": "string"
+          },
+          "track": {
+            "format": "iri-reference",
+            "description": "The track this vote is about",
+            "type": "string"
+          },
+          "session": {
+            "format": "iri-reference",
+            "type": "string"
+          },
+          "user": {
+            "format": "iri-reference",
+            "description": "The user who emit this vote, optional",
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Rating"
+        }
+      }
+    },
+    "responses": {
+      "Resource.Deleted": {
+        "content": {
+          "application/json": {},
+          "application/vnd.api+json": {},
+          "application/ld+json": {}
+        },
+        "description": "Resource deleted correctly"
+      },
+      "Bad.Request": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Errors"
+            }
+          },
+          "application/vnd.api+json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jsonapi": {
+                  "$ref": "#/components/schemas/Jsonapi.Version"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                },
+                "meta": {
+                  "$ref": "#/components/schemas/Jsonapi.Meta"
+                }
+              }
+            }
+          },
+          "application/ld+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Errors.Jsonld"
+            }
+          }
+        },
+        "description": "The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications."
+      },
+      "Internal.Server.Error": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Errors"
+            }
+          },
+          "application/vnd.api+json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jsonapi": {
+                  "$ref": "#/components/schemas/Jsonapi.Version"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                },
+                "meta": {
+                  "$ref": "#/components/schemas/Jsonapi.Meta"
+                }
+              }
+            }
+          },
+          "application/ld+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Errors.Jsonld"
+            }
+          }
+        },
+        "description": "The server encountered an unexpected condition which prevented it from fulfilling the request."
+      },
+      "Unauthorized": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Errors"
+            }
+          },
+          "application/vnd.api+json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jsonapi": {
+                  "$ref": "#/components/schemas/Jsonapi.Version"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                },
+                "meta": {
+                  "$ref": "#/components/schemas/Jsonapi.Meta"
+                }
+              }
+            }
+          },
+          "application/ld+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Errors.Jsonld"
+            }
+          }
+        },
+        "description": "The request requires user authentication"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "JWT Token, in Authorization header, with Bearer prepended.",
+        "name": "Authorization",
+        "in": "header"
+      },
+      "csrf": {
+        "scheme": "basic",
+        "type": "http",
+        "description": "Cross-site request forgery token. Send the token inside \"X-CSRF-TOKEN\" header.",
+        "name": "X-CSRF-TOKEN",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    },
+    {
+      "csrf": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Group",
+      "description": "A group of users"
+    },
+    {
+      "name": "Poll",
+      "description": "Poll, owned by one group, can have tracks and votes"
+    },
+    {
+      "name": "User",
+      "description": "The client of the API"
+    }
+  ]
+}
