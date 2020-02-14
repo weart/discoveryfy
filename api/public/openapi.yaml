@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
     title: Discoveryfy
-    version: 0.2.1
+    version: 0.2.2
     description: Create collaborative playlists in Spotify with your friends and colleagues and rate the songs
     contact:
         name: Leninux
@@ -584,7 +584,6 @@ paths:
                                         $ref: '#/components/schemas/Jsonapi.Meta'
                         application/ld+json:
                             schema:
-                                $ref: '#/components/schemas/CSRF'
                                 required:
                                     - csrf
                                 type: object
@@ -826,277 +825,6 @@ paths:
                     $ref: '#/components/responses/Internal.Server.Error'
             operationId: group.create
             summary: Create new Group
-    '/groups/{group_uuid}/polls':
-        get:
-            tags:
-                - Poll
-                - Group
-            parameters:
-                -
-                    name: page
-                    schema:
-                        $ref: '#/components/schemas/Page'
-                    in: query
-                    required: false
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/Poll.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Poll.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                required:
-                                    - 'hydra:member'
-                                type: object
-                                properties:
-                                    'hydra:member':
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Poll.Read.Jsonld'
-                                    'hydra:totalItems':
-                                        minimum: 0
-                                        type: integer
-                                    'hydra:view':
-                                        type: object
-                                        properties:
-                                            '@id':
-                                                format: iri-reference
-                                                type: string
-                                            '@type':
-                                                type: string
-                                            'hydra:first':
-                                                format: iri-reference
-                                                type: string
-                                            'hydra:last':
-                                                format: iri-reference
-                                                type: string
-                                            'hydra:next':
-                                                format: iri-reference
-                                                type: string
-                                    'hydra:search':
-                                        type: object
-                                        properties:
-                                            '@type':
-                                                type: string
-                                            'hydra:template':
-                                                type: string
-                                            'hydra:variableRepresentation':
-                                                type: string
-                                            'hydra:mapping':
-                                                type: array
-                                                items:
-                                                    type: object
-                                                    properties:
-                                                        '@type':
-                                                            type: string
-                                                        variable:
-                                                            type: string
-                                                        property:
-                                                            type: string
-                                                        required:
-                                                            type: boolean
-                    description: Poll collection response
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: group.polls.list
-            summary: 'Retrieves the public polls of one group, or all polls if the user is member of the group'
-        post:
-            requestBody:
-                description: The new Poll resource
-                content:
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/Poll.Write'
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Poll.Write'
-                    application/vnd.api+json:
-                        schema:
-                            $ref: '#/components/schemas/Poll.Write'
-                required: true
-            tags:
-                - Poll
-            responses:
-                '201':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Poll.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/Poll.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Poll.Read'
-                    links:
-                        GetPollItem:
-                            operationId: poll.get
-                            parameters:
-                                poll_uuid: '$response.body#/poll_uuid'
-                            description: >-
-                                The `poll_uuid` value returned in the response can be used as the `poll_uuid`
-                                parameter in `GET /polls/{poll_uuid}`.
-                    description: Poll resource created
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: poll.create
-            summary: Create one new poll inside a group
-        parameters:
-            -
-                name: group_uuid
-                description: Group UUID
-                schema:
-                    $ref: '#/components/schemas/Group.UUID'
-                in: path
-                required: true
-    /polls:
-        summary: >-
-            Get all public polls, and if the current session has a user attached, the polls where the user has
-            accesss
-        get:
-            tags:
-                - Poll
-            parameters:
-                -
-                    name: page
-                    schema:
-                        $ref: '#/components/schemas/Page'
-                    in: query
-                    required: false
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/Poll.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Poll.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                required:
-                                    - 'hydra:member'
-                                type: object
-                                properties:
-                                    'hydra:member':
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Poll.Read.Jsonld'
-                                    'hydra:totalItems':
-                                        minimum: 0
-                                        type: integer
-                                    'hydra:view':
-                                        type: object
-                                        properties:
-                                            '@id':
-                                                format: iri-reference
-                                                type: string
-                                            '@type':
-                                                type: string
-                                            'hydra:first':
-                                                format: iri-reference
-                                                type: string
-                                            'hydra:last':
-                                                format: iri-reference
-                                                type: string
-                                            'hydra:next':
-                                                format: iri-reference
-                                                type: string
-                                    'hydra:search':
-                                        type: object
-                                        properties:
-                                            '@type':
-                                                type: string
-                                            'hydra:template':
-                                                type: string
-                                            'hydra:variableRepresentation':
-                                                type: string
-                                            'hydra:mapping':
-                                                type: array
-                                                items:
-                                                    type: object
-                                                    properties:
-                                                        '@type':
-                                                            type: string
-                                                        variable:
-                                                            type: string
-                                                        property:
-                                                            type: string
-                                                        required:
-                                                            type: boolean
-                    description: Poll collection response
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: polls.list
-            summary: >-
-                Get all public polls, and if the current session has a user attached, the polls where the user
-                has accesss
     '/polls/{poll_uuid}':
         get:
             tags:
@@ -1204,74 +932,6 @@ paths:
                     bearerAuth: []
             operationId: poll.delete
             summary: Delete one Poll
-        parameters:
-            -
-                name: poll_uuid
-                description: Poll UUID
-                schema:
-                    $ref: '#/components/schemas/Poll.UUID'
-                in: path
-                required: true
-    '/polls/{poll_uuid}/tracks':
-        post:
-            requestBody:
-                description: The new Track resource
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Track.Write'
-                    application/vnd.api+json:
-                        schema:
-                            $ref: '#/components/schemas/Track.Write'
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/Track.Write'
-                required: true
-            tags:
-                - Poll
-            responses:
-                '201':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Track.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/Track.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Track.Read.Jsonld'
-                    links:
-                        GetPollItem:
-                            operationId: poll.get
-                            parameters:
-                                id: '$response.body#/id'
-                            description: >-
-                                The `id` value returned in the response can be used as the `id` parameter in
-                                `GET /polls/{poll_uuid}`.
-                    description: Track resource created
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: track.create
-            summary: Add one new Track into one Poll
         parameters:
             -
                 name: poll_uuid
@@ -1477,7 +1137,6 @@ paths:
                                         $ref: '#/components/schemas/Jsonapi.Meta'
                         application/ld+json:
                             schema:
-                                $ref: '#/components/schemas/CSRF'
                                 required:
                                     - csrf
                                 type: object
@@ -1560,6 +1219,368 @@ paths:
                     csrf: []
             operationId: user.create
             summary: Create one new user in the platform
+    '/groups/{group_uuid}/polls':
+        get:
+            tags:
+                - Poll
+                - Group
+            parameters:
+                -
+                    name: page
+                    schema:
+                        $ref: '#/components/schemas/Page'
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Poll.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Poll.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Poll.Read.Jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                    links:
+                        GetPoll:
+                            operationId: poll.get
+                            parameters:
+                                poll_uuid: '$response.body#/poll_uuid'
+                            description: >-
+                                The `id` value returned in the response can be used as the `poll_uuid`
+                                parameter in `GET /polls/{poll_uuid}`.                                        
+                    description: Poll collection response
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: group.polls.list
+            summary: 'Retrieves the public polls of one group, or all polls if the user is member of the group'
+        post:
+            requestBody:
+                description: The new Poll resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll.Write'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Poll.Write'
+                    application/vnd.api+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll.Write'
+                required: true
+            tags:
+                - Poll
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        $ref: '#/components/schemas/Poll.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll.Read'
+                    links:
+                        GetPoll:
+                            operationId: poll.get
+                            parameters:
+                                poll_uuid: '$response.body#/poll_uuid'
+                            description: >-
+                                The `id` value returned in the response can be used as the `poll_uuid`
+                                parameter in `GET /polls/{poll_uuid}`.
+                    description: Poll resource created
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: poll.create
+            summary: Create one new poll inside a group
+        parameters:
+            -
+                name: group_uuid
+                description: Group UUID
+                schema:
+                    $ref: '#/components/schemas/Group.UUID'
+                in: path
+                required: true
+    /polls:
+        summary: >-
+            Get all public polls, and if the current session has a user attached, the polls where the user has
+            accesss
+        get:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: page
+                    schema:
+                        $ref: '#/components/schemas/Page'
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Poll.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Poll.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Poll.Read.Jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                    links:
+                        GetPoll:
+                            operationId: poll.get
+                            parameters:
+                                poll_uuid: '$response.body#/poll_uuid'
+                            description: >-
+                                The `id` value returned in the response can be used as the `poll_uuid`
+                                parameter in `GET /polls/{poll_uuid}`. 
+                    description: Poll collection response
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: polls.list
+            summary: >-
+                Get all public polls, and if the current session has a user attached, the polls where the user
+                has accesss
+    '/polls/{poll_uuid}/tracks':
+        post:
+            requestBody:
+                description: The new Track resource
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Track.Write'
+                    application/vnd.api+json:
+                        schema:
+                            $ref: '#/components/schemas/Track.Write'
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Track.Write'
+                required: true
+            tags:
+                - Poll
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Track.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        $ref: '#/components/schemas/Track.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Track.Read.Jsonld'
+                    links:
+                        ModifyTrack:
+                            operationId: track.put
+                            parameters:
+                                track_uuid: '$response.body#/track_uuid'
+                            description: >-
+                                The `id` value returned in the response can be used as the `track_uuid`
+                                parameter in `POST /polls/{poll_uuid}/tracks/{track_uuid}`. 
+                        DeleteTrack:
+                            operationId: track.delete
+                            parameters:
+                                track_uuid: '$response.body#/track_uuid'
+                            description: >-
+                                The `id` value returned in the response can be used as the `track_uuid`
+                                parameter in `DELETE /polls/{poll_uuid}/tracks/{track_uuid}`.
+                    description: Track resource created
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: track.create
+            summary: Add one new Track into one Poll
+        parameters:
+            -
+                name: poll_uuid
+                description: Poll UUID
+                schema:
+                    $ref: '#/components/schemas/Poll.UUID'
+                in: path
+                required: true
 components:
     schemas:
         CSRF:
@@ -1589,8 +1610,7 @@ components:
             example: >-
                 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.2gSBz9EOsQRN9I-3iSxJoFt7NtgV6Rm0IL6a8CAwl3Q
         Login.Request:
-            title: Root Type for LoginRequest
-            description: ''
+            title: Request of POST /login
             type: object
             properties:
                 username:
@@ -1602,7 +1622,7 @@ components:
                 username: xxx
                 password: xxx
         Login.Response:
-            description: ''
+            title: Response of POST /login
             required:
                 - JWT
                 - session
@@ -1610,10 +1630,8 @@ components:
             properties:
                 JWT:
                     $ref: '#/components/schemas/JWT'
-                    description: ''
                 session:
                     $ref: '#/components/schemas/Session.Read'
-                    description: ''
                 user:
                     $ref: '#/components/schemas/User.Read'
                     description: 'Optional, only if username & password are provided and valid.'
@@ -1624,9 +1642,6 @@ components:
                     id: 9fea1130-479a-44be-bcf6-d10030b76c4b
                     created-at: '2020-02-13T13:35:20-05:00'
                     name: Leninux
-        Jsonapi.Data:
-            description: The document’s “primary data”
-            type: object
         Error:
             description: Describe an error in the platform
             required:
@@ -1653,72 +1668,11 @@ components:
             type: object
             properties:
                 errors:
-                    description: ''
                     type: array
                     items:
                         $ref: '#/components/schemas/Error'
-        Errors.Jsonld:
-            description: '@ToDo'
-            required:
-                - errors
-            type: object
-            properties:
-                context:
-                    $ref: '#/components/schemas/Errors.Jsonld.Context'
-                    description: ''
-                errors:
-                    $ref: '#/components/schemas/Errors'
-                    description: ''
-            example:
-                '@context':
-                    errors:
-                        error:
-                            '@type': '@id'
-                errors:
-                    -
-                        status: 400
-                        title: Invalid Attribute
-                        detail: First name must contain at least three characters.
-        Errors.Jsonld.Context:
-            description: '@ToDo'
-            type: object
-        Login.Response.Jsonld:
-            description: ''
-            required:
-                - JWT
-                - session
-                - context
-            type: object
-            properties:
-                context:
-                    $ref: '#/components/schemas/Login.Response.Jsonld.Context'
-                    description: ''
-                JWT:
-                    $ref: '#/components/schemas/JWT'
-                    description: ''
-                session:
-                    $ref: '#/components/schemas/Session.Read'
-                    description: ''
-                user:
-                    $ref: '#/components/schemas/User.Read'
-                    description: 'Optional, only if username & password are provided and valid.'
-            example:
-                '@context':
-                    jwt:
-                        '@type': '@id'
-                    session:
-                        '@type': '@id'
-                jwt: >-
-                    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.2gSBz9EOsQRN9I-3iSxJoFt7NtgV6Rm0IL6a8CAwl3Q
-                session:
-                    id: 9fea1130-479a-44be-bcf6-d10030b76c4b
-                    created-at: '2020-02-13T13:35:20-05:00'
-                    name: Leninux
-        Login.Response.Jsonld.Context:
-            description: '@ToDo'
-            type: object
         User.Write:
-            description: ''
+            description: Create a User of the platform
             required:
                 - username
                 - email
@@ -1759,7 +1713,7 @@ components:
             externalDocs:
                 url: 'https://schema.org/Person'
         Session.Modify:
-            description: ''
+            description: Modify a User in the platform
             type: object
             properties:
                 name:
@@ -3334,6 +3288,70 @@ components:
                     type: boolean
             externalDocs:
                 url: 'https://schema.org/Person'
+        Errors.Jsonld:
+            description: '@ToDo'
+            required:
+                - errors
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                errors:
+                    $ref: '#/components/schemas/Errors'
+                    description: ''
+            example:
+                '@context':
+                    errors:
+                        error:
+                            '@type': '@id'
+                errors:
+                    -
+                        status: 400
+                        title: Invalid Attribute
+                        detail: First name must contain at least three characters.
+        Login.Response.Jsonld:
+            description: ''
+            required:
+                - JWT
+                - session
+                - context
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                JWT:
+                    $ref: '#/components/schemas/JWT'
+                session:
+                    $ref: '#/components/schemas/Session.Read'
+                user:
+                    $ref: '#/components/schemas/User.Read'
+                    description: 'Optional, only if username & password are provided and valid.'
+            example:
+                '@context':
+                    jwt:
+                        '@type': '@id'
+                    session:
+                        '@type': '@id'
+                jwt: >-
+                    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.2gSBz9EOsQRN9I-3iSxJoFt7NtgV6Rm0IL6a8CAwl3Q
+                session:
+                    id: 9fea1130-479a-44be-bcf6-d10030b76c4b
+                    created-at: '2020-02-13T13:35:20-05:00'
+                    name: Leninux
     responses:
         Resource.Deleted:
             content:
