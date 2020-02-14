@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
     title: Discoveryfy
-    version: 0.2.0
+    version: 0.2.1
     description: Create collaborative playlists in Spotify with your friends and colleagues and rate the songs
     contact:
         name: Leninux
@@ -377,6 +377,7 @@ paths:
                     application/vnd.api+json:
                         schema:
                             $ref: '#/components/schemas/Member.Write'
+                required: true
             tags:
                 - Group
             responses:
@@ -666,7 +667,7 @@ paths:
                 If username & password is provided, try to authenticate an user to the api. Otherwise a anon
                 session will be created.
     /groups:
-        summary: Group of Users
+        summary: Operations with a Group of Users
         get:
             tags:
                 - Group
@@ -763,7 +764,7 @@ paths:
             security:
                 -
                     bearerAuth: []
-            operationId: group.list
+            operationId: groups.list
             summary: >-
                 Return all public groups, and if the current session has an user attached, the groups of the
                 current user.
@@ -780,6 +781,7 @@ paths:
                     application/vnd.api+json:
                         schema:
                             $ref: '#/components/schemas/Group.Write'
+                required: true
             tags:
                 - Group
             responses:
@@ -922,8 +924,8 @@ paths:
             security:
                 -
                     bearerAuth: []
-            operationId: groups.polls.list
-            summary: Retrieves the polls of one group
+            operationId: group.polls.list
+            summary: 'Retrieves the public polls of one group, or all polls if the user is member of the group'
         post:
             requestBody:
                 description: The new Poll resource
@@ -937,6 +939,7 @@ paths:
                     application/vnd.api+json:
                         schema:
                             $ref: '#/components/schemas/Poll.Write'
+                required: true
             tags:
                 - Poll
             responses:
@@ -1090,7 +1093,7 @@ paths:
             security:
                 -
                     bearerAuth: []
-            operationId: poll.list
+            operationId: polls.list
             summary: >-
                 Get all public polls, and if the current session has a user attached, the polls where the user
                 has accesss
@@ -1146,6 +1149,7 @@ paths:
                     application/vnd.api+json:
                         schema:
                             $ref: '#/components/schemas/Poll.Write'
+                required: true
             tags:
                 - Poll
             responses:
@@ -1222,6 +1226,7 @@ paths:
                     application/ld+json:
                         schema:
                             $ref: '#/components/schemas/Track.Write'
+                required: true
             tags:
                 - Poll
             responses:
@@ -1289,6 +1294,7 @@ paths:
                     application/ld+json:
                         schema:
                             $ref: '#/components/schemas/Track.Write'
+                required: true
             tags:
                 - Poll
             responses:
@@ -1325,7 +1331,7 @@ paths:
                 -
                     bearerAuth: []
             operationId: track.put
-            summary: Modify the Track information
+            summary: Modify the information about one Track
         delete:
             tags:
                 - Poll
@@ -1342,7 +1348,7 @@ paths:
                 -
                     bearerAuth: []
             operationId: track.delete
-            summary: Delete the Track from a Poll
+            summary: Delete one Track from a Poll
         parameters:
             -
                 name: poll_uuid
@@ -1372,6 +1378,7 @@ paths:
                     application/ld+json:
                         schema:
                             $ref: '#/components/schemas/Rate.Write'
+                required: true
             tags:
                 - Poll
             responses:
@@ -1573,21 +1580,6 @@ components:
             pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
             type: string
             example: 9fea1130-479a-44be-bcf6-d10030b76c4b
-        User.UUID:
-            $ref: '#/components/schemas/UUID'
-            description: User entity unique identifier
-        Session.UUID:
-            $ref: '#/components/schemas/UUID'
-            description: User entity unique identifier
-        Group.UUID:
-            $ref: '#/components/schemas/UUID'
-            description: User entity unique identifier
-        Poll.UUID:
-            $ref: '#/components/schemas/UUID'
-            description: User entity unique identifier
-        Track.UUID:
-            $ref: '#/components/schemas/UUID'
-            description: User entity unique identifier
         JWT:
             description: >-
                 JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained
@@ -1596,37 +1588,6 @@ components:
             type: string
             example: >-
                 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.2gSBz9EOsQRN9I-3iSxJoFt7NtgV6Rm0IL6a8CAwl3Q
-        Session.Read:
-            description: 'Current session, is mandatory in order to use the API.'
-            required:
-                - id
-                - created-at
-            type: object
-            properties:
-                id:
-                    $ref: '#/components/schemas/UUID'
-                    description: The session Id
-                    readOnly: true
-                name:
-                    description: >-
-                        The name of the user in this session, only used when this session is not attached to a
-                        user
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/agent'
-                created-at:
-                    format: date-time
-                    description: The creation date of this session
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/startTime'
-            externalDocs:
-                url: 'https://schema.org/AuthorizeAction'
-            example:
-                id: 9fea1130-479a-44be-bcf6-d10030b76c4b
-                created-at: '2020-02-13T13:35:20-05:00'
-                name: Leninux
         Login.Request:
             title: Root Type for LoginRequest
             description: ''
@@ -1666,22 +1627,6 @@ components:
         Jsonapi.Data:
             description: The document’s “primary data”
             type: object
-        Jsonapi.Meta:
-            description: Non-standard meta-information
-            type: object
-            properties:
-                timestamp:
-                    format: date-time
-                    description: 'Timestamp when server generated the response '
-                    type: string
-                hash:
-                    description: Request unique identifier
-                    type: string
-            example: |-
-                "meta": {
-                    "timestamp": "2020-02-13T13:35:20-05:00",
-                    "hash": "e6d4d57162ae0f220c8649ae50a2b79fd1cb2c60"
-                }
         Error:
             description: Describe an error in the platform
             required:
@@ -1813,6 +1758,303 @@ components:
                     type: boolean
             externalDocs:
                 url: 'https://schema.org/Person'
+        Session.Modify:
+            description: ''
+            type: object
+            properties:
+                name:
+                    description: >-
+                        The name of the user in this session, only used when this session is not attached to a
+                        user
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/agent'
+            externalDocs:
+                url: 'https://schema.org/AuthorizeAction'
+            example:
+                name: Leninux
+        Jsonapi.Version:
+            description: String indicating the highest JSON API version supported
+            required:
+                - version
+            type: object
+            properties:
+                version:
+                    description: String indicating the highest JSON API version supported
+                    type: string
+            example:
+                version: '1.0'
+        Group.Write:
+            description: 'An group of users or an organization, such as a school, NGO, corporation, club, etc.'
+            type: object
+            properties:
+                name:
+                    description: The name of the group
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                public-visibility:
+                    description: Is this group public and can be seen be anyone?
+                    type: boolean
+                public-membership:
+                    description: Can anyone be part of this group? Or an invitation is required?
+                    type: boolean
+                who-can-create-polls:
+                    description: 'Who can create new Polls? Members->2, Admins-> 1, Owners-> 0'
+                    maximum: 2
+                    minimum: 0
+                    type: integer
+            externalDocs:
+                url: 'https://schema.org/Group'
+        Member.Read.Jsonld:
+            description: A member of an Group
+            required:
+                - created-at
+                - user-id
+                - group-id
+                - rol
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                created-at:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                user-id:
+                    $ref: '#/components/schemas/User.UUID'
+                    description: The User Uuid
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/member'
+                group-id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: The Group Uuid where this user belong
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/hostingGroup'
+                rol:
+                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
+                    maximum: 3
+                    minimum: 0
+                    type: integer
+            externalDocs:
+                url: 'https://schema.org/ProgramMembership'
+        Poll.Write:
+            description: Poll / Election / Referendum
+            type: object
+            properties:
+                name:
+                    description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                description:
+                    description: >-
+                        The description of the poll, this value is also the description showed in the Spotify
+                        playlist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                spotify-playlist-public:
+                    description: 'If true the playlist will be public, if false it will be private.'
+                    type: boolean
+                spotify-playlist-collaborative:
+                    description: |-
+                        If true, the playlist will become collaborative and other users
+                        will be able to modify the playlist in their Spotify client.
+                        Note: You can only set collaborative to true on non-public playlists.
+                    type: boolean
+                spotify-playlist-uri:
+                    description: >-
+                        Spotify playlist identifier where the Poll is located, prepend "spotify:playlist:" for
+                        a complete valid spotify uri
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-playlist-winner-uri:
+                    description: >-
+                        Spotify playlist identifier where the winner of the Poll will be saved, prepend
+                        "spotify:playlist:" for a complete valid spotify uri
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-playlist-historic-uri:
+                    description: >-
+                        Spotify playlist identifier where all the songs of the Poll will be saved when is Poll
+                        is finished, prepend "spotify:playlist:" for a complete valid spotify uri.
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                start-date:
+                    format: date-time
+                    description: The start date of this poll
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/datePublished'
+                end-date:
+                    format: date-time
+                    description: 'The end date of this poll, only used if restart-date is empty.'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/expires'
+                restart-date:
+                    description: |-
+                        String with a crontab style restart command. If setted, this poll is never closed,
+                        the winner song goes to winner playlist and the others to the historic playlist.
+                    type: string
+                public-visibility:
+                    description: Is this poll visible to anyone or only to the members of the group?
+                    type: boolean
+                public-votes:
+                    description: Are the votes public meanwhile the poll is active?
+                    type: boolean
+                anon-can-vote:
+                    description: Can anyone vote into this poll or only the members of the group?
+                    type: boolean
+                who-can-add-track:
+                    nullable: true
+                    description: |-
+                        Who can add tracks into this poll?
+                        null => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone
+                    maximum: 4
+                    minimum: 0
+                    type: integer
+                anon-votes-max-rating:
+                    description: All the ratings given by a anonymous user to this poll can't excede this number
+                    minimum: 0
+                    type: integer
+                user-votes-max-rating:
+                    description: All the ratings given by a member to this poll can't excede this number
+                    minimum: 0
+                    type: integer
+                multiple-user-tracks:
+                    description: Can one user add more than one track to this poll?
+                    type: boolean
+                multiple-anon-tracks:
+                    description: Can an anonymous user add more than one track to this poll?
+                    type: boolean
+            externalDocs:
+                url: 'https://schema.org/Question'
+            example:
+                name: Weekly Public Playlist
+                description: 'Public playlist, restarted weekly'
+                spotify-playlist-public: true
+                spotify-playlist-collaborative: false
+                spotify-playlist-uri: 0yRBerq6d7SgJZk77uNx5l
+                spotify-playlist-winner-uri: 7FuWGgXiRtjo4VIeTbe5Ph
+                spotify-playlist-historic-uri: 7j8RuavEdsKTi06x786QMe
+                start-date: '2020-02-13T13:35:20-05:00'
+                end-date: '2020-03-13T13:35:20-05:00'
+                restart-date: 0 0 * * 1
+                public-visibility: true
+                public-votes: true
+                anon-can-vote: true
+                who-can-add-track: 4
+                anon-votes-max-rating: 1
+                user-votes-max-rating: 3
+                multiple-user-tracks: false
+                multiple-anon-tracks: false
+        Jsonapi.Meta:
+            description: Non-standard meta-information
+            type: object
+            properties:
+                timestamp:
+                    format: date-time
+                    description: 'Timestamp when server generated the response '
+                    type: string
+                hash:
+                    description: Request unique identifier
+                    type: string
+            example:
+                timestamp: '2020-02-13T13:35:20-05:00'
+                hash: e6d4d57162ae0f220c8649ae50a2b79fd1cb2c60
+        Member.Read:
+            description: A member of an Group
+            required:
+                - created-at
+                - user-id
+                - group-id
+                - rol
+            type: object
+            properties:
+                created-at:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                user-id:
+                    $ref: '#/components/schemas/User.UUID'
+                    description: The User Uuid
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/member'
+                group-id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: The Group Uuid where this user belong
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/hostingGroup'
+                rol:
+                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
+                    maximum: 3
+                    minimum: 0
+                    type: integer
+            externalDocs:
+                url: 'https://schema.org/ProgramMembership'
+            example:
+                created-at: '2020-02-13T13:35:20-05:00'
+                user-id: b85dc364-a646-4230-9f52-adfd45561b20
+                group-id: a9894239-905a-4a14-b43f-5f116b9e0532
+                rol: 0
+        Member.Write:
+            description: Modify the rol of an User in a Group
+            required:
+                - rol
+            type: object
+            properties:
+                rol:
+                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
+                    maximum: 3
+                    minimum: 0
+                    type: integer
+            externalDocs:
+                url: 'https://schema.org/ProgramMembership'
+            example:
+                rol: 3
+        Page:
+            description: The page number
+            default: 1
+            type: integer
+            example: 1
+        Track.UUID:
+            $ref: '#/components/schemas/UUID'
+            description: Track unique identifier
+            example: a9269c43-94dc-4b6a-9e97-f8871d2b630b
+        Session.UUID:
+            $ref: '#/components/schemas/UUID'
+            description: Session unique identifier
+            example: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
+        Poll.UUID:
+            $ref: '#/components/schemas/UUID'
+            description: Poll unique identifier
+            example: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+        Group.UUID:
+            $ref: '#/components/schemas/UUID'
+            description: Group unique identifier
+            example: a9894239-905a-4a14-b43f-5f116b9e0532
+        User.UUID:
+            $ref: '#/components/schemas/UUID'
+            description: User unique identifier
+            example: b85dc364-a646-4230-9f52-adfd45561b20
         User.Read:
             description: '@ToDo: Add sessions?'
             required:
@@ -1825,7 +2067,7 @@ components:
             properties:
                 id:
                     $ref: '#/components/schemas/UUID'
-                    description: The user UUID
+                    description: User unique identifier
                     readOnly: true
                 username:
                     description: The name of the user
@@ -1886,7 +2128,7 @@ components:
                     readOnly: true
                 id:
                     $ref: '#/components/schemas/UUID'
-                    description: The entity Id
+                    description: User unique identifier
                     readOnly: true
                 username:
                     description: The name of the user
@@ -1930,9 +2172,1133 @@ components:
                         url: 'http://schema.org/dateModified'
             externalDocs:
                 url: 'https://schema.org/Person'
+        User.List:
+            description: User Subresource
+            required:
+                - id
+                - username
+            type: object
+            properties:
+                id:
+                    $ref: '#/components/schemas/UUID'
+                    description: User unique identifier
+                    readOnly: true
+                username:
+                    description: The name of the user
+                    type: string
+                email:
+                    description: The email of the user
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/email'
+            externalDocs:
+                url: 'https://schema.org/Person'
+        Session.Read.Jsonld:
+            description: ''
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    $ref: '#/components/schemas/UUID'
+                    description: Session unique identifier
+                    readOnly: true
+                name:
+                    description: >-
+                        The name of the user in this session, only used when this session is not attached to a
+                        user
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/agent'
+                created-at:
+                    format: date-time
+                    description: The creation date of this session
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/startTime'
+            externalDocs:
+                url: 'https://schema.org/AuthorizeAction'
+        Session.Read:
+            description: 'Current session, is mandatory in order to use the API.'
+            required:
+                - id
+                - created-at
+            type: object
+            properties:
+                id:
+                    $ref: '#/components/schemas/UUID'
+                    description: Session unique identifier
+                    readOnly: true
+                name:
+                    description: >-
+                        The name of the user in this session, only used when this session is not attached to a
+                        user
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/agent'
+                created-at:
+                    format: date-time
+                    description: The creation date of this session
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/startTime'
+            externalDocs:
+                url: 'https://schema.org/AuthorizeAction'
+            example:
+                id: 9fea1130-479a-44be-bcf6-d10030b76c4b
+                created-at: '2020-02-13T13:35:20-05:00'
+                name: Leninux
+        Poll.Read.Jsonld:
+            description: Poll / Election / Referendum
+            required:
+                - id
+                - group-id
+                - name
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    $ref: '#/components/schemas/Poll.UUID'
+                    description: Poll unique identifier
+                    readOnly: true
+                name:
+                    description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                description:
+                    description: >-
+                        The description of the poll, this value is also the description showed in the Spotify
+                        playlist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                spotify-playlist-images:
+                    description: Array with all the images provided by Spotify
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/image'
+                spotify-playlist-public:
+                    description: 'If true the playlist will be public, if false it will be private.'
+                    type: boolean
+                spotify-playlist-collaborative:
+                    description: |-
+                        If true, the playlist will become collaborative and other users
+                        will be able to modify the playlist in their Spotify client.
+                        Note: You can only set collaborative to true on non-public playlists.
+                    type: boolean
+                spotify-playlist-uri:
+                    description: >-
+                        Spotify playlist identifier where the Poll is located, prepend "spotify:playlist:" for
+                        a complete valid spotify uri
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-playlist-winner-uri:
+                    description: >-
+                        Spotify playlist identifier where the winner of the Poll will be saved, prepend
+                        "spotify:playlist:" for a complete valid spotify uri
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-playlist-historic-uri:
+                    description: >-
+                        Spotify playlist identifier where all the songs of the Poll will be saved when is Poll
+                        is finished, prepend "spotify:playlist:" for a complete valid spotify uri.
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                start-date:
+                    format: date-time
+                    description: The start date of this poll
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/datePublished'
+                end-date:
+                    format: date-time
+                    description: 'The end date of this poll, only used if restart-date is empty.'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/expires'
+                restart-date:
+                    description: |-
+                        String with a crontab style restart command. If setted, this poll is never closed,
+                        the winner song goes to winner playlist and the others to the historic playlist.
+                    type: string
+                public-visibility:
+                    description: Is this poll visible to anyone or only to the members of the group?
+                    type: boolean
+                public-votes:
+                    description: Are the votes public meanwhile the poll is active?
+                    type: boolean
+                anon-can-vote:
+                    description: Can anyone vote into this poll or only the members of the group?
+                    type: boolean
+                who-can-add-track:
+                    nullable: true
+                    description: |-
+                        Who can add tracks into this poll?
+                        null => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone
+                    maximum: 4
+                    minimum: 0
+                    type: integer
+                anon-votes-max-rating:
+                    description: All the ratings given by a anonymous user to this poll can't excede this number
+                    minimum: 0
+                    type: integer
+                user-votes-max-rating:
+                    description: All the ratings given by a member to this poll can't excede this number
+                    minimum: 0
+                    type: integer
+                multiple-user-tracks:
+                    description: Can one user add more than one track to this poll?
+                    type: boolean
+                multiple-anon-tracks:
+                    description: Can an anonymous user add more than one track to this poll?
+                    type: boolean
+                group-id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: The Group Uuid where this Poll belong
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/hostingGroup'
+                num-tracks:
+                    description: Number of tracks of this poll
+                    minimum: 0
+                    type: integer
+                    readOnly: true
+                tracks:
+                    description: Available tracks for this poll
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Track.Read'
+                    readOnly: true
+                num-rates:
+                    description: Number of rates of this poll
+                    minimum: 0
+                    type: integer
+                    readOnly: true
+                rates:
+                    description: Available rates for this poll
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Rate.Read'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Question'
+            example:
+                id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                name: Weekly Public Playlist
+                description: 'Public playlist, restarted weekly'
+                spotify-playlist-images:
+                    - 'https://pl.scdn.co/images/pl/default/1a165c7ee8ad6beeb36ceae02e5ca465129a7342'
+                    - 'https://pl.scdn.co/images/pl/default/59a801c4bb5bdfa9dd690de51d2aa904f7809f58'
+                spotify-playlist-public: true
+                spotify-playlist-collaborative: false
+                spotify-playlist-uri: 0yRBerq6d7SgJZk77uNx5l
+                spotify-playlist-winner-uri: 7FuWGgXiRtjo4VIeTbe5Ph
+                spotify-playlist-historic-uri: 7j8RuavEdsKTi06x786QMe
+                start-date: '2020-02-13T13:35:20-05:00'
+                end-date: '2020-03-13T13:35:20-05:00'
+                restart-date: 0 0 * * 1
+                public-visibility: true
+                public-votes: true
+                anon-can-vote: true
+                who-can-add-track: 4
+                anon-votes-max-rating: 1
+                user-votes-max-rating: 3
+                multiple-user-tracks: false
+                multiple-anon-tracks: false
+                group-id: 9fea1130-479a-44be-bcf6-d10030b76c4b
+                num-tracks: 2
+                tracks:
+                    -
+                        id: a9269c43-94dc-4b6a-9e97-f8871d2b630b
+                        artist: Lágrimas de Sangre
+                        name: Rojos y separatistas
+                        proposal-date: '2020-02-13T15:35:20-05:00'
+                        spotify-uri: 1ECc1EhfkRx08o8uIwYOxW
+                        spotify-images:
+                            - 'https://i.scdn.co/image/ab67616d0000b273ae0fe33eda83f26bd0fdd956'
+                        youtube-uri: t67NhxJhrUU
+                    -
+                        id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
+                        artist: Queen
+                        name: I Was Born To Love You - 2011 Remaster
+                        proposal-date: '2020-02-14T13:35:20-05:00'
+                        spotify-uri: 7DtdhIJlSSOaAFNk4JdXCb
+                        spotify-images:
+                            - 'https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7'
+                num-rates: 1
+                rates:
+                    -
+                        rating: 3
+                        createdAt: '2020-02-14T13:35:20-05:00'
+                        poll-id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                        track-id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
+                        session-id: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
+                        user-id: b85dc364-a646-4230-9f52-adfd45561b20
+        Poll.Read:
+            description: Poll / Election / Referendum
+            required:
+                - name
+                - id
+            type: object
+            properties:
+                id:
+                    $ref: '#/components/schemas/Poll.UUID'
+                    description: Poll unique identifier
+                    readOnly: true
+                name:
+                    description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                description:
+                    description: >-
+                        The description of the poll, this value is also the description showed in the Spotify
+                        playlist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                spotify-playlist-images:
+                    description: Array with all the images provided by Spotify
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/image'
+                spotify-playlist-public:
+                    description: 'If true the playlist will be public, if false it will be private.'
+                    type: boolean
+                spotify-playlist-collaborative:
+                    description: |-
+                        If true, the playlist will become collaborative and other users
+                        will be able to modify the playlist in their Spotify client.
+                        Note: You can only set collaborative to true on non-public playlists.
+                    type: boolean
+                spotify-playlist-uri:
+                    description: >-
+                        Spotify playlist identifier where the Poll is located, prepend "spotify:playlist:" for
+                        a complete valid spotify uri
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-playlist-winner-uri:
+                    description: >-
+                        Spotify playlist identifier where the winner of the Poll will be saved, prepend
+                        "spotify:playlist:" for a complete valid spotify uri
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-playlist-historic-uri:
+                    description: >-
+                        Spotify playlist identifier where all the songs of the Poll will be saved when is Poll
+                        is finished, prepend "spotify:playlist:" for a complete valid spotify uri.
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                start-date:
+                    format: date-time
+                    description: The start date of this poll
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/datePublished'
+                end-date:
+                    format: date-time
+                    description: 'The end date of this poll, only used if restart-date is empty.'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/expires'
+                restart-date:
+                    description: |-
+                        String with a crontab style restart command. If setted, this poll is never closed,
+                        the winner song goes to winner playlist and the others to the historic playlist.
+                    type: string
+                public-visibility:
+                    description: Is this poll visible to anyone or only to the members of the group?
+                    type: boolean
+                public-votes:
+                    description: Are the votes public meanwhile the poll is active?
+                    type: boolean
+                anon-can-vote:
+                    description: Can anyone vote into this poll or only the members of the group?
+                    type: boolean
+                who-can-add-track:
+                    nullable: true
+                    description: |-
+                        Who can add tracks into this poll?
+                        null => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone
+                    maximum: 4
+                    minimum: 0
+                    type: integer
+                anon-votes-max-rating:
+                    description: All the ratings given by a anonymous user to this poll can't excede this number
+                    minimum: 0
+                    type: integer
+                user-votes-max-rating:
+                    description: All the ratings given by a member to this poll can't excede this number
+                    minimum: 0
+                    type: integer
+                multiple-user-tracks:
+                    description: Can one user add more than one track to this poll?
+                    type: boolean
+                multiple-anon-tracks:
+                    description: Can an anonymous user add more than one track to this poll?
+                    type: boolean
+                group-id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: The Group Uuid where this Poll belong
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/hostingGroup'
+                num-tracks:
+                    description: Number of tracks of this poll
+                    minimum: 0
+                    type: integer
+                    readOnly: true
+                tracks:
+                    description: Available tracks for this poll
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Track.Read'
+                    readOnly: true
+                num-rates:
+                    description: Number of rates of this poll
+                    minimum: 0
+                    type: integer
+                    readOnly: true
+                rates:
+                    description: Available rates for this poll
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Rate.Read'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Question'
+            example:
+                id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                name: Weekly Public Playlist
+                description: 'Public playlist, restarted weekly'
+                spotify-playlist-images:
+                    - 'https://pl.scdn.co/images/pl/default/1a165c7ee8ad6beeb36ceae02e5ca465129a7342'
+                    - 'https://pl.scdn.co/images/pl/default/59a801c4bb5bdfa9dd690de51d2aa904f7809f58'
+                spotify-playlist-public: true
+                spotify-playlist-collaborative: false
+                spotify-playlist-uri: 0yRBerq6d7SgJZk77uNx5l
+                spotify-playlist-winner-uri: 7FuWGgXiRtjo4VIeTbe5Ph
+                spotify-playlist-historic-uri: 7j8RuavEdsKTi06x786QMe
+                start-date: '2020-02-13T13:35:20-05:00'
+                end-date: '2020-03-13T13:35:20-05:00'
+                restart-date: 0 0 * * 1
+                public-visibility: true
+                public-votes: true
+                anon-can-vote: true
+                who-can-add-track: 4
+                anon-votes-max-rating: 1
+                user-votes-max-rating: 3
+                multiple-user-tracks: false
+                multiple-anon-tracks: false
+                group-id: 9fea1130-479a-44be-bcf6-d10030b76c4b
+                num-tracks: 2
+                tracks:
+                    -
+                        id: a9269c43-94dc-4b6a-9e97-f8871d2b630b
+                        artist: Lágrimas de Sangre
+                        name: Rojos y separatistas
+                        proposal-date: '2020-02-13T15:35:20-05:00'
+                        spotify-uri: 1ECc1EhfkRx08o8uIwYOxW
+                        spotify-images:
+                            - 'https://i.scdn.co/image/ab67616d0000b273ae0fe33eda83f26bd0fdd956'
+                        youtube-uri: t67NhxJhrUU
+                    -
+                        id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
+                        artist: Queen
+                        name: I Was Born To Love You - 2011 Remaster
+                        proposal-date: '2020-02-14T13:35:20-05:00'
+                        spotify-uri: 7DtdhIJlSSOaAFNk4JdXCb
+                        spotify-images:
+                            - 'https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7'
+                num-rates: 1
+                rates:
+                    -
+                        rating: 3
+                        createdAt: '2020-02-14T13:35:20-05:00'
+                        poll-id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                        track-id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
+                        session-id: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
+                        user-id: b85dc364-a646-4230-9f52-adfd45561b20
+        Poll.List:
+            description: Poll / Election / Referendum
+            required:
+                - name
+                - id
+            type: object
+            properties:
+                id:
+                    $ref: '#/components/schemas/Poll.UUID'
+                    description: Poll unique identifier
+                    readOnly: true
+                name:
+                    description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                description:
+                    description: >-
+                        The description of the poll, this value is also the description showed in the Spotify
+                        playlist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                spotify-playlist-images:
+                    description: Array with all the images provided by Spotify
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/image'
+                spotify-playlist-public:
+                    description: 'If true the playlist will be public, if false it will be private.'
+                    type: boolean
+                spotify-playlist-collaborative:
+                    description: |-
+                        If true, the playlist will become collaborative and other users
+                        will be able to modify the playlist in their Spotify client.
+                        Note: You can only set collaborative to true on non-public playlists.
+                    type: boolean
+                spotify-playlist-uri:
+                    description: >-
+                        Spotify playlist identifier where the Poll is located, prepend "spotify:playlist:" for
+                        a complete valid spotify uri
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-playlist-winner-uri:
+                    description: >-
+                        Spotify playlist identifier where the winner of the Poll will be saved, prepend
+                        "spotify:playlist:" for a complete valid spotify uri
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-playlist-historic-uri:
+                    description: >-
+                        Spotify playlist identifier where all the songs of the Poll will be saved when is Poll
+                        is finished, prepend "spotify:playlist:" for a complete valid spotify uri.
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                start-date:
+                    format: date-time
+                    description: The start date of this poll
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/datePublished'
+                end-date:
+                    format: date-time
+                    description: 'The end date of this poll, only used if restart-date is empty.'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/expires'
+                restart-date:
+                    description: |-
+                        String with a crontab style restart command. If setted, this poll is never closed,
+                        the winner song goes to winner playlist and the others to the historic playlist.
+                    type: string
+                public-visibility:
+                    description: Is this poll visible to anyone or only to the members of the group?
+                    type: boolean
+                public-votes:
+                    description: Are the votes public meanwhile the poll is active?
+                    type: boolean
+                anon-can-vote:
+                    description: Can anyone vote into this poll or only the members of the group?
+                    type: boolean
+                who-can-add-track:
+                    nullable: true
+                    description: |-
+                        Who can add tracks into this poll?
+                        null => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone
+                    maximum: 4
+                    minimum: 0
+                    type: integer
+                anon-votes-max-rating:
+                    description: All the ratings given by a anonymous user to this poll can't excede this number
+                    minimum: 0
+                    type: integer
+                user-votes-max-rating:
+                    description: All the ratings given by a member to this poll can't excede this number
+                    minimum: 0
+                    type: integer
+                multiple-user-tracks:
+                    description: Can one user add more than one track to this poll?
+                    type: boolean
+                multiple-anon-tracks:
+                    description: Can an anonymous user add more than one track to this poll?
+                    type: boolean
+                group-id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: The Group Uuid where this Poll belong
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/hostingGroup'
+                num-tracks:
+                    description: Number of tracks of this poll
+                    minimum: 0
+                    type: integer
+                    readOnly: true
+                num-rates:
+                    description: Number of rates of this poll
+                    minimum: 0
+                    type: integer
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Question'
+            example:
+                id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                name: Weekly Public Playlist
+                description: 'Public playlist, restarted weekly'
+                spotify-playlist-images:
+                    - 'https://pl.scdn.co/images/pl/default/1a165c7ee8ad6beeb36ceae02e5ca465129a7342'
+                    - 'https://pl.scdn.co/images/pl/default/59a801c4bb5bdfa9dd690de51d2aa904f7809f58'
+                spotify-playlist-public: true
+                spotify-playlist-collaborative: false
+                spotify-playlist-uri: 0yRBerq6d7SgJZk77uNx5l
+                spotify-playlist-winner-uri: 7FuWGgXiRtjo4VIeTbe5Ph
+                spotify-playlist-historic-uri: 7j8RuavEdsKTi06x786QMe
+                start-date: '2020-02-13T13:35:20-05:00'
+                end-date: '2020-03-13T13:35:20-05:00'
+                restart-date: 0 0 * * 1
+                public-visibility: true
+                public-votes: true
+                anon-can-vote: true
+                who-can-add-track: 4
+                anon-votes-max-rating: 1
+                user-votes-max-rating: 3
+                multiple-user-tracks: false
+                multiple-anon-tracks: false
+                group-id: 9fea1130-479a-44be-bcf6-d10030b76c4b
+                num-tracks: 2
+                num-rates: 1
+        Group.Read.Jsonld:
+            description: 'An group of users or an organization, such as a school, NGO, corporation, club, etc.'
+            required:
+                - id
+                - created-at
+                - name
+                - public-visibility
+                - public-membership
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: Group unique identifier
+                    readOnly: true
+                created-at:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/foundingDate'
+                name:
+                    description: The name of the group
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                public-visibility:
+                    description: Is this group public and can be seen be anyone?
+                    type: boolean
+                public-membership:
+                    description: Can anyone be part of this group? Or an invitation is required?
+                    type: boolean
+                who-can-create-polls:
+                    description: 'Who can create new Polls? Members->2, Admins-> 1, Owners-> 0'
+                    maximum: 2
+                    minimum: 0
+                    type: integer
+                num-members:
+                    description: Number of members in this group
+                    type: integer
+                    readOnly: true
+                members:
+                    description: Members in this group
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User.List'
+                    readOnly: true
+                num-polls:
+                    description: Number of polls in this group
+                    type: integer
+                    readOnly: true
+                polls:
+                    description: Polls in this group
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Poll.List'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Group'
+        Group.Read:
+            description: 'An group of users or an organization, such as a school, NGO, corporation, club, etc.'
+            required:
+                - id
+                - created-at
+                - name
+                - public-visibility
+                - public-membership
+            type: object
+            properties:
+                id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: Group unique identifier
+                    readOnly: true
+                created-at:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/foundingDate'
+                name:
+                    description: The name of the group
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                public-visibility:
+                    description: Is this group public and can be seen be anyone?
+                    type: boolean
+                public-membership:
+                    description: Can anyone be part of this group? Or an invitation is required?
+                    type: boolean
+                who-can-create-polls:
+                    description: 'Who can create new Polls? Members->2, Admins-> 1, Owners-> 0'
+                    maximum: 2
+                    minimum: 0
+                    type: integer
+                num-members:
+                    description: Number of members in this group
+                    type: integer
+                    readOnly: true
+                members:
+                    description: Members in this group
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User.List'
+                    readOnly: true
+                num-polls:
+                    description: Number of polls in this group
+                    type: integer
+                    readOnly: true
+                polls:
+                    description: Polls in this group
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Poll.List'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Group'
+            example:
+                id: a9894239-905a-4a14-b43f-5f116b9e0532
+                createdAt: '2020-02-13T13:35:20-05:00'
+                name: Discoveryfy
+                public-visibility: true
+                public-membership: true
+                who-can-create-polls: 0
+                num-members: 1
+                members:
+                    -
+                        id: b85dc364-a646-4230-9f52-adfd45561b20
+                        username: Leninux
+                        email: discoveryfy@fabri.cat
+                num-polls: 1
+                polls:
+                    -
+                        id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                        name: Weekly Public Playlist
+                        description: 'Public playlist, restarted weekly'
+                        spotify-playlist-images:
+                            - 'https://pl.scdn.co/images/pl/default/1a165c7ee8ad6beeb36ceae02e5ca465129a7342'
+                            - 'https://pl.scdn.co/images/pl/default/59a801c4bb5bdfa9dd690de51d2aa904f7809f58'
+                        spotify-playlist-public: true
+                        spotify-playlist-collaborative: false
+                        spotify-playlist-uri: 0yRBerq6d7SgJZk77uNx5l
+                        spotify-playlist-winner-uri: 7FuWGgXiRtjo4VIeTbe5Ph
+                        spotify-playlist-historic-uri: 7j8RuavEdsKTi06x786QMe
+                        start-date: '2020-02-13T13:35:20-05:00'
+                        end-date: '2020-03-13T13:35:20-05:00'
+                        restart-date: 0 0 * * 1
+                        public-visibility: true
+                        public-votes: true
+                        anon-can-vote: true
+                        who-can-add-track: 4
+                        anon-votes-max-rating: 1
+                        user-votes-max-rating: 3
+                        multiple-user-tracks: false
+                        multiple-anon-tracks: false
+                        group-id: 9fea1130-479a-44be-bcf6-d10030b76c4b
+                        num-tracks: 2
+                        num-rates: 1
+        Rate.Read.Jsonld:
+            description: Vote / Rating
+            required:
+                - rating
+                - poll-id
+                - track-id
+                - session-id
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                rating:
+                    description: The rating of this vote
+                    type: integer
+                    externalDocs:
+                        url: 'http://schema.org/ratingValue'
+                created-at:
+                    format: date-time
+                    description: The creation date of this vote
+                    type: string
+                    readOnly: true
+                poll-id:
+                    $ref: '#/components/schemas/Poll.UUID'
+                    description: The poll this vote is about
+                    readOnly: true
+                track-id:
+                    $ref: '#/components/schemas/Track.UUID'
+                    description: The track this vote is about
+                    readOnly: true
+                session-id:
+                    $ref: '#/components/schemas/Session.UUID'
+                    description: 'The session who emit this vote, mandatory'
+                    readOnly: true
+                user-id:
+                    $ref: '#/components/schemas/User.UUID'
+                    description: 'The user who emit this vote, optional'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Rating'
+            example:
+                rating: 3
+                created-at: '2020-02-13T13:35:20-05:00'
+                poll-id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                track-id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
+                session-id: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
+                user-id: b85dc364-a646-4230-9f52-adfd45561b20
+        Rate.Read:
+            description: Vote / Rating
+            required:
+                - rating
+                - poll-id
+                - track-id
+                - session-id
+            type: object
+            properties:
+                rating:
+                    description: The rating of this vote
+                    type: integer
+                    externalDocs:
+                        url: 'http://schema.org/ratingValue'
+                created-at:
+                    format: date-time
+                    description: The creation date of this vote
+                    type: string
+                    readOnly: true
+                poll-id:
+                    $ref: '#/components/schemas/Poll.UUID'
+                    description: The poll this vote is about
+                    readOnly: true
+                track-id:
+                    $ref: '#/components/schemas/Track.UUID'
+                    description: The track this vote is about
+                    readOnly: true
+                session-id:
+                    $ref: '#/components/schemas/Session.UUID'
+                    description: 'The session who emit this vote, mandatory'
+                    readOnly: true
+                user-id:
+                    $ref: '#/components/schemas/User.UUID'
+                    description: 'The user who emit this vote, optional'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Rating'
+            example:
+                rating: 3
+                created-at: '2020-02-13T13:35:20-05:00'
+                poll-id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                track-id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
+                session-id: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
+                user-id: b85dc364-a646-4230-9f52-adfd45561b20
+        Rate.Write:
+            description: Vote / Rating
+            required:
+                - rating
+            type: object
+            properties:
+                rating:
+                    description: The rating of this vote
+                    type: integer
+                    externalDocs:
+                        url: 'http://schema.org/ratingValue'
+                poll-id:
+                    $ref: '#/components/schemas/Poll.UUID'
+                    description: The poll this vote is about
+                track-id:
+                    $ref: '#/components/schemas/Track.UUID'
+                    description: The track this vote is about
+                session-id:
+                    $ref: '#/components/schemas/Session.UUID'
+                    description: 'The session who emit this vote, mandatory'
+                user-id:
+                    $ref: '#/components/schemas/User.UUID'
+                    description: 'The user who emit this vote, optional'
+            externalDocs:
+                url: 'https://schema.org/Rating'
+            example:
+                rating: 3
+                poll-id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                track-id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
+                session-id: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
+                user-id: b85dc364-a646-4230-9f52-adfd45561b20
+        Track.Write:
+            description: Track / Music or Video recording
+            required:
+                - artist
+                - name
+            type: object
+            properties:
+                artist:
+                    description: The name of the artist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/byArtist'
+                name:
+                    description: The name of the track
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                spotify-uri:
+                    description: Spotify track identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                youtube-uri:
+                    description: Youtube resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                poll-id:
+                    $ref: '#/components/schemas/Poll.UUID'
+                    description: The poll where track is participating
+                session-id:
+                    $ref: '#/components/schemas/Session.UUID'
+                    description: 'The Session who suggest this Track, used in anonymous sessions'
+                user-id:
+                    $ref: '#/components/schemas/User.UUID'
+                    description: The User who suggest this Track
+            externalDocs:
+                url: 'https://schema.org/MusicRecording'
+            example:
+                artist: Queen
+                name: I Was Born To Love You - 2011 Remaster
+                spotify-uri: 7DtdhIJlSSOaAFNk4JdXCb
+                spotify-images:
+                    - 'https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7'
+                youtube-uri: vNhhAEupU4g
+                poll-id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                session-id: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
+                user-id: b85dc364-a646-4230-9f52-adfd45561b20
+        Track.Read:
+            description: Track / Music or Video recording
+            required:
+                - id
+                - artist
+                - name
+            type: object
+            properties:
+                id:
+                    $ref: '#/components/schemas/Track.UUID'
+                    description: Track unique identifier
+                    readOnly: true
+                artist:
+                    description: The name of the artist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/byArtist'
+                name:
+                    description: The name of the track
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                proposal-date:
+                    format: date-time
+                    description: The proposal date of this track
+                    type: string
+                    readOnly: true
+                spotify-uri:
+                    description: Spotify track identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-images:
+                    description: All the images from the Spotify track
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/image'
+                youtube-uri:
+                    description: Youtube resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                poll-id:
+                    $ref: '#/components/schemas/Poll.UUID'
+                    description: The poll where track is participating
+                    readOnly: true
+                session-id:
+                    $ref: '#/components/schemas/Session.UUID'
+                    description: 'The Session who suggest this Track, used in anonymous sessions'
+                    readOnly: true
+                user-id:
+                    $ref: '#/components/schemas/User.UUID'
+                    description: The User who suggest this Track
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/MusicRecording'
+            example:
+                id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
+                artist: Queen
+                name: I Was Born To Love You - 2011 Remaster
+                proposal-date: '2020-02-14T13:35:20-05:00'
+                spotify-uri: 7DtdhIJlSSOaAFNk4JdXCb
+                spotify-images:
+                    - 'https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7'
+                youtube-uri: vNhhAEupU4g
+                poll-id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                session-id: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
+                user-id: b85dc364-a646-4230-9f52-adfd45561b20
+        Track.Read.Jsonld:
+            description: Track / Music or Video recording
+            required:
+                - id
+                - artist
+                - name
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    $ref: '#/components/schemas/Track.UUID'
+                    description: Track unique identifier
+                    readOnly: true
+                artist:
+                    description: The name of the artist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/byArtist'
+                name:
+                    description: The name of the track
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                proposal-date:
+                    format: date-time
+                    description: The proposal date of this track
+                    type: string
+                    readOnly: true
+                spotify-uri:
+                    description: Spotify track identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotify-images:
+                    description: All the images from the Spotify track
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/image'
+                youtube-uri:
+                    description: Youtube resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                poll-id:
+                    $ref: '#/components/schemas/Poll.UUID'
+                    description: The poll where track is participating
+                    readOnly: true
+                session-id:
+                    $ref: '#/components/schemas/Session.UUID'
+                    description: 'The Session who suggest this Track, used in anonymous sessions'
+                    readOnly: true
+                user-id:
+                    $ref: '#/components/schemas/User.UUID'
+                    description: The User who suggest this Track
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/MusicRecording'
+            example:
+                id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
+                artist: Queen
+                name: I Was Born To Love You - 2011 Remaster
+                proposal-date: '2020-02-14T13:35:20-05:00'
+                spotify-uri: 7DtdhIJlSSOaAFNk4JdXCb
+                spotify-images:
+                    - 'https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7'
+                youtube-uri: vNhhAEupU4g
+                poll-id: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                session-id: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
+                user-id: b85dc364-a646-4230-9f52-adfd45561b20
         User.Modify:
             description: ''
-            required: []
             type: object
             properties:
                 username:
@@ -1968,1093 +3334,6 @@ components:
                     type: boolean
             externalDocs:
                 url: 'https://schema.org/Person'
-        Session.Modify:
-            description: ''
-            type: object
-            properties:
-                name:
-                    description: >-
-                        The name of the user in this session, only used when this session is not attached to a
-                        user
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/agent'
-            externalDocs:
-                url: 'https://schema.org/AuthorizeAction'
-        Session.Read.Jsonld:
-            description: ''
-            type: object
-            properties:
-                '@context':
-                    type: string
-                    readOnly: true
-                '@id':
-                    type: string
-                    readOnly: true
-                '@type':
-                    type: string
-                    readOnly: true
-                id:
-                    $ref: '#/components/schemas/UUID'
-                    description: The entity Id
-                    readOnly: true
-                name:
-                    description: >-
-                        The name of the user in this session, only used when this session is not attached to a
-                        user
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/agent'
-                created-at:
-                    format: date-time
-                    description: The creation date of this session
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/startTime'
-            externalDocs:
-                url: 'https://schema.org/AuthorizeAction'
-        Track.Read:
-            description: Track
-            required:
-                - artist
-                - name
-            type: object
-            properties:
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                artist:
-                    description: The name of the artist
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/byArtist'
-                name:
-                    description: The name of the track
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/name'
-                proposalDate:
-                    format: date-time
-                    description: The proposal date of this track
-                    type: string
-                    readOnly: true
-                spotifyUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyUriRaw:
-                    type: string
-                    readOnly: true
-                spotifyImages:
-                    description: All the images from the Spotify track
-                    type: array
-                    items:
-                        type: string
-                    externalDocs:
-                        url: 'http://schema.org/image'
-                youtubeUri:
-                    description: Youtube resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                poll:
-                    format: iri-reference
-                    description: The poll where track is participating
-                    type: string
-                session:
-                    format: iri-reference
-                    description: 'The Session who suggest this Track, used in anonymous sessions'
-                    type: string
-                user:
-                    format: iri-reference
-                    description: The User who suggest this Track
-                    type: string
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/MusicRecording'
-        Track.Read.Jsonld:
-            description: Track
-            required:
-                - artist
-                - name
-            type: object
-            properties:
-                '@context':
-                    type: string
-                    readOnly: true
-                '@id':
-                    type: string
-                    readOnly: true
-                '@type':
-                    type: string
-                    readOnly: true
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                artist:
-                    description: The name of the artist
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/byArtist'
-                name:
-                    description: The name of the track
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/name'
-                proposalDate:
-                    format: date-time
-                    description: The proposal date of this track
-                    type: string
-                    readOnly: true
-                spotifyUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyUriRaw:
-                    type: string
-                    readOnly: true
-                spotifyImages:
-                    description: All the images from the Spotify track
-                    type: array
-                    items:
-                        type: string
-                    externalDocs:
-                        url: 'http://schema.org/image'
-                youtubeUri:
-                    description: Youtube resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                poll:
-                    format: iri-reference
-                    description: The poll where track is participating
-                    type: string
-                session:
-                    format: iri-reference
-                    description: 'The Session who suggest this Track, used in anonymous sessions'
-                    type: string
-                user:
-                    format: iri-reference
-                    description: The User who suggest this Track
-                    type: string
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/MusicRecording'
-        Poll.Read:
-            description: Poll / Election / Referendum
-            required:
-                - name
-            type: object
-            properties:
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                name:
-                    description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/text'
-                description:
-                    description: >-
-                        The description of the poll, this value is also the description showed in the Spotify
-                        playlist
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/text'
-                spotifyPlaylistImages:
-                    type: array
-                    items:
-                        type: string
-                    externalDocs:
-                        url: 'http://schema.org/image'
-                spotifyPlaylistPublic:
-                    description: 'If true the playlist will be public, if false it will be private.'
-                    type: boolean
-                spotifyPlaylistCollaborative:
-                    description: |-
-                        If true, the playlist will become collaborative and other users
-                        will be able to modify the playlist in their Spotify client.
-                        Note: You can only set collaborative to true on non-public playlists.
-                    type: boolean
-                spotifyPlaylistUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyPlaylistUriRaw:
-                    description: Return the raw spotify_playlist_uri value
-                    type: string
-                    readOnly: true
-                spotifyWinnerPlaylistUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyWinnerPlaylistUriRaw:
-                    description: Return the raw spotify_winner_playlist_uri value
-                    type: string
-                    readOnly: true
-                spotifyHistoricPlaylistUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyHistoricPlaylistUriRaw:
-                    description: Return the raw spotify_historic_playlist_uri value
-                    type: string
-                    readOnly: true
-                startDate:
-                    format: date-time
-                    description: The start date of this poll
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/datePublished'
-                endDate:
-                    format: date-time
-                    description: The end date of this poll
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/expires'
-                restartDate:
-                    description: |-
-                        String with a crontab style restart command. If setted, this poll is never closed,
-                        the winner song goes to winner playlist and the others to the historic playlist.
-                    type: string
-                publicVisibility:
-                    description: Is this poll visible to anyone or only to the members of the group?
-                    type: boolean
-                publicVotes:
-                    description: Are the votes public meanwhile the poll is active?
-                    type: boolean
-                anonCanVote:
-                    description: Can anyone vote into this poll or only the members of the group?
-                    type: boolean
-                whoCanAddTrack:
-                    writeOnly: true
-                    description: |-
-                        Who can add tracks into this poll?
-                        null => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone
-                    type: integer
-                anonVotesMaxRating:
-                    description: All the ratings given by a anonymous user to this poll can't excede this number
-                    type: integer
-                userVotesMaxRating:
-                    description: All the ratings given by a member to this poll can't excede this number
-                    type: integer
-                multipleUserTracks:
-                    description: Can one user add more than one track to this poll?
-                    type: boolean
-                multipleAnonTracks:
-                    description: Can an anonymous user add more than one track to this poll?
-                    type: boolean
-                group:
-                    format: iri-reference
-                    description: The group owner of this poll
-                    type: string
-                numTracks:
-                    type: integer
-                    readOnly: true
-                tracks:
-                    description: Available tracks for this poll
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                tracksRaw:
-                    $ref: '#/components/schemas/Collection'
-                    readOnly: true
-                trackOrderByVoted:
-                    type: array
-                    items:
-                        type: string
-                    readOnly: true
-                votes:
-                    description: Available votes for this poll
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                numVotes:
-                    type: integer
-                    readOnly: true
-                votesRaw:
-                    $ref: '#/components/schemas/Collection'
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/Question'
-        Poll.Read.Jsonld:
-            description: Poll / Election / Referendum
-            required:
-                - name
-            type: object
-            properties:
-                '@context':
-                    type: string
-                    readOnly: true
-                '@id':
-                    type: string
-                    readOnly: true
-                '@type':
-                    type: string
-                    readOnly: true
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                name:
-                    description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/text'
-                description:
-                    description: >-
-                        The description of the poll, this value is also the description showed in the Spotify
-                        playlist
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/text'
-                spotifyPlaylistImages:
-                    type: array
-                    items:
-                        type: string
-                    externalDocs:
-                        url: 'http://schema.org/image'
-                spotifyPlaylistPublic:
-                    description: 'If true the playlist will be public, if false it will be private.'
-                    type: boolean
-                spotifyPlaylistCollaborative:
-                    description: |-
-                        If true, the playlist will become collaborative and other users
-                        will be able to modify the playlist in their Spotify client.
-                        Note: You can only set collaborative to true on non-public playlists.
-                    type: boolean
-                spotifyPlaylistUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyPlaylistUriRaw:
-                    description: Return the raw spotify_playlist_uri value
-                    type: string
-                    readOnly: true
-                spotifyWinnerPlaylistUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyWinnerPlaylistUriRaw:
-                    description: Return the raw spotify_winner_playlist_uri value
-                    type: string
-                    readOnly: true
-                spotifyHistoricPlaylistUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyHistoricPlaylistUriRaw:
-                    description: Return the raw spotify_historic_playlist_uri value
-                    type: string
-                    readOnly: true
-                startDate:
-                    format: date-time
-                    description: The start date of this poll
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/datePublished'
-                endDate:
-                    format: date-time
-                    description: The end date of this poll
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/expires'
-                restartDate:
-                    description: |-
-                        String with a crontab style restart command. If setted, this poll is never closed,
-                        the winner song goes to winner playlist and the others to the historic playlist.
-                    type: string
-                publicVisibility:
-                    description: Is this poll visible to anyone or only to the members of the group?
-                    type: boolean
-                publicVotes:
-                    description: Are the votes public meanwhile the poll is active?
-                    type: boolean
-                anonCanVote:
-                    description: Can anyone vote into this poll or only the members of the group?
-                    type: boolean
-                whoCanAddTrack:
-                    writeOnly: true
-                    description: |-
-                        Who can add tracks into this poll?
-                        null => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone
-                    type: integer
-                anonVotesMaxRating:
-                    description: All the ratings given by a anonymous user to this poll can't excede this number
-                    type: integer
-                userVotesMaxRating:
-                    description: All the ratings given by a member to this poll can't excede this number
-                    type: integer
-                multipleUserTracks:
-                    description: Can one user add more than one track to this poll?
-                    type: boolean
-                multipleAnonTracks:
-                    description: Can an anonymous user add more than one track to this poll?
-                    type: boolean
-                group:
-                    format: iri-reference
-                    description: The group owner of this poll
-                    type: string
-                numTracks:
-                    type: integer
-                    readOnly: true
-                tracks:
-                    description: Available tracks for this poll
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                tracksRaw:
-                    $ref: '#/components/schemas/Collection:jsonld'
-                    readOnly: true
-                trackOrderByVoted:
-                    type: array
-                    items:
-                        type: string
-                    readOnly: true
-                votes:
-                    description: Available votes for this poll
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                numVotes:
-                    type: integer
-                    readOnly: true
-                votesRaw:
-                    $ref: '#/components/schemas/Collection:jsonld'
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/Question'
-        Group.Read:
-            description: 'An group such as a school, NGO, corporation, club, etc.'
-            required:
-                - name
-                - publicVisibility
-                - publicMembership
-            type: object
-            properties:
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                createdAt:
-                    format: date-time
-                    description: DateTime when this object is created
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/foundingDate'
-                name:
-                    description: The name of the group
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/name'
-                publicVisibility:
-                    description: Is this group public and can be seen be anyone?
-                    type: boolean
-                publicMembership:
-                    description: Can anyone be part of this group? Or an invitation is required?
-                    type: boolean
-                whoCanCreatePolls:
-                    writeOnly: true
-                    type: integer
-                numMemberships:
-                    type: integer
-                    readOnly: true
-                memberships:
-                    description: Members in this group
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                    readOnly: true
-                membershipsRaw:
-                    $ref: '#/components/schemas/Collection'
-                    readOnly: true
-                members:
-                    type: array
-                    items:
-                        type: string
-                    readOnly: true
-                membersRaw:
-                    $ref: '#/components/schemas/Collection'
-                    readOnly: true
-                numPolls:
-                    type: integer
-                    readOnly: true
-                polls:
-                    description: Polls in this group
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                pollsRaw:
-                    $ref: '#/components/schemas/Collection'
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/Group'
-        Group.Read.Jsonld:
-            description: 'An group such as a school, NGO, corporation, club, etc.'
-            required:
-                - name
-                - publicVisibility
-                - publicMembership
-            type: object
-            properties:
-                '@context':
-                    type: string
-                    readOnly: true
-                '@id':
-                    type: string
-                    readOnly: true
-                '@type':
-                    type: string
-                    readOnly: true
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                createdAt:
-                    format: date-time
-                    description: DateTime when this object is created
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/foundingDate'
-                name:
-                    description: The name of the group
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/name'
-                publicVisibility:
-                    description: Is this group public and can be seen be anyone?
-                    type: boolean
-                publicMembership:
-                    description: Can anyone be part of this group? Or an invitation is required?
-                    type: boolean
-                whoCanCreatePolls:
-                    writeOnly: true
-                    type: integer
-                numMemberships:
-                    type: integer
-                    readOnly: true
-                memberships:
-                    description: Members in this group
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                    readOnly: true
-                membershipsRaw:
-                    $ref: '#/components/schemas/Collection:jsonld'
-                    readOnly: true
-                members:
-                    type: array
-                    items:
-                        type: string
-                    readOnly: true
-                membersRaw:
-                    $ref: '#/components/schemas/Collection:jsonld'
-                    readOnly: true
-                numPolls:
-                    type: integer
-                    readOnly: true
-                polls:
-                    description: Polls in this group
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                pollsRaw:
-                    $ref: '#/components/schemas/Collection:jsonld'
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/Group'
-        Group.Write:
-            description: 'An group such as a school, NGO, corporation, club, etc.'
-            required:
-                - name
-                - public-visibility
-                - public-membership
-                - who-can-create-polls
-            type: object
-            properties:
-                name:
-                    description: The name of the group
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/name'
-                public-visibility:
-                    description: Is this group public and can be seen be anyone?
-                    type: boolean
-                public-membership:
-                    description: Can anyone be part of this group? Or an invitation is required?
-                    type: boolean
-                who-can-create-polls:
-                    description: Can anyone create a new poll?
-                    type: integer
-            externalDocs:
-                url: 'https://schema.org/Group'
-        Jsonapi.Version:
-            description: String indicating the highest JSON API version supported
-            required:
-                - version
-            type: object
-            properties:
-                version:
-                    description: String indicating the highest JSON API version supported
-                    type: string
-            example:
-                version: '1.0'
-        Page:
-            description: The page number
-            default: 1
-            type: integer
-        Member.Read:
-            description: A member of an Group
-            required:
-                - rol
-            type: object
-            properties:
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                rol:
-                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
-                    type: integer
-                member:
-                    format: iri-reference
-                    description: User in this group
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/member'
-                group:
-                    format: iri-reference
-                    description: Group where this user belong
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/hostingGroup'
-                created-at:
-                    format: date-time
-                    description: DateTime when this object is created
-                    type: string
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/ProgramMembership'
-        Member.Read.Jsonld:
-            description: A member of an Group
-            required:
-                - rol
-            type: object
-            properties:
-                '@context':
-                    type: string
-                    readOnly: true
-                '@id':
-                    type: string
-                    readOnly: true
-                '@type':
-                    type: string
-                    readOnly: true
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                createdAt:
-                    format: date-time
-                    description: DateTime when this object is created
-                    type: string
-                    readOnly: true
-                rol:
-                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
-                    type: integer
-                member:
-                    format: iri-reference
-                    description: User in this group
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/member'
-                group:
-                    format: iri-reference
-                    description: Group where this user belong
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/hostingGroup'
-            externalDocs:
-                url: 'https://schema.org/ProgramMembership'
-        Member.Write:
-            description: Modify the rol of an User in a Group
-            required:
-                - rol
-            type: object
-            properties:
-                rol:
-                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
-                    type: integer
-            externalDocs:
-                url: 'https://schema.org/ProgramMembership'
-        Poll.Write:
-            description: Poll / Election / Referendum
-            required:
-                - name
-            type: object
-            properties:
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                name:
-                    description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/text'
-                description:
-                    description: >-
-                        The description of the poll, this value is also the description showed in the Spotify
-                        playlist
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/text'
-                spotifyPlaylistImages:
-                    type: array
-                    items:
-                        type: string
-                    externalDocs:
-                        url: 'http://schema.org/image'
-                spotifyPlaylistPublic:
-                    description: 'If true the playlist will be public, if false it will be private.'
-                    type: boolean
-                spotifyPlaylistCollaborative:
-                    description: |-
-                        If true, the playlist will become collaborative and other users
-                        will be able to modify the playlist in their Spotify client.
-                        Note: You can only set collaborative to true on non-public playlists.
-                    type: boolean
-                spotifyPlaylistUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyPlaylistUriRaw:
-                    description: Return the raw spotify_playlist_uri value
-                    type: string
-                    readOnly: true
-                spotifyWinnerPlaylistUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyWinnerPlaylistUriRaw:
-                    description: Return the raw spotify_winner_playlist_uri value
-                    type: string
-                    readOnly: true
-                spotifyHistoricPlaylistUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyHistoricPlaylistUriRaw:
-                    description: Return the raw spotify_historic_playlist_uri value
-                    type: string
-                    readOnly: true
-                startDate:
-                    format: date-time
-                    description: The start date of this poll
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/datePublished'
-                endDate:
-                    format: date-time
-                    description: The end date of this poll
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/expires'
-                restartDate:
-                    description: |-
-                        String with a crontab style restart command. If setted, this poll is never closed,
-                        the winner song goes to winner playlist and the others to the historic playlist.
-                    type: string
-                publicVisibility:
-                    description: Is this poll visible to anyone or only to the members of the group?
-                    type: boolean
-                publicVotes:
-                    description: Are the votes public meanwhile the poll is active?
-                    type: boolean
-                anonCanVote:
-                    description: Can anyone vote into this poll or only the members of the group?
-                    type: boolean
-                whoCanAddTrack:
-                    writeOnly: true
-                    description: |-
-                        Who can add tracks into this poll?
-                        null => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone
-                    type: integer
-                anonVotesMaxRating:
-                    description: All the ratings given by a anonymous user to this poll can't excede this number
-                    type: integer
-                userVotesMaxRating:
-                    description: All the ratings given by a member to this poll can't excede this number
-                    type: integer
-                multipleUserTracks:
-                    description: Can one user add more than one track to this poll?
-                    type: boolean
-                multipleAnonTracks:
-                    description: Can an anonymous user add more than one track to this poll?
-                    type: boolean
-                group:
-                    format: iri-reference
-                    description: The group owner of this poll
-                    type: string
-                numTracks:
-                    type: integer
-                    readOnly: true
-                tracks:
-                    description: Available tracks for this poll
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                tracksRaw:
-                    $ref: '#/components/schemas/Collection'
-                    readOnly: true
-                trackOrderByVoted:
-                    type: array
-                    items:
-                        type: string
-                    readOnly: true
-                votes:
-                    description: Available votes for this poll
-                    type: array
-                    items:
-                        format: iri-reference
-                        type: string
-                numVotes:
-                    type: integer
-                    readOnly: true
-                votesRaw:
-                    $ref: '#/components/schemas/Collection'
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/Question'
-        Track.Write:
-            description: Track
-            required:
-                - artist
-                - name
-            type: object
-            properties:
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                artist:
-                    description: The name of the artist
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/byArtist'
-                name:
-                    description: The name of the track
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/name'
-                proposalDate:
-                    format: date-time
-                    description: The proposal date of this track
-                    type: string
-                    readOnly: true
-                spotifyUri:
-                    description: Spotify resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                spotifyUriRaw:
-                    type: string
-                    readOnly: true
-                spotifyImages:
-                    description: All the images from the Spotify track
-                    type: array
-                    items:
-                        type: string
-                    externalDocs:
-                        url: 'http://schema.org/image'
-                youtubeUri:
-                    description: Youtube resource identifier
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/identifier'
-                poll:
-                    format: iri-reference
-                    description: The poll where track is participating
-                    type: string
-                session:
-                    format: iri-reference
-                    description: 'The Session who suggest this Track, used in anonymous sessions'
-                    type: string
-                user:
-                    format: iri-reference
-                    description: The User who suggest this Track
-                    type: string
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/MusicRecording'
-        Rate.Read:
-            description: Vote / Rating
-            required:
-                - rating
-            type: object
-            properties:
-                rating:
-                    description: The rating of this vote
-                    type: integer
-                    externalDocs:
-                        url: 'http://schema.org/ratingValue'
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                createdAt:
-                    format: date-time
-                    description: The creation date of this vote
-                    type: string
-                    readOnly: true
-                poll:
-                    format: iri-reference
-                    description: The poll this vote is about
-                    type: string
-                track:
-                    format: iri-reference
-                    description: The track this vote is about
-                    type: string
-                session:
-                    format: iri-reference
-                    type: string
-                user:
-                    format: iri-reference
-                    description: 'The user who emit this vote, optional'
-                    type: string
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/Rating'
-        Rate.Read.Jsonld:
-            description: Vote / Rating
-            required:
-                - rating
-            type: object
-            properties:
-                '@context':
-                    type: string
-                    readOnly: true
-                '@id':
-                    type: string
-                    readOnly: true
-                '@type':
-                    type: string
-                    readOnly: true
-                rating:
-                    description: The rating of this vote
-                    type: integer
-                    externalDocs:
-                        url: 'http://schema.org/ratingValue'
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                createdAt:
-                    format: date-time
-                    description: The creation date of this vote
-                    type: string
-                    readOnly: true
-                poll:
-                    format: iri-reference
-                    description: The poll this vote is about
-                    type: string
-                track:
-                    format: iri-reference
-                    description: The track this vote is about
-                    type: string
-                session:
-                    format: iri-reference
-                    type: string
-                user:
-                    format: iri-reference
-                    description: 'The user who emit this vote, optional'
-                    type: string
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/Rating'
-        Rate.Write:
-            description: Vote / Rating
-            required:
-                - rating
-            type: object
-            properties:
-                rating:
-                    description: The rating of this vote
-                    type: integer
-                    externalDocs:
-                        url: 'http://schema.org/ratingValue'
-                id:
-                    format: uuid
-                    description: The entity Id
-                    type: string
-                    readOnly: true
-                createdAt:
-                    format: date-time
-                    description: The creation date of this vote
-                    type: string
-                    readOnly: true
-                poll:
-                    format: iri-reference
-                    description: The poll this vote is about
-                    type: string
-                track:
-                    format: iri-reference
-                    description: The track this vote is about
-                    type: string
-                session:
-                    format: iri-reference
-                    type: string
-                user:
-                    format: iri-reference
-                    description: 'The user who emit this vote, optional'
-                    type: string
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/Rating'
     responses:
         Resource.Deleted:
             content:
