@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
     title: Discoveryfy
-    version: 0.2.2
+    version: 0.2.3
     description: Create collaborative playlists in Spotify with your friends and colleagues and rate the songs
     contact:
         name: Leninux
@@ -67,7 +67,7 @@ paths:
                             $ref: '#/components/schemas/User.Modify'
                 required: true
             tags:
-                - Subject
+                - User
             responses:
                 '200':
                     content:
@@ -619,7 +619,7 @@ paths:
                         schema:
                             $ref: '#/components/schemas/Login.Request'
             tags:
-                - Subject
+                - User
             responses:
                 '201':
                     content:
@@ -665,281 +665,6 @@ paths:
             summary: >-
                 If username & password is provided, try to authenticate an user to the api. Otherwise a anon
                 session will be created.
-    /groups:
-        summary: Operations with a Group of Users
-        get:
-            tags:
-                - Group
-            parameters:
-                -
-                    name: page
-                    schema:
-                        $ref: '#/components/schemas/Page'
-                    in: query
-                    required: false
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/Group.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Group.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                required:
-                                    - 'hydra:member'
-                                type: object
-                                properties:
-                                    'hydra:member':
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Group.Read.Jsonld'
-                                    'hydra:totalItems':
-                                        minimum: 0
-                                        type: integer
-                                    'hydra:view':
-                                        type: object
-                                        properties:
-                                            '@id':
-                                                format: iri-reference
-                                                type: string
-                                            '@type':
-                                                type: string
-                                            'hydra:first':
-                                                format: iri-reference
-                                                type: string
-                                            'hydra:last':
-                                                format: iri-reference
-                                                type: string
-                                            'hydra:next':
-                                                format: iri-reference
-                                                type: string
-                                    'hydra:search':
-                                        type: object
-                                        properties:
-                                            '@type':
-                                                type: string
-                                            'hydra:template':
-                                                type: string
-                                            'hydra:variableRepresentation':
-                                                type: string
-                                            'hydra:mapping':
-                                                type: array
-                                                items:
-                                                    type: object
-                                                    properties:
-                                                        '@type':
-                                                            type: string
-                                                        variable:
-                                                            type: string
-                                                        property:
-                                                            type: string
-                                                        required:
-                                                            type: boolean
-                    description: Group collection response
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: groups.list
-            summary: >-
-                Return all public groups, and if the current session has an user attached, the groups of the
-                current user.
-        post:
-            requestBody:
-                description: The new Group resource
-                content:
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/Group.Write'
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Group.Write'
-                    application/vnd.api+json:
-                        schema:
-                            $ref: '#/components/schemas/Group.Write'
-                required: true
-            tags:
-                - Group
-            responses:
-                '201':
-                    content:
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Group.Read.Jsonld'
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Group.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Group.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                    links:
-                        GetGroupItem:
-                            operationId: group.get
-                            parameters:
-                                id: '$response.body#/id'
-                            description: >-
-                                The `id` value returned in the response can be used as the `group_uuid`
-                                parameter in `GET /groups/{group_uuid}`.
-                    description: Group resource created
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            operationId: group.create
-            summary: Create new Group
-    '/polls/{poll_uuid}':
-        get:
-            tags:
-                - Poll
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Poll.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/Poll.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Poll.Read.Jsonld'
-                    description: Poll resource response
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: poll.get
-            summary: Get information about one Poll
-        put:
-            requestBody:
-                description: The updated Poll resource
-                content:
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/Poll.Write'
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Poll.Write'
-                    application/vnd.api+json:
-                        schema:
-                            $ref: '#/components/schemas/Poll.Write'
-                required: true
-            tags:
-                - Poll
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Poll.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/Poll.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Poll.Read.Jsonld'
-                    description: Poll resource updated
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: poll.put
-            summary: Modify the configuration of one Poll
-        delete:
-            tags:
-                - Poll
-            responses:
-                '204':
-                    $ref: '#/components/responses/Resource.Deleted'
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: poll.delete
-            summary: Delete one Poll
-        parameters:
-            -
-                name: poll_uuid
-                description: Poll UUID
-                schema:
-                    $ref: '#/components/schemas/Poll.UUID'
-                in: path
-                required: true
     '/polls/{poll_uuid}/tracks/{track_uuid}':
         put:
             requestBody:
@@ -1175,7 +900,7 @@ paths:
                             $ref: '#/components/schemas/User.Write'
                 required: true
             tags:
-                - Subject
+                - User
             responses:
                 '201':
                     content:
@@ -1394,6 +1119,410 @@ paths:
                     $ref: '#/components/schemas/Group.UUID'
                 in: path
                 required: true
+    '/polls/{poll_uuid}/tracks':
+        post:
+            requestBody:
+                description: The new Track resource
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Track.Write'
+                    application/vnd.api+json:
+                        schema:
+                            $ref: '#/components/schemas/Track.Write'
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Track.Write'
+                required: true
+            tags:
+                - Poll
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Track.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: Track
+                                            id:
+                                                $ref: '#/components/schemas/Track.UUID'
+                                            attributes:
+                                                $ref: '#/components/schemas/Track.Read'
+                                            relationships:
+                                                type: object
+                                                properties:
+                                                    rate:
+                                                        type: array
+                                                        items:
+                                                            type: object
+                                                            properties:
+                                                                type:
+                                                                    type: string
+                                                                    example: Rate
+                                                                id:
+                                                                    type: string
+                                                                    example: 2
+                                    included:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Rate.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Track.Read.Jsonld'
+                    links:
+                        ModifyTrack:
+                            operationId: track.put
+                            parameters:
+                                track_uuid: '$response.body#/track_uuid'
+                            description: >-
+                                The `id` value returned in the response can be used as the `track_uuid`
+                                parameter in `POST /polls/{poll_uuid}/tracks/{track_uuid}`. 
+                        DeleteTrack:
+                            operationId: track.delete
+                            parameters:
+                                track_uuid: '$response.body#/track_uuid'
+                            description: >-
+                                The `id` value returned in the response can be used as the `track_uuid`
+                                parameter in `DELETE /polls/{poll_uuid}/tracks/{track_uuid}`.
+                    description: Track resource created
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: track.create
+            summary: Add one new Track into one Poll
+        parameters:
+            -
+                name: poll_uuid
+                description: Poll UUID
+                schema:
+                    $ref: '#/components/schemas/Poll.UUID'
+                in: path
+                required: true
+    '/polls/{poll_uuid}':
+        get:
+            tags:
+                - Poll
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: Poll
+                                            id:
+                                                $ref: '#/components/schemas/Poll.UUID'
+                                            attributes:
+                                                $ref: '#/components/schemas/Poll.Read'
+                                            relationships:
+                                                type: object
+                                                properties:
+                                                    polls:
+                                                        type: array
+                                                        items:
+                                                            type: object
+                                                            properties:
+                                                                type:
+                                                                    type: string
+                                                                    example: Track
+                                                                id:
+                                                                    type: string
+                                                                    example: a9269c43-94dc-4b6a-9e97-f8871d2b630b
+                                    included:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Track.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll.Read.Jsonld'
+                    description: Poll resource response
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: poll.get
+            summary: Get information about one Poll
+        put:
+            requestBody:
+                description: The updated Poll resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll.Write'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Poll.Write'
+                    application/vnd.api+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll.Write'
+                required: true
+            tags:
+                - Poll
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        $ref: '#/components/schemas/Poll.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll.Read.Jsonld'
+                    description: Poll resource updated
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: poll.put
+            summary: Modify the configuration of one Poll
+        delete:
+            tags:
+                - Poll
+            responses:
+                '204':
+                    $ref: '#/components/responses/Resource.Deleted'
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: poll.delete
+            summary: Delete one Poll
+        parameters:
+            -
+                name: poll_uuid
+                description: Poll UUID
+                schema:
+                    $ref: '#/components/schemas/Poll.UUID'
+                in: path
+                required: true
+    /groups:
+        summary: Operations with a Group of Users
+        get:
+            tags:
+                - Group
+            parameters:
+                -
+                    $ref: '#/components/parameters/pageParam'
+                -
+                    $ref: '#/components/parameters/sortGroupsParam'
+                -
+                    $ref: '#/components/parameters/filterGroupsParam'
+                -
+                    $ref: '#/components/parameters/includeGroupsParam'
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Group.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Group.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Group.Read.Jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                    description: Group collection response
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: groups.list
+            summary: >-
+                Return all public groups, and if the current session has an user attached, the groups of the
+                current user.
+        post:
+            requestBody:
+                description: The new Group resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Group.Write'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Group.Write'
+                    application/vnd.api+json:
+                        schema:
+                            $ref: '#/components/schemas/Group.Write'
+                required: true
+            tags:
+                - Group
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Group.Read.Jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Group.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Group.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                    links:
+                        GetGroupItem:
+                            operationId: group.get
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `group_uuid`
+                                parameter in `GET /groups/{group_uuid}`.
+                    description: Group resource created
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            operationId: group.create
+            summary: Create new Group
     /polls:
         summary: >-
             Get all public polls, and if the current session has a user attached, the polls where the user has
@@ -1403,11 +1532,13 @@ paths:
                 - Poll
             parameters:
                 -
-                    name: page
-                    schema:
-                        $ref: '#/components/schemas/Page'
-                    in: query
-                    required: false
+                    $ref: '#/components/parameters/pageParam'
+                -
+                    $ref: '#/components/parameters/sortPollsParam'
+                -
+                    $ref: '#/components/parameters/filterPollsParam'
+                -
+                    $ref: '#/components/parameters/includePollsParam'
             responses:
                 '200':
                     content:
@@ -1506,81 +1637,6 @@ paths:
             summary: >-
                 Get all public polls, and if the current session has a user attached, the polls where the user
                 has accesss
-    '/polls/{poll_uuid}/tracks':
-        post:
-            requestBody:
-                description: The new Track resource
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Track.Write'
-                    application/vnd.api+json:
-                        schema:
-                            $ref: '#/components/schemas/Track.Write'
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/Track.Write'
-                required: true
-            tags:
-                - Poll
-            responses:
-                '201':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Track.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/Track.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Track.Read.Jsonld'
-                    links:
-                        ModifyTrack:
-                            operationId: track.put
-                            parameters:
-                                track_uuid: '$response.body#/track_uuid'
-                            description: >-
-                                The `id` value returned in the response can be used as the `track_uuid`
-                                parameter in `POST /polls/{poll_uuid}/tracks/{track_uuid}`. 
-                        DeleteTrack:
-                            operationId: track.delete
-                            parameters:
-                                track_uuid: '$response.body#/track_uuid'
-                            description: >-
-                                The `id` value returned in the response can be used as the `track_uuid`
-                                parameter in `DELETE /polls/{poll_uuid}/tracks/{track_uuid}`.
-                    description: Track resource created
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: track.create
-            summary: Add one new Track into one Poll
-        parameters:
-            -
-                name: poll_uuid
-                description: Poll UUID
-                schema:
-                    $ref: '#/components/schemas/Poll.UUID'
-                in: path
-                required: true
 components:
     schemas:
         CSRF:
@@ -3424,6 +3480,117 @@ components:
                     schema:
                         $ref: '#/components/schemas/Errors.Jsonld'
             description: The request requires user authentication
+    parameters:
+        pageParam:
+            name: page
+            description: The numbers of the page
+            schema:
+                default: 1
+                minimum: 1
+                type: integer
+            in: query
+            required: false
+        sortGroupsParam:
+            name: sort
+            description: >-
+                Sort the groups by name, by num-polls or by num-users. Sorting is in ascending order by
+                default, to sort descending you can prepend - to the field.
+            schema:
+                type: array
+                items:
+                    default: name
+                    enum:
+                        - name
+                        - '-name'
+                        - num-polls
+                        - '-num-polls'
+                        - num-users
+                        - '-num-users'
+                    type: string
+            in: query
+            required: false
+        filterGroupsParam:
+            name: filter
+            description: Filter the group by name.
+            schema:
+                type: object
+                properties:
+                    id:
+                        type: string
+                    name:
+                        type: string
+            in: query
+            required: false
+        includeGroupsParam:
+            name: include
+            description: The included relationships
+            schema:
+                type: array
+                items:
+                    default: polls
+                    enum:
+                        - polls
+                    type: string
+            in: query
+            required: false
+        sortPollsParam:
+            name: sort
+            description: >-
+                Sort polls by name, by num-tracks or by num-votes. Sort tracks by proposal-date, by name, by
+                artist or by num-votes. Sorting is in ascending order by default, to sort descending you can
+                prepend - to the field.
+            schema:
+                type: array
+                items:
+                    default: name
+                    enum:
+                        - name
+                        - '-name'
+                        - num-votes
+                        - '-num-votes'
+                        - num-tracks
+                        - '-num-tracks'
+                        - tracks.proposal-date
+                        - '-tracks.proposal-date'
+                        - tracks.name
+                        - '-tracks.name'
+                        - tracks.artist
+                        - '-tracks.artist'
+                        - tracks.num-votes
+                        - '-tracks.num-votes'
+                    type: string
+            in: query
+            required: false
+        filterPollsParam:
+            name: filter
+            description: 'Filter Polls by id, by name. Filter Tracks by id, by name and by artist.'
+            schema:
+                type: object
+                properties:
+                    id:
+                        type: string
+                    name:
+                        type: string
+                    tracks.id:
+                        type: string
+                    tracks.name:
+                        type: string
+                    tracks.artist:
+                        type: string
+            in: query
+            required: false
+        includePollsParam:
+            name: include
+            description: The included relationships
+            schema:
+                type: array
+                items:
+                    default: tracks
+                    enum:
+                        - tracks
+                    type: string
+            in: query
+            required: false
     securitySchemes:
         bearerAuth:
             scheme: bearer
