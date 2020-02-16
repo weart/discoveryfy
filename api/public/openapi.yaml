@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
     title: Discoveryfy
-    version: 0.2.4
+    version: 0.2.5
     description: Create collaborative playlists in Spotify with your friends and colleagues and rate the songs
     contact:
         name: Leninux
@@ -13,626 +13,6 @@ servers:
     -
         url: 'https://api.discoveryfy.fabri.cat'
 paths:
-    '/users/{user_uuid}':
-        get:
-            tags:
-                - User
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/User.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/User.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/User.Read.Jsonld'
-                    description: User resource response
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: user.get
-            summary: Retrieves a User
-        put:
-            requestBody:
-                description: Only the updated information of the User.
-                content:
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/User.Modify'
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/User.Modify'
-                    application/vnd.api+json:
-                        schema:
-                            $ref: '#/components/schemas/User.Modify'
-                required: true
-            tags:
-                - User
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/User.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/User.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/User.Read.Jsonld'
-                    description: User resource updated
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: user.put
-            summary: Update the user information
-        parameters:
-            -
-                name: user_uuid
-                description: User UUID
-                schema:
-                    $ref: '#/components/schemas/User.UUID'
-                in: path
-                required: true
-    '/sessions/{session_uuid}':
-        get:
-            tags:
-                - User
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Session.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/Session.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Session.Read.Jsonld'
-                    description: Session resource response
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: session.get
-            summary: Retrieves a Session resource.
-        put:
-            requestBody:
-                description: The updated Session resource
-                content:
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/Session.Modify'
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Session.Modify'
-                    application/vnd.api+json:
-                        schema:
-                            $ref: '#/components/schemas/Session.Modify'
-            tags:
-                - User
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Session.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/Session.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Session.Read.Jsonld'
-                    description: Session resource updated
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: session.put
-            summary: Replaces the name of the Session.
-        parameters:
-            -
-                name: session_uuid
-                description: Session UUID
-                schema:
-                    $ref: '#/components/schemas/Session.UUID'
-                in: path
-                required: true
-    /login:
-        summary: >-
-            This must be the first call to the API in order to obtain a valid JWT token for call all the other
-            endpoints
-        get:
-            tags:
-                - User
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CSRF'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/CSRF'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                required:
-                                    - csrf
-                                type: object
-                                properties:
-                                    '@context':
-                                        type: string
-                                        readOnly: true
-                                    '@id':
-                                        type: string
-                                        readOnly: true
-                                    '@type':
-                                        type: string
-                                        readOnly: true
-                                    csrf:
-                                        $ref: '#/components/schemas/CSRF'
-                    description: CSRF Token
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            operationId: session.create.csrf
-            summary: Get one valid CSRF token
-            description: 'This is the first mandatory call, in order to do a valid call to POST /login with a CSRF token'
-        post:
-            requestBody:
-                description: 'Optional, if provided must be an object with username & password keys.'
-                content:
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/Login.Request'
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Login.Request'
-                    application/vnd.api+json:
-                        schema:
-                            $ref: '#/components/schemas/Login.Request'
-            tags:
-                - User
-            responses:
-                '201':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Login.Response'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/Login.Response'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Login.Response.Jsonld'
-                    links:
-                        GetSessionItem:
-                            operationId: session.get
-                            parameters:
-                                id: '$response.body#/session_uuid'
-                            description: >-
-                                The `session_uuid` value returned in the response can be used as the
-                                `session_uuid` parameter in `GET /sessions/{session_uuid}`.
-                    description: Session resource created
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    csrf: []
-            operationId: session.create
-            summary: >-
-                If username & password is provided, try to authenticate an user to the api. Otherwise a anon
-                session will be created.
-    /register:
-        summary: >-
-            Create one new user in the platform. A GET request must be done for a valid CSRF token before the
-            POST request.
-        get:
-            tags:
-                - User
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CSRF'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/CSRF'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                required:
-                                    - csrf
-                                type: object
-                                properties:
-                                    '@context':
-                                        type: string
-                                        readOnly: true
-                                    '@id':
-                                        type: string
-                                        readOnly: true
-                                    '@type':
-                                        type: string
-                                        readOnly: true
-                                    csrf:
-                                        $ref: '#/components/schemas/CSRF'
-                    description: CSRF Token
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            operationId: user.create.csrf
-            summary: Get one valid CSRF token
-            description: >-
-                This is the first mandatory call, in order to do a valid call to POST /register with a CSRF
-                token
-        post:
-            requestBody:
-                description: The new User resource
-                content:
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/User.Write'
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/User.Write'
-                    application/vnd.api+json:
-                        schema:
-                            $ref: '#/components/schemas/User.Write'
-                required: true
-            tags:
-                - User
-            responses:
-                '201':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/User.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        $ref: '#/components/schemas/User.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/User.Read.Jsonld'
-                    links:
-                        GetUser:
-                            operationId: user.get
-                            parameters:
-                                id: '$response.body#/id'
-                            description: >-
-                                The `id` value returned in the response can be used as the `id` parameter in
-                                `GET /users/{user_uuid}`.
-                    description: User created
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    csrf: []
-            operationId: user.create
-            summary: Create one new user in the platform
-    /groups:
-        summary: Operations with a Groups of Users
-        get:
-            tags:
-                - Group
-            parameters:
-                -
-                    $ref: '#/components/parameters/pageParam'
-                -
-                    $ref: '#/components/parameters/sortGroupsParam'
-                -
-                    $ref: '#/components/parameters/filterGroupsParam'
-                -
-                    $ref: '#/components/parameters/includeGroupsParam'
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/Group.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        type: array
-                                        items:
-                                            type: object
-                                            properties:
-                                                type:
-                                                    type: string
-                                                    example: Group
-                                                id:
-                                                    $ref: '#/components/schemas/Group.UUID'
-                                                attributes:
-                                                    $ref: '#/components/schemas/Group.Read'
-                                                relationships:
-                                                    type: object
-                                                    properties:
-                                                        polls:
-                                                            type: array
-                                                            items:
-                                                                type: object
-                                                                properties:
-                                                                    type:
-                                                                        type: string
-                                                                        example: Polls
-                                                                    id:
-                                                                        type: string
-                                                                        example: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
-                                    included:
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Poll.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                required:
-                                    - 'hydra:member'
-                                type: object
-                                properties:
-                                    'hydra:member':
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Group.Read.Jsonld'
-                                    'hydra:totalItems':
-                                        minimum: 0
-                                        type: integer
-                                    'hydra:view':
-                                        type: object
-                                        properties:
-                                            '@id':
-                                                format: iri-reference
-                                                type: string
-                                            '@type':
-                                                type: string
-                                            'hydra:first':
-                                                format: iri-reference
-                                                type: string
-                                            'hydra:last':
-                                                format: iri-reference
-                                                type: string
-                                            'hydra:next':
-                                                format: iri-reference
-                                                type: string
-                                    'hydra:search':
-                                        type: object
-                                        properties:
-                                            '@type':
-                                                type: string
-                                            'hydra:template':
-                                                type: string
-                                            'hydra:variableRepresentation':
-                                                type: string
-                                            'hydra:mapping':
-                                                type: array
-                                                items:
-                                                    type: object
-                                                    properties:
-                                                        '@type':
-                                                            type: string
-                                                        variable:
-                                                            type: string
-                                                        property:
-                                                            type: string
-                                                        required:
-                                                            type: boolean
-                    description: Group collection response
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            security:
-                -
-                    bearerAuth: []
-            operationId: groups.list
-            summary: >-
-                Return all public groups, and if the current session has an user attached, the groups of the
-                current user.
-        post:
-            requestBody:
-                description: The new Group resource
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Group.Write'
-                    application/vnd.api+json:
-                        schema:
-                            required:
-                                - data
-                            properties:
-                                data:
-                                    type: object
-                                    properties:
-                                        type:
-                                            type: string
-                                            example: Group
-                                        attributes:
-                                            $ref: '#/components/schemas/Group.Write'
-                    application/ld+json:
-                        schema:
-                            $ref: '#/components/schemas/Group.Write'
-                required: true
-            tags:
-                - Group
-            responses:
-                '201':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Group.Read'
-                        application/vnd.api+json:
-                            schema:
-                                required:
-                                    - jsonapi
-                                    - data
-                                    - meta
-                                type: object
-                                properties:
-                                    jsonapi:
-                                        $ref: '#/components/schemas/Jsonapi.Version'
-                                    data:
-                                        type: object
-                                        properties:
-                                            type:
-                                                type: string
-                                                example: Group
-                                            id:
-                                                $ref: '#/components/schemas/Group.UUID'
-                                            attributes:
-                                                $ref: '#/components/schemas/Group.Read'
-                                    meta:
-                                        $ref: '#/components/schemas/Jsonapi.Meta'
-                        application/ld+json:
-                            schema:
-                                $ref: '#/components/schemas/Group.Read.Jsonld'
-                    links:
-                        GetGroupItem:
-                            operationId: group.get
-                            parameters:
-                                id: '$response.body#/id'
-                            description: >-
-                                The `id` value returned in the response can be used as the `group_uuid`
-                                parameter in `GET /groups/{group_uuid}`.
-                    description: Group resource created
-                '400':
-                    $ref: '#/components/responses/Bad.Request'
-                '401':
-                    $ref: '#/components/responses/Unauthorized'
-                '500':
-                    $ref: '#/components/responses/Internal.Server.Error'
-            operationId: group.create
-            summary: Create new Group
     '/groups/{group_uuid}':
         summary: One group of users
         get:
@@ -1269,6 +649,10 @@ paths:
                     bearerAuth: []
             operationId: poll.create
             summary: Create one new poll inside a group
+            description: >-
+                If the fields: spotify-playlist-uri, spotify-playlist-winner-uri or
+                spotify-playlist-historic-uri are empty, an async task is called for create one playlist in
+                Spotify for each empty value.
         parameters:
             -
                 name: group_uuid
@@ -1553,6 +937,10 @@ paths:
                     bearerAuth: []
             operationId: poll.put
             summary: Modify the configuration of one Poll
+            description: >-
+                If the fields: name, description, spotify-playlist-public or spotify-playlist-collaborative
+                are modified, an async task is called for sync those options in Spotify with the playlist
+                stored in the field spotify-playlist-uri
         delete:
             tags:
                 - Poll
@@ -1663,6 +1051,9 @@ paths:
                     bearerAuth: []
             operationId: track.create
             summary: Add one new Track into one Poll
+            description: >-
+                An async task is called for add this track in the Spotify playlist stored in the field
+                spotify-playlist-uri
         parameters:
             -
                 name: poll_uuid
@@ -1743,6 +1134,9 @@ paths:
                     bearerAuth: []
             operationId: track.put
             summary: Modify the information about one Track
+            description: >-
+                If the field spotify-uri is modified, an async task is called for change the song also in
+                Spotify using the playlist stored in the field spotify-playlist-uri
         delete:
             tags:
                 - Poll
@@ -1760,6 +1154,9 @@ paths:
                     bearerAuth: []
             operationId: track.delete
             summary: Delete one Track from a Poll
+            description: >-
+                When one track is removed, an async task is called for remove the song also in Spotify using
+                the playlist stored in the field spotify-playlist-uri
         parameters:
             -
                 name: poll_uuid
@@ -1875,6 +1272,737 @@ paths:
                     $ref: '#/components/schemas/Track.UUID'
                 in: path
                 required: true
+    /register:
+        summary: >-
+            Create one new user in the platform. A GET request must be done for a valid CSRF token before the
+            POST request.
+        get:
+            tags:
+                - User
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CSRF'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: CSRF
+                                            id:
+                                                $ref: '#/components/schemas/CSRF'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - csrf
+                                type: object
+                                properties:
+                                    '@context':
+                                        type: string
+                                        readOnly: true
+                                    '@id':
+                                        type: string
+                                        readOnly: true
+                                    '@type':
+                                        type: string
+                                        readOnly: true
+                                    csrf:
+                                        $ref: '#/components/schemas/CSRF'
+                    description: CSRF Token
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            operationId: user.create.csrf
+            summary: Get one valid CSRF token
+            description: >-
+                This is the first mandatory call, in order to do a valid call to POST /register with a CSRF
+                token
+        post:
+            requestBody:
+                description: The new User resource
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/User.Write'
+                    application/vnd.api+json:
+                        schema:
+                            required:
+                                - data
+                            properties:
+                                data:
+                                    type: object
+                                    properties:
+                                        type:
+                                            type: string
+                                            example: User.Write
+                                        attributes:
+                                            $ref: '#/components/schemas/User.Write'
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/User.Write'
+                required: true
+            tags:
+                - User
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: User.Read
+                                            attributes:
+                                                $ref: '#/components/schemas/User.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/User.Read.Jsonld'
+                    links:
+                        GetUser:
+                            operationId: user.get
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /users/{user_uuid}`.
+                    description: User created
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    csrf: []
+            operationId: user.create
+            summary: Create one new user in the platform
+    /login:
+        summary: >-
+            This must be the first call to the API in order to obtain a valid JWT token for call all the other
+            endpoints
+        get:
+            tags:
+                - User
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CSRF'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: CSRF
+                                            id:
+                                                $ref: '#/components/schemas/CSRF'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - csrf
+                                type: object
+                                properties:
+                                    '@context':
+                                        type: string
+                                        readOnly: true
+                                    '@id':
+                                        type: string
+                                        readOnly: true
+                                    '@type':
+                                        type: string
+                                        readOnly: true
+                                    csrf:
+                                        $ref: '#/components/schemas/CSRF'
+                    description: CSRF Token
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            operationId: session.create.csrf
+            summary: Get one valid CSRF token
+            description: 'This is the first mandatory call, in order to do a valid call to POST /login with a CSRF token'
+        post:
+            requestBody:
+                description: 'Optional, if provided must be an object with username & password keys.'
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Login.Request'
+                    application/vnd.api+json:
+                        schema:
+                            required:
+                                - data
+                            properties:
+                                data:
+                                    type: object
+                                    properties:
+                                        type:
+                                            type: string
+                                            example: Login.Request
+                                        attributes:
+                                            $ref: '#/components/schemas/Login.Request'
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Login.Request'
+            tags:
+                - User
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Login.Response'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: Login.Response
+                                            attributes:
+                                                $ref: '#/components/schemas/Login.Response'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Login.Response.Jsonld'
+                    links:
+                        GetSessionItem:
+                            operationId: session.get
+                            parameters:
+                                id: '$response.body#/session_uuid'
+                            description: >-
+                                The `session_uuid` value returned in the response can be used as the
+                                `session_uuid` parameter in `GET /sessions/{session_uuid}`.
+                    description: Session resource created
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    csrf: []
+            operationId: session.create
+            summary: >-
+                If username & password is provided, try to authenticate an user to the api. Otherwise a anon
+                session will be created.
+    '/sessions/{session_uuid}':
+        get:
+            tags:
+                - User
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Session.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: Session
+                                            id:
+                                                $ref: '#/components/schemas/Session.UUID'
+                                            attributes:
+                                                $ref: '#/components/schemas/Session.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Session.Read.Jsonld'
+                    description: Session resource response
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: session.get
+            summary: Retrieves a Session resource.
+        put:
+            requestBody:
+                description: The updated Session resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Session.Modify'
+                    application/json:
+                        schema:
+                            required:
+                                - data
+                            properties:
+                                data:
+                                    type: object
+                                    properties:
+                                        type:
+                                            type: string
+                                            example: Session.Modify
+                                        attributes:
+                                            $ref: '#/components/schemas/Session.Modify'
+                    application/vnd.api+json:
+                        schema:
+                            $ref: '#/components/schemas/Session.Modify'
+            tags:
+                - User
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Session.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: Session
+                                            id:
+                                                $ref: '#/components/schemas/Session.UUID'
+                                            attributes:
+                                                $ref: '#/components/schemas/Session.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Session.Read.Jsonld'
+                    description: Session resource updated
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: session.put
+            summary: Replaces the name of the Session.
+        parameters:
+            -
+                name: session_uuid
+                description: Session UUID
+                schema:
+                    $ref: '#/components/schemas/Session.UUID'
+                in: path
+                required: true
+    '/users/{user_uuid}':
+        get:
+            tags:
+                - User
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: User
+                                            id:
+                                                $ref: '#/components/schemas/User.UUID'
+                                            attributes:
+                                                $ref: '#/components/schemas/User.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/User.Read.Jsonld'
+                    description: User resource response
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: user.get
+            summary: Retrieves a User
+        put:
+            requestBody:
+                description: Only the updated information of the User.
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/User.Modify'
+                    application/json:
+                        schema:
+                            required:
+                                - data
+                            properties:
+                                data:
+                                    type: object
+                                    properties:
+                                        type:
+                                            type: string
+                                            example: User.Modify
+                                        attributes:
+                                            $ref: '#/components/schemas/User.Modify'
+                    application/vnd.api+json:
+                        schema:
+                            $ref: '#/components/schemas/User.Modify'
+                required: true
+            tags:
+                - User
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: User
+                                            id:
+                                                $ref: '#/components/schemas/User.UUID'
+                                            attributes:
+                                                $ref: '#/components/schemas/User.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/User.Read.Jsonld'
+                    description: User resource updated
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: user.put
+            summary: Update the user information
+        parameters:
+            -
+                name: user_uuid
+                description: User UUID
+                schema:
+                    $ref: '#/components/schemas/User.UUID'
+                in: path
+                required: true
+    /groups:
+        summary: Operations with a Groups of Users
+        get:
+            tags:
+                - Group
+            parameters:
+                -
+                    $ref: '#/components/parameters/pageParam'
+                -
+                    $ref: '#/components/parameters/sortGroupsParam'
+                -
+                    $ref: '#/components/parameters/filterGroupsParam'
+                -
+                    $ref: '#/components/parameters/includeGroupsParam'
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Group.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                type:
+                                                    type: string
+                                                    example: Group
+                                                id:
+                                                    $ref: '#/components/schemas/Group.UUID'
+                                                attributes:
+                                                    $ref: '#/components/schemas/Group.Read'
+                                                relationships:
+                                                    type: object
+                                                    properties:
+                                                        polls:
+                                                            type: array
+                                                            items:
+                                                                type: object
+                                                                properties:
+                                                                    type:
+                                                                        type: string
+                                                                        example: polls
+                                                                    id:
+                                                                        type: string
+                                                                        example: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                                                        members:
+                                                            type: array
+                                                            items:
+                                                                type: object
+                                                                properties:
+                                                                    type:
+                                                                        type: string
+                                                                        example: members
+                                                                    id:
+                                                                        type: string
+                                                                        example: b85dc364-a646-4230-9f52-adfd45561b20
+                                    included:
+                                        type: array
+                                        items:
+                                            anyOf:
+                                                -
+                                                    $ref: '#/components/schemas/Poll.Read'
+                                                -
+                                                    $ref: '#/components/schemas/Member.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Group.Read.Jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                    description: Group collection response
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            security:
+                -
+                    bearerAuth: []
+            operationId: groups.list
+            summary: >-
+                Return all public groups, and if the current session has an user attached, the groups of the
+                current user.
+        post:
+            requestBody:
+                description: The new Group resource
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Group.Write'
+                    application/vnd.api+json:
+                        schema:
+                            required:
+                                - data
+                            properties:
+                                data:
+                                    type: object
+                                    properties:
+                                        type:
+                                            type: string
+                                            example: Group
+                                        attributes:
+                                            $ref: '#/components/schemas/Group.Write'
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Group.Write'
+                required: true
+            tags:
+                - Group
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Group.Read'
+                        application/vnd.api+json:
+                            schema:
+                                required:
+                                    - jsonapi
+                                    - data
+                                    - meta
+                                type: object
+                                properties:
+                                    jsonapi:
+                                        $ref: '#/components/schemas/Jsonapi.Version'
+                                    data:
+                                        type: object
+                                        properties:
+                                            type:
+                                                type: string
+                                                example: Group
+                                            id:
+                                                $ref: '#/components/schemas/Group.UUID'
+                                            attributes:
+                                                $ref: '#/components/schemas/Group.Read'
+                                    meta:
+                                        $ref: '#/components/schemas/Jsonapi.Meta'
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Group.Read.Jsonld'
+                    links:
+                        GetGroupItem:
+                            operationId: group.get
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `group_uuid`
+                                parameter in `GET /groups/{group_uuid}`.
+                    description: Group resource created
+                '400':
+                    $ref: '#/components/responses/Bad.Request'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '500':
+                    $ref: '#/components/responses/Internal.Server.Error'
+            operationId: group.create
+            summary: Create new Group
 components:
     schemas:
         CSRF:
@@ -2225,44 +2353,6 @@ components:
             example:
                 timestamp: '2020-02-13T13:35:20-05:00'
                 hash: e6d4d57162ae0f220c8649ae50a2b79fd1cb2c60
-        Member.Read:
-            description: A member of an Group
-            required:
-                - created-at
-                - user-id
-                - group-id
-                - rol
-            type: object
-            properties:
-                created-at:
-                    format: date-time
-                    description: DateTime when this object is created
-                    type: string
-                    readOnly: true
-                user-id:
-                    $ref: '#/components/schemas/User.UUID'
-                    description: The User Uuid
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/member'
-                group-id:
-                    $ref: '#/components/schemas/Group.UUID'
-                    description: The Group Uuid where this user belong
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/hostingGroup'
-                rol:
-                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
-                    maximum: 3
-                    minimum: 0
-                    type: integer
-            externalDocs:
-                url: 'https://schema.org/ProgramMembership'
-            example:
-                created-at: '2020-02-13T13:35:20-05:00'
-                user-id: b85dc364-a646-4230-9f52-adfd45561b20
-                group-id: a9894239-905a-4a14-b43f-5f116b9e0532
-                rol: 0
         Member.Write:
             description: Modify the rol of an User in a Group
             required:
@@ -3334,44 +3424,6 @@ components:
                     id: 9fea1130-479a-44be-bcf6-d10030b76c4b
                     created-at: '2020-02-13T13:35:20-05:00'
                     name: Leninux
-        Member.List:
-            description: A member of an Group
-            required:
-                - created-at
-                - user-id
-                - rol
-            type: object
-            properties:
-                user-id:
-                    $ref: '#/components/schemas/User.UUID'
-                    description: The User Uuid
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/member'
-                created-at:
-                    format: date-time
-                    description: DateTime when this object is created
-                    type: string
-                    readOnly: true
-                username:
-                    description: The name of the user
-                    type: string
-                email:
-                    description: The email of the user
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/email'
-                rol:
-                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
-                    maximum: 3
-                    minimum: 0
-                    type: integer
-            externalDocs:
-                url: 'https://schema.org/ProgramMembership'
-            example:
-                created-at: '2020-02-13T13:35:20-05:00'
-                user-id: b85dc364-a646-4230-9f52-adfd45561b20
-                rol: 0
         User.List:
             description: User Subresource
             required:
@@ -3397,73 +3449,6 @@ components:
                 id: b85dc364-a646-4230-9f52-adfd45561b20
                 username: Leninux
                 email: test@test.com
-        Group.Read:
-            description: 'An group of users or an organization, such as a school, NGO, corporation, club, etc.'
-            required:
-                - id
-                - created-at
-                - name
-                - public-visibility
-                - public-membership
-            type: object
-            properties:
-                id:
-                    $ref: '#/components/schemas/Group.UUID'
-                    description: Group unique identifier
-                    readOnly: true
-                created-at:
-                    format: date-time
-                    description: DateTime when this object is created
-                    type: string
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/foundingDate'
-                name:
-                    description: The name of the group
-                    type: string
-                    externalDocs:
-                        url: 'http://schema.org/name'
-                public-visibility:
-                    description: Is this group public and can be seen be anyone?
-                    type: boolean
-                public-membership:
-                    description: Can anyone be part of this group? Or an invitation is required?
-                    type: boolean
-                who-can-create-polls:
-                    description: 'Who can create new Polls? Members->2, Admins-> 1, Owners-> 0'
-                    maximum: 2
-                    minimum: 0
-                    type: integer
-                num-members:
-                    description: Number of members in this group
-                    type: integer
-                    readOnly: true
-                members:
-                    description: Members in this group
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Member.List'
-                    readOnly: true
-                num-polls:
-                    description: Number of polls in this group
-                    type: integer
-                    readOnly: true
-            externalDocs:
-                url: 'https://schema.org/Group'
-            example:
-                id: a9894239-905a-4a14-b43f-5f116b9e0532
-                createdAt: '2020-02-13T13:35:20-05:00'
-                name: Discoveryfy
-                public-visibility: true
-                public-membership: true
-                who-can-create-polls: 0
-                num-members: 1
-                members:
-                    -
-                        id: b85dc364-a646-4230-9f52-adfd45561b20
-                        username: Leninux
-                        email: discoveryfy@fabri.cat
-                num-polls: 1
         Poll.Read:
             description: Poll / Election / Referendum
             required:
@@ -3649,6 +3634,108 @@ components:
                         track-id: 8a34652d-9535-41e9-96d7-ee0b09e82a36
                         session-id: 91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40
                         user-id: b85dc364-a646-4230-9f52-adfd45561b20
+        Group.Read:
+            description: 'An group of users or an organization, such as a school, NGO, corporation, club, etc.'
+            required:
+                - id
+                - created-at
+                - name
+                - public-visibility
+                - public-membership
+            type: object
+            properties:
+                id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: Group unique identifier
+                    readOnly: true
+                created-at:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/foundingDate'
+                name:
+                    description: The name of the group
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                public-visibility:
+                    description: Is this group public and can be seen be anyone?
+                    type: boolean
+                public-membership:
+                    description: Can anyone be part of this group? Or an invitation is required?
+                    type: boolean
+                who-can-create-polls:
+                    description: 'Who can create new Polls? Members->2, Admins-> 1, Owners-> 0'
+                    maximum: 2
+                    minimum: 0
+                    type: integer
+                num-members:
+                    description: Number of members in this group
+                    type: integer
+                    readOnly: true
+                num-polls:
+                    description: Number of polls in this group
+                    type: integer
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Group'
+            example:
+                id: a9894239-905a-4a14-b43f-5f116b9e0532
+                createdAt: '2020-02-13T13:35:20-05:00'
+                name: Discoveryfy
+                public-visibility: true
+                public-membership: true
+                who-can-create-polls: 0
+                num-members: 1
+                num-polls: 1
+        Member.Read:
+            description: A member of an Group
+            required:
+                - created-at
+                - id
+                - group-id
+                - username
+                - rol
+            type: object
+            properties:
+                created-at:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                id:
+                    $ref: '#/components/schemas/User.UUID'
+                    description: The User Uuid
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/member'
+                group-id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: The Group Uuid where this user belong
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/hostingGroup'
+                username:
+                    description: The name of the user
+                    type: string
+                email:
+                    description: The email of the user
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/email'
+                rol:
+                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
+                    maximum: 3
+                    minimum: 0
+                    type: integer
+            externalDocs:
+                url: 'https://schema.org/ProgramMembership'
+            example:
+                created-at: '2020-02-13T13:35:20-05:00'
+                user-id: b85dc364-a646-4230-9f52-adfd45561b20
+                rol: 0
     responses:
         Resource.Deleted:
             content:
@@ -3771,6 +3858,7 @@ components:
                     default: polls
                     enum:
                         - polls
+                        - members
                     type: string
             in: query
             required: false
