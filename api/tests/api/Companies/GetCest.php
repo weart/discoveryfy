@@ -3,8 +3,8 @@
 namespace Phalcon\Api\Tests\api\Companies;
 
 use ApiTester;
-use Phalcon\Api\Exception\ModelException;
-use Phalcon\Api\Models\Companies;
+use Discoveryfy\Exceptions\ModelException;
+use Discoveryfy\Models\Companies;
 use Page\Data;
 
 class GetCest extends GetBase
@@ -16,7 +16,7 @@ class GetCest extends GetBase
     {
         $I->addApiUserRecord();
         $token = $I->apiLogin();
-        
+
         $company = $I->addCompanyRecord('com-a-');
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
         $I->sendGET(sprintf(Data::$companiesRecordUrl, $company->get('id')));

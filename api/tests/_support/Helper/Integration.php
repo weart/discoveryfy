@@ -7,12 +7,12 @@ use Codeception\Exception\TestRuntimeException;
 use Codeception\TestInterface;
 
 use Phalcon\Api\Bootstrap\Api;
-use Phalcon\Api\Models\Companies;
-use Phalcon\Api\Models\CompaniesXProducts;
-use Phalcon\Api\Models\Individuals;
-use Phalcon\Api\Models\IndividualTypes;
-use Phalcon\Api\Models\Products;
-use Phalcon\Api\Models\ProductTypes;
+use Discoveryfy\Models\Companies;
+use Discoveryfy\Models\CompaniesXProducts;
+use Discoveryfy\Models\Individuals;
+use Discoveryfy\Models\IndividualTypes;
+use Discoveryfy\Models\Products;
+use Discoveryfy\Models\ProductTypes;
 use Phalcon\Api\Mvc\Model\AbstractModel;
 use Phalcon\DI\FactoryDefault as PhDI;
 use Phalcon\Config as PhConfig;

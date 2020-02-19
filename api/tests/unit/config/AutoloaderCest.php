@@ -11,7 +11,7 @@ class AutoloaderCest
 {
     public function checkDotenvVariables(UnitTester $I)
     {
-        require appPath('library/Core/autoload.php');
+        require appPath('phalcon-api/Core/autoload.php');
 
         $I->assertNotEquals(false, getenv('APP_DEBUG'));
         $I->assertNotEquals(false, getenv('APP_ENV'));
@@ -28,9 +28,9 @@ class AutoloaderCest
 
         $I->assertEquals('true', getenv('APP_DEBUG'));
         $I->assertEquals('development', getenv('APP_ENV'));
-        $I->assertEquals('http://api.phalcon.ld', getenv('APP_URL'));
+        $I->assertEquals('https://api.discoveryfy.fabri.cat', getenv('APP_URL'));
         $I->assertEquals('/', getenv('APP_BASE_URI'));
-        $I->assertEquals('team@phalcon.io', getenv('APP_SUPPORT_EMAIL'));
+        $I->assertEquals('discoveryfy@fabri.cat', getenv('APP_SUPPORT_EMAIL'));
         $I->assertEquals('UTC', getenv('APP_TIMEZONE'));
         $I->assertEquals('api_cache_', getenv('CACHE_PREFIX'));
         $I->assertEquals(86400, getenv('CACHE_LIFETIME'));
@@ -40,7 +40,7 @@ class AutoloaderCest
 
     public function checkAutoloader(UnitTester $I)
     {
-        require appPath('library/Core/autoload.php');
+        require appPath('phalcon-api/Core/autoload.php');
 
         $class = new Response();
         $I->assertTrue($class instanceof Response);

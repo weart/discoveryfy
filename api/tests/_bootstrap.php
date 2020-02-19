@@ -8,7 +8,7 @@ define('API_TESTS', true);
  */
 $_SERVER['REQUEST_URI'] = '/';
 
-require __DIR__ . '/../library/Core/autoload.php';
+require __DIR__ . '/../phalcon-api/Core/autoload.php';
 
 ini_set('date.timezone', 'UTC');
 ini_set('display_errors', 1);

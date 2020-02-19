@@ -1,5 +1,10 @@
 # Discoveryfy (API)
 
+WIP - Phalcon API
+
+Specs in: ./public/openapi.yaml (@ToDo: JsonLD schemas)
+
+
 Useful commands
 -------
 In order to execute symfony commands:

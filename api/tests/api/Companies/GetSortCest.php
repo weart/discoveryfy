@@ -3,8 +3,8 @@
 namespace Phalcon\Api\Tests\api\Companies;
 
 use ApiTester;
-use Phalcon\Api\Exception\ModelException;
-use Phalcon\Api\Models\Companies;
+use Discoveryfy\Exceptions\ModelException;
+use Discoveryfy\Models\Companies;
 use Page\Data;
 
 class GetSortCest extends GetBase

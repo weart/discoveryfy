@@ -5,9 +5,9 @@ namespace Phalcon\Api\Tests\integration\library\Traits;
 use IntegrationTester;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Hmac\Sha512;
-use Phalcon\Api\Exception\ModelException;
-use Phalcon\Api\Models\Companies;
-use Phalcon\Api\Models\Users;
+use Discoveryfy\Exceptions\ModelException;
+use Discoveryfy\Models\Companies;
+use Discoveryfy\Models\Users;
 use Phalcon\Api\Traits\QueryTrait;
 use Phalcon\Api\Traits\TokenTrait;
 use Phalcon\Cache;
@@ -112,7 +112,7 @@ class QueryCest
 
     public function getCompaniesCachedData(IntegrationTester $I)
     {
-        $configData = require appPath('./library/Core/config.php');
+        $configData = require appPath('config/config.php');
         $I->assertTrue($configData['app']['devMode']);
 
         $configData['app']['devMode'] = false;

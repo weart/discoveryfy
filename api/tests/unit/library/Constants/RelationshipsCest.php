@@ -3,7 +3,7 @@
 namespace Phalcon\Api\Tests\unit\library\Constants;
 
 use CliTester;
-use Phalcon\Api\Constants\Relationships;
+use Discoveryfy\Constants\Relationships;
 
 class RelationshipsCest
 {

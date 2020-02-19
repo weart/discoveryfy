@@ -3,7 +3,7 @@
 namespace Phalcon\Api\Tests\api\Companies;
 
 use ApiTester;
-use Phalcon\Api\Models\Companies;
+use Discoveryfy\Models\Companies;
 
 class GetBase
 {

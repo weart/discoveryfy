@@ -4,7 +4,7 @@ namespace Phalcon\Api\Tests\integration\library\Models;
 
 use IntegrationTester;
 use Lcobucci\JWT\ValidationData;
-use Phalcon\Api\Models\Users;
+use Discoveryfy\Models\Users;
 use Phalcon\Api\Traits\TokenTrait;
 use Phalcon\Filter;
 

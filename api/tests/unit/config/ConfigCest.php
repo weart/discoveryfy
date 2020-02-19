@@ -10,7 +10,7 @@ class ConfigCest
 {
     public function checkConfig(UnitTester $I)
     {
-        $config = require(appPath('library/Core/config.php'));
+        $config = require(appPath('config/config.php'));
 
         $I->assertTrue(is_array($config));
         $I->assertTrue(isset($config['app']));

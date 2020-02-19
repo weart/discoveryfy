@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 use Phalcon\Api\Bootstrap\Api;
 
-require_once __DIR__ . '/../library/Core/autoload.php';
+require_once __DIR__ . '/../phalcon-api/Core/autoload.php';
 
 $bootstrap = new Api();
 

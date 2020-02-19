@@ -113,9 +113,10 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 # copy app
 WORKDIR /var/www
-COPY --chown=www-data:www-data ./app ./app
-COPY --chown=www-data:www-data ./cli ./cli
-COPY --chown=www-data:www-data ./library ./library
+COPY --chown=www-data:www-data ./bin ./bin
+COPY --chown=www-data:www-data ./config ./config
+COPY --chown=www-data:www-data ./discoveryfy ./discoveryfy
+COPY --chown=www-data:www-data ./phalcon-api ./phalcon-api
 COPY --chown=www-data:www-data ./public ./public
 COPY --chown=www-data:www-data ./vendor ./vendor
 COPY --chown=www-data:www-data ./tests ./tests

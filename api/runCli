@@ -3,4 +3,4 @@
 EXEC_PATH="`dirname \"$0\"`"
 
 PHP_BINARY="`which php`"
-$PHP_BINARY $EXEC_PATH/cli/cli.php $*
+$PHP_BINARY $EXEC_PATH/bin/cli.php $*

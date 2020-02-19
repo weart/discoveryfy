@@ -3,8 +3,8 @@
 namespace Phalcon\Api\Tests\integration\library\Transformers;
 
 use IntegrationTester;
-use Phalcon\Api\Exception\ModelException;
-use Phalcon\Api\Models\Companies;
+use Discoveryfy\Exceptions\ModelException;
+use Discoveryfy\Models\Companies;
 use Phalcon\Api\Transformers\BaseTransformer;
 
 class BaseTransformerCest

@@ -3,11 +3,11 @@
 namespace Phalcon\Api\Tests\api\Products;
 
 use ApiTester;
-use Phalcon\Api\Constants\Relationships;
-use Phalcon\Api\Exception\ModelException;
-use Phalcon\Api\Models\Companies;
-use Phalcon\Api\Models\Products;
-use Phalcon\Api\Models\ProductTypes;
+use Discoveryfy\Constants\Relationships;
+use Discoveryfy\Exceptions\ModelException;
+use Discoveryfy\Models\Companies;
+use Discoveryfy\Models\Products;
+use Discoveryfy\Models\ProductTypes;
 use Page\Data;
 use function Phalcon\Api\Core\envValue;
 

@@ -3,7 +3,7 @@
 namespace Phalcon\Api\Tests\unit\cli;
 
 use FilesystemIterator;
-use Phalcon\Api\Cli\Tasks\ClearcacheTask;
+use Discoveryfy\Tasks\ClearCacheTask;
 use Phalcon\Api\Providers\CacheDataProvider;
 use Phalcon\Api\Providers\ConfigProvider;
 use Phalcon\Di\FactoryDefault\Cli;
@@ -28,7 +28,7 @@ class ClearCacheCest
         $config->register($container);
         $cache     = new CacheDataProvider();
         $cache->register($container);
-        $task      = new ClearcacheTask();
+        $task      = new ClearCacheTask();
         $task->setDI($container);
 
         $iterator = new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);

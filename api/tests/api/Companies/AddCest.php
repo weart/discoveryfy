@@ -3,10 +3,10 @@
 namespace Phalcon\Api\Tests\api\Companies;
 
 use ApiTester;
-use Phalcon\Api\Constants\Relationships;
-use Phalcon\Api\Exception\ModelException;
+use Discoveryfy\Constants\Relationships;
+use Discoveryfy\Exceptions\ModelException;
 use Phalcon\Api\Http\Response;
-use Phalcon\Api\Models\Companies;
+use Discoveryfy\Models\Companies;
 use Page\Data;
 use function Phalcon\Api\Core\appUrl;
 use function uniqid;

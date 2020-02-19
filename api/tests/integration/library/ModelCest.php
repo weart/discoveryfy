@@ -6,8 +6,8 @@ use Codeception\Stub;
 use Exception;
 use IntegrationTester;
 use Monolog\Logger;
-use Phalcon\Api\Exception\ModelException;
-use Phalcon\Api\Models\Users;
+use Discoveryfy\Exceptions\ModelException;
+use Discoveryfy\Models\Users;
 use Phalcon\Messages\Message;
 use function Phalcon\Api\Core\appPath;
 

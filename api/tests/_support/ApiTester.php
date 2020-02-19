@@ -3,7 +3,7 @@
 use Codeception\Actor;
 use Codeception\Lib\Friend;
 use Codeception\Util\HttpCode;
-use Phalcon\Api\Models\Users;
+use Discoveryfy\Models\Users;
 use Page\Data as DataPage;
 
 /**

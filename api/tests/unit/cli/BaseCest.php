@@ -2,7 +2,7 @@
 
 namespace Phalcon\Api\Tests\unit\cli;
 
-use Phalcon\Api\Cli\Tasks\MainTask;
+use Discoveryfy\Tasks\MainTask;
 use Phalcon\Di\FactoryDefault\Cli;
 use UnitTester;
 use function ob_end_clean;
@@ -22,7 +22,7 @@ class BaseCest
         $actual = ob_get_contents();
         ob_end_clean();
 
-        $actual   = str_replace("\n", "\r\n", $actual);
+//        $actual   = str_replace("\n", "\r\n", $actual);
         $year     = date('Y');
         $expected = <<<EOF
 ******************************************************

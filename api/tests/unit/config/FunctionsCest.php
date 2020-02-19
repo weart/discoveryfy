@@ -2,7 +2,7 @@
 
 namespace Phalcon\Api\Tests\unit\config;
 
-use Phalcon\Api\Constants\Relationships;
+use Discoveryfy\Constants\Relationships;
 use UnitTester;
 use function Phalcon\Api\Core\appPath;
 use function Phalcon\Api\Core\appUrl;
@@ -18,8 +18,8 @@ class FunctionsCest
 
     public function checkApppathWithParameter(UnitTester $I)
     {
-        $path = dirname(dirname(dirname(__DIR__))) . '/library/Core/config.php';
-        $I->assertEquals($path, appPath('library/Core/config.php'));
+        $path = dirname(dirname(dirname(__DIR__))) . '/config/config.php';
+        $I->assertEquals($path, appPath('config/config.php'));
     }
 
     public function checkEnvvalueAsFalse(UnitTester $I)

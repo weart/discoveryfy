@@ -3,7 +3,7 @@
 namespace Phalcon\Api\Tests\api\Companies;
 
 use ApiTester;
-use Phalcon\Api\Constants\Relationships;
+use Discoveryfy\Constants\Relationships;
 use Page\Data;
 use function Phalcon\Api\Core\envValue;
 

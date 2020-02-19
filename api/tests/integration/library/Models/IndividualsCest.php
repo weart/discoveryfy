@@ -3,10 +3,10 @@
 namespace Phalcon\Api\Tests\integration\library\Models;
 
 use IntegrationTester;
-use Phalcon\Api\Constants\Relationships;
-use Phalcon\Api\Models\Companies;
-use Phalcon\Api\Models\Individuals;
-use Phalcon\Api\Models\IndividualTypes;
+use Discoveryfy\Constants\Relationships;
+use Discoveryfy\Models\Companies;
+use Discoveryfy\Models\Individuals;
+use Discoveryfy\Models\IndividualTypes;
 use Phalcon\Filter;
 
 class IndividualsCest

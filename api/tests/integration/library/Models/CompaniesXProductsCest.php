@@ -3,10 +3,10 @@
 namespace Phalcon\Api\Tests\integration\library\Models;
 
 use IntegrationTester;
-use Phalcon\Api\Constants\Relationships;
-use Phalcon\Api\Models\Companies;
-use Phalcon\Api\Models\CompaniesXProducts;
-use Phalcon\Api\Models\Products;
+use Discoveryfy\Constants\Relationships;
+use Discoveryfy\Models\Companies;
+use Discoveryfy\Models\CompaniesXProducts;
+use Discoveryfy\Models\Products;
 use Phalcon\Filter;
 
 class CompaniesXProductsCest

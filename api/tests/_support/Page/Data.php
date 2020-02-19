@@ -2,8 +2,8 @@
 
 namespace Page;
 
-use Phalcon\Api\Constants\Relationships;
-use Phalcon\Api\Exception\ModelException;
+use Discoveryfy\Constants\Relationships;
+use Discoveryfy\Exceptions\ModelException;
 use Phalcon\Api\Mvc\Model\AbstractModel;
 use function Phalcon\Api\Core\envValue;
 

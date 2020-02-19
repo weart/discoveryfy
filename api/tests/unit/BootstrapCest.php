@@ -10,6 +10,7 @@ class BootstrapCest
 {
     public function checkBootstrap(CliTester $I)
     {
+        $_GET['_url'] = '/';
         ob_start();
         require appPath('public/api.php');
         $actual = ob_get_contents();

@@ -18,7 +18,7 @@ class ProvidersCest
 {
     public function checkApiProviders(UnitTester $I)
     {
-        $providers = require(appPath('app/config/providers.php'));
+        $providers = require(appPath('config/providers.api.php'));
 
         $I->assertEquals(ConfigProvider::class, $providers[0]);
         $I->assertEquals(LoggerProvider::class, $providers[1]);
@@ -32,7 +32,7 @@ class ProvidersCest
 
     public function checkCliProviders(UnitTester $I)
     {
-        $providers = require(appPath('cli/config/providers.php'));
+        $providers = require(appPath('config/providers.cli.php'));
 
         $I->assertEquals(ConfigProvider::class, $providers[0]);
         $I->assertEquals(LoggerProvider::class, $providers[1]);

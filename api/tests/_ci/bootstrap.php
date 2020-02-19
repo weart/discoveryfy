@@ -2,7 +2,7 @@
 
 use Phalcon\Api\Bootstrap\Tests;
 
-require_once __DIR__ . '/../../library/Core/autoload.php';
+require_once __DIR__ . '/../../phalcon-api/Core/autoload.php';
 
 $bootstrap = new Tests();
 $bootstrap->setup();

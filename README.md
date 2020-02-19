@@ -12,20 +12,21 @@ More information in api/README.md & client/README.md.
 
 ## Technology stack:
 
-Backend:
+Api / Backend:
+  * OpenApi specs available at ./api/public/openapi.yaml
   * Phalcon: PHP framework for generate a [JSON:API](https://jsonapi.org/) compliant API, [OpenAPI Specification](/docs): [json definition](/openapi.json) & [yaml definition](/openapi.yaml).
   * [jwilsson/spotify-web-api-php](https://github.com/jwilsson/spotify-web-api-php): PHP wrapper for Spotify's Web API. 
   * JWT: Authentication engine
   * PostgreSQL: Database engine for persist data.
-  * Gravatar
   * Redis?
-Other possibilites:
-  * Django, Laravel, Flask
-  * Instead of JSON:API, use [any other hypermedia spec](https://www.nginx.com/blog/building-your-api-for-longevity-best-practices/), [2](https://sookocheff.com/post/api/on-choosing-a-hypermedia-format/):
-  Hydra, HAL, [CPHL](https://github.com/mikestowe/CPHL)...
+  * Other possibilites:
+    * Django, Laravel, Flask
+    * Instead of JSON:API, use [any other hypermedia spec](https://www.nginx.com/blog/building-your-api-for-longevity-best-practices/), [2](https://sookocheff.com/post/api/on-choosing-a-hypermedia-format/):
+		* Hydra, HAL, [CPHL](https://github.com/mikestowe/CPHL)...
 
-Frontend:
+Client / Frontend:
   * Quasar? Ionic? Material UI? Flutter?
+  * Gravatar
   * [JSON:API vuex adapter?](https://mrichar1.github.io/jsonapi-vuex/)
 
 DevOps:
