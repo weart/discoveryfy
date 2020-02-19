@@ -1,0 +1,2946 @@
+# Discoveryfy Namespaces
+
+    ```
+        +-- discoveryfy
+        |   +-- controllers: (In rest-api: Validate - BBDD - Transform)
+        |       DTO/Models: Schema
+        |       Validation: Request -> (Schema) -> Model
+        |       Transform:  Model -> (Schema) -> Response
+        |   +-- exceptions
+        |   +-- models, per ex: User.List User.Read User.Create User.Modify User.UUID (move to controller)
+        |       fromRequest
+        |       Validation?
+        |       getSchema() => Storage => Obj{key=>val}
+        |   +-- routes
+        |   +-- services - Spotify
+        |   +-- tasks
+        |   +-- transformers/JsonApi (& JsonLd)
+        |   +-- validators
+        +-- config
+        +-- cli
+        +-- phalcon-api
+        +-- public
+        +-- tests
+        +-- storage
+        |   +-- db/fixtures
+        |   +-- db/migrations
+        ```
+    properties:
+        jsonapi:
+            $ref: '#/components/schemas/Jsonapi.Version'
+        data:
+            type: object
+            properties:
+                type:
+                    type: string
+                    example: Track
+                id:
+                    $ref: '#/components/schemas/Track.UUID'
+                attributes:
+                    $ref: '#/components/schemas/Track.Read'
+                relationships:
+                    type: object
+                    properties:
+                        rate:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    type:
+                                        type: string
+                                        example: Rate
+                                    id:
+                                        type: string
+                                        example: 2
+        included:
+            type: array
+            items:
+                $ref: '#/components/schemas/Rate.Read'
+        meta:
+            $ref: '#/components/schemas/Jsonapi.Meta'
+
+
+
+                properties:
+                    jsonapi:
+                        $ref: '#/components/schemas/Jsonapi.Version'
+                    data:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                example: Group
+                            id:
+                                $ref: '#/components/schemas/Group.UUID'
+                            attributes:
+                                $ref: '#/components/schemas/Group.Read'
+                            relationships:
+                                type: object
+                                properties:
+                                    polls:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                type:
+                                                    type: string
+                                                    example: Polls
+                                                id:
+                                                    type: string
+                                                    example: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                    included:
+                        type: array
+                        items:
+                            $ref: '#/components/schemas/Poll.Read'
+                    meta:
+                        $ref: '#/components/schemas/Jsonapi.Meta'
+
+
+
+##post-requestbody /group
+                schema:
+                    required:
+                        - data
+                    properties:
+                        data:
+                            type: object
+                            properties:
+                                type:
+                                    type: string
+                                    example: Group
+                                id:
+                                    $ref: '#/components/schemas/Group.UUID'
+                                attributes:
+                                    $ref: '#/components/schemas/Group.Write'
+
+
+    schema:
+        required:
+            - data
+        properties:
+            data:
+                type: object
+                properties:
+                    type:
+                        type: string
+                        example: Group
+                    id:
+                        $ref: '#/components/schemas/Group.UUID'
+                    attributes:
+                        $ref: '#/components/schemas/Group.Read'
+                    relationships:
+                        type: object
+                        properties:
+                            polls:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        type:
+                                            type: string
+                                            example: Polls
+                                        id:
+                                            type: string
+                                            example: 15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5
+                                            
+                                    relationships:
+                                        type: object
+                                        properties:
+                                            rate:
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        type:
+                                                            type: string
+                                                            example: Rate
+                                                        id:
+                                                            type: string
+                                                            example: 2
+                            included:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Rate.Read'
+
+    openapi: 3.0.2
+info:
+    title: Discoveryfy
+    version: 1.0.0
+paths:
+    /login:
+        post:
+            requestBody:
+                description: The new Session resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Session:jsonld-WriteSession'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Session-WriteSession'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Session-WriteSession'
+            tags:
+                - Subject
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Session:jsonld-ReadSession'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Session-ReadSession'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Session-ReadSession'
+                    links:
+                        GetSessionItem:
+                            operationId: getSessionItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /sessions/{id}`.
+                    description: Session resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: postSessionCollection
+            summary: ''
+    /memberships:
+        get:
+            tags:
+                - Group
+            parameters:
+                -
+                    name: page
+                    description: The collection page number
+                    schema:
+                        default: 1
+                        type: integer
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Membership:jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Membership'
+                        text/html:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Membership'
+                    description: Membership collection response
+            operationId: getMembershipCollection
+            summary: ''
+        post:
+            requestBody:
+                description: The new Membership resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Membership:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Membership'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Membership'
+            tags:
+                - Group
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Membership:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Membership'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Membership'
+                    links:
+                        GetMembershipItem:
+                            operationId: getMembershipItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /memberships/{id}`.
+                    description: Membership resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: postMembershipCollection
+            summary: ''
+    '/memberships/{id}':
+        get:
+            tags:
+                - Group
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Membership:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Membership'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Membership'
+                    description: Membership resource response
+                '404':
+                    description: Resource not found
+            operationId: getMembershipItem
+            summary: ''
+        put:
+            requestBody:
+                description: The updated Membership resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Membership:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Membership'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Membership'
+            tags:
+                - Group
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Membership:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Membership'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Membership'
+                    description: Membership resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putMembershipItem
+            summary: ''
+        delete:
+            tags:
+                - Group
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '204':
+                    description: Membership resource deleted
+                '404':
+                    description: Resource not found
+            operationId: deleteMembershipItem
+            summary: ''
+    /groups:
+        get:
+            tags:
+                - Group
+            parameters:
+                -
+                    name: page
+                    description: The collection page number
+                    schema:
+                        default: 1
+                        type: integer
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Group:jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Group'
+                        text/html:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Group'
+                    description: Group collection response
+            operationId: getGroupCollection
+            summary: ''
+        post:
+            requestBody:
+                description: The new Group resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Group:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Group'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Group'
+            tags:
+                - Group
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Group:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                    links:
+                        GetGroupItem:
+                            operationId: getGroupItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /groups/{id}`.
+                    description: Group resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: postGroupCollection
+            summary: ''
+    '/groups/{id}':
+        get:
+            tags:
+                - Group
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Group:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                    description: Group resource response
+                '404':
+                    description: Resource not found
+            operationId: getGroupItem
+            summary: ''
+        put:
+            requestBody:
+                description: The updated Group resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Group:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Group'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Group'
+            tags:
+                - Group
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Group:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                    description: Group resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putGroupItem
+            summary: ''
+        delete:
+            tags:
+                - Group
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '204':
+                    description: Group resource deleted
+                '404':
+                    description: Resource not found
+            operationId: deleteGroupItem
+            summary: ''
+    '/groups/{id}/invite/{user_id}':
+        post:
+            requestBody:
+                description: The new Group resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Group:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Group'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Group'
+            tags:
+                - Group
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Group:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                    links:
+                        GetGroupItem:
+                            operationId: getGroupItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /groups/{id}`.
+                    description: Group resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: createMembershipGroupCollection
+            summary: ''
+    '/groups/{id}/membership/{user_id}':
+        put:
+            requestBody:
+                description: The updated Group resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Group:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Group'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Group'
+            tags:
+                - Group
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Group:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Group'
+                    description: Group resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putMembershipGroupItem
+            summary: Replaces the Group resource.
+        delete:
+            tags:
+                - Group
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '204':
+                    description: Group resource deleted
+                '404':
+                    description: Resource not found
+            operationId: deleteMembershipGroupItem
+            summary: Removes the Group resource.
+    '/groups/{id}/polls':
+        get:
+            tags:
+                - Poll
+                - Group
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+                -
+                    name: page
+                    description: The collection page number
+                    schema:
+                        default: 1
+                        type: integer
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Poll:jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Poll'
+                        text/html:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Poll'
+                    description: Poll collection response
+                '404':
+                    description: Resource not found
+            operationId: api_groups_polls_get_subresource
+            summary: Retrieves the collection of Poll resources.
+    /polls:
+        get:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: page
+                    description: The collection page number
+                    schema:
+                        default: 1
+                        type: integer
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Poll:jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Poll'
+                        text/html:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Poll'
+                    description: Poll collection response
+            operationId: getPollCollection
+            summary: ''
+        post:
+            requestBody:
+                description: The new Poll resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+            tags:
+                - Poll
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                    links:
+                        GetPollItem:
+                            operationId: getPollItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /polls/{id}`.
+                    description: Poll resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: postPollCollection
+            summary: ''
+    '/polls/{id}':
+        get:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                    description: Poll resource response
+                '404':
+                    description: Resource not found
+            operationId: getPollItem
+            summary: ''
+        put:
+            requestBody:
+                description: The updated Poll resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                    description: Poll resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putPollItem
+            summary: ''
+        delete:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '204':
+                    description: Poll resource deleted
+                '404':
+                    description: Resource not found
+            operationId: deletePollItem
+            summary: ''
+    '/polls/{id}/track':
+        post:
+            requestBody:
+                description: The new Poll resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+            tags:
+                - Poll
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                    links:
+                        GetPollItem:
+                            operationId: getPollItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /polls/{id}`.
+                    description: Poll resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: createTrackPollCollection
+            summary: ''
+    '/polls/{id}/tracks/{track_id}':
+        put:
+            requestBody:
+                description: The updated Poll resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                    description: Poll resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putTrackPollItem
+            summary: ''
+        delete:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '204':
+                    description: Poll resource deleted
+                '404':
+                    description: Resource not found
+            operationId: deleteTrackPollItem
+            summary: ''
+    '/polls/{id}/tracks/{track_id}/vote':
+        put:
+            requestBody:
+                description: The updated Poll resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                    description: Poll resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putVotePollItem
+            summary: ''
+        post:
+            requestBody:
+                description: The new Poll resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Poll:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Poll'
+            tags:
+                - Poll
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Poll:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Poll'
+                    links:
+                        GetPollItem:
+                            operationId: getPollItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /polls/{id}`.
+                    description: Poll resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: createVotePollCollection
+            summary: ''
+        delete:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '204':
+                    description: Poll resource deleted
+                '404':
+                    description: Resource not found
+            operationId: deleteVotePollItem
+            summary: ''
+    /register:
+        post:
+            requestBody:
+                description: The new User resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/User:jsonld-WriteUser'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/User-WriteUser'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/User-WriteUser'
+            tags:
+                - Subject
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/User:jsonld-ReadUser'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User-ReadUser'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/User-ReadUser'
+                    links:
+                        GetUserItem:
+                            operationId: getUserItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /users/{id}`.
+                    description: User resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: postUserCollection
+            summary: ''
+    '/sessions/{id}':
+        get:
+            tags:
+                - Subject
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Session:jsonld-ReadSession'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Session-ReadSession'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Session-ReadSession'
+                    description: Session resource response
+                '404':
+                    description: Resource not found
+            operationId: getSessionItem
+            summary: Retrieves a Session resource.
+        put:
+            requestBody:
+                description: The updated Session resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Session:jsonld-WriteSession'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Session-WriteSession'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Session-WriteSession'
+            tags:
+                - Subject
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Session:jsonld-ReadSession'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Session-ReadSession'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Session-ReadSession'
+                    description: Session resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putSessionItem
+            summary: Replaces the Session resource.
+    /tracks:
+        get:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: page
+                    description: The collection page number
+                    schema:
+                        default: 1
+                        type: integer
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Track:jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Track'
+                        text/html:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Track'
+                    description: Track collection response
+            operationId: getTrackCollection
+            summary: ''
+        post:
+            requestBody:
+                description: The new Track resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Track:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Track'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Track'
+            tags:
+                - Poll
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Track:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Track'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Track'
+                    links:
+                        GetTrackItem:
+                            operationId: getTrackItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /tracks/{id}`.
+                    description: Track resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: postTrackCollection
+            summary: ''
+    '/tracks/{id}':
+        get:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Track:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Track'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Track'
+                    description: Track resource response
+                '404':
+                    description: Resource not found
+            operationId: getTrackItem
+            summary: ''
+        put:
+            requestBody:
+                description: The updated Track resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Track:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Track'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Track'
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Track:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Track'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Track'
+                    description: Track resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putTrackItem
+            summary: ''
+        delete:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '204':
+                    description: Track resource deleted
+                '404':
+                    description: Resource not found
+            operationId: deleteTrackItem
+            summary: ''
+    '/users/{id}':
+        get:
+            tags:
+                - Subject
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/User:jsonld-ReadUser'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User-ReadUser'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/User-ReadUser'
+                    description: User resource response
+                '404':
+                    description: Resource not found
+            operationId: getUserItem
+            summary: Retrieves a User resource.
+        put:
+            requestBody:
+                description: The updated User resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/User:jsonld-WriteUser'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/User-WriteUser'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/User-WriteUser'
+            tags:
+                - Subject
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/User:jsonld-ReadUser'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User-ReadUser'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/User-ReadUser'
+                    description: User resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putUserItem
+            summary: Replaces the User resource.
+    /votes:
+        get:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: page
+                    description: The collection page number
+                    schema:
+                        default: 1
+                        type: integer
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                required:
+                                    - 'hydra:member'
+                                type: object
+                                properties:
+                                    'hydra:member':
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Vote:jsonld'
+                                    'hydra:totalItems':
+                                        minimum: 0
+                                        type: integer
+                                    'hydra:view':
+                                        type: object
+                                        properties:
+                                            '@id':
+                                                format: iri-reference
+                                                type: string
+                                            '@type':
+                                                type: string
+                                            'hydra:first':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:last':
+                                                format: iri-reference
+                                                type: string
+                                            'hydra:next':
+                                                format: iri-reference
+                                                type: string
+                                    'hydra:search':
+                                        type: object
+                                        properties:
+                                            '@type':
+                                                type: string
+                                            'hydra:template':
+                                                type: string
+                                            'hydra:variableRepresentation':
+                                                type: string
+                                            'hydra:mapping':
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        '@type':
+                                                            type: string
+                                                        variable:
+                                                            type: string
+                                                        property:
+                                                            type: string
+                                                        required:
+                                                            type: boolean
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Vote'
+                        text/html:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Vote'
+                    description: Vote collection response
+            operationId: getVoteCollection
+            summary: ''
+        post:
+            requestBody:
+                description: The new Vote resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Vote:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Vote'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Vote'
+            tags:
+                - Poll
+            responses:
+                '201':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Vote:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Vote'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Vote'
+                    links:
+                        GetVoteItem:
+                            operationId: getVoteItem
+                            parameters:
+                                id: '$response.body#/id'
+                            description: >-
+                                The `id` value returned in the response can be used as the `id` parameter in
+                                `GET /votes/{id}`.
+                    description: Vote resource created
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: postVoteCollection
+            summary: ''
+    '/votes/{id}':
+        get:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Vote:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Vote'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Vote'
+                    description: Vote resource response
+                '404':
+                    description: Resource not found
+            operationId: getVoteItem
+            summary: ''
+        put:
+            requestBody:
+                description: The updated Vote resource
+                content:
+                    application/ld+json:
+                        schema:
+                            $ref: '#/components/schemas/Vote:jsonld'
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Vote'
+                    text/html:
+                        schema:
+                            $ref: '#/components/schemas/Vote'
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/ld+json:
+                            schema:
+                                $ref: '#/components/schemas/Vote:jsonld'
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Vote'
+                        text/html:
+                            schema:
+                                $ref: '#/components/schemas/Vote'
+                    description: Vote resource updated
+                '400':
+                    description: Invalid input
+                '404':
+                    description: Resource not found
+            operationId: putVoteItem
+            summary: ''
+        delete:
+            tags:
+                - Poll
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '204':
+                    description: Vote resource deleted
+                '404':
+                    description: Resource not found
+            operationId: deleteVoteItem
+            summary: ''
+components:
+    schemas:
+        Collection:
+            type: object
+            properties:
+                empty:
+                    description: Checks whether the collection is empty (contains no elements).
+                    type: boolean
+                    readOnly: true
+                element:
+                    writeOnly: true
+                    description: 'Removes the specified element from the collection, if it is found.'
+                keys:
+                    description: Gets all keys/indices of the collection.
+                    type: array
+                    items:
+                        type: integer
+                    readOnly: true
+                values:
+                    description: Gets all values of the collection.
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                iterator:
+                    readOnly: true
+        'Collection:jsonld':
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                empty:
+                    description: Checks whether the collection is empty (contains no elements).
+                    type: boolean
+                    readOnly: true
+                element:
+                    writeOnly: true
+                    description: 'Removes the specified element from the collection, if it is found.'
+                keys:
+                    description: Gets all keys/indices of the collection.
+                    type: array
+                    items:
+                        type: integer
+                    readOnly: true
+                values:
+                    description: Gets all values of the collection.
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                iterator:
+                    readOnly: true
+        Membership:
+            description: A member of an Group
+            required:
+                - rol
+            type: object
+            properties:
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                createdAt:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                rol:
+                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
+                    type: integer
+                member:
+                    format: iri-reference
+                    description: User in this group
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/member'
+                group:
+                    format: iri-reference
+                    description: Group where this user belong
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/hostingGroup'
+            externalDocs:
+                url: 'https://schema.org/ProgramMembership'
+        'Membership:jsonld':
+            description: A member of an Group
+            required:
+                - rol
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                createdAt:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                rol:
+                    description: 'Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;'
+                    type: integer
+                member:
+                    format: iri-reference
+                    description: User in this group
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/member'
+                group:
+                    format: iri-reference
+                    description: Group where this user belong
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/hostingGroup'
+            externalDocs:
+                url: 'https://schema.org/ProgramMembership'
+        Group:
+            description: 'An group such as a school, NGO, corporation, club, etc.'
+            required:
+                - name
+                - publicVisibility
+                - publicMembership
+            type: object
+            properties:
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                createdAt:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/foundingDate'
+                name:
+                    description: The name of the group
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                publicVisibility:
+                    description: Is this group public and can be seen be anyone?
+                    type: boolean
+                publicMembership:
+                    description: Can anyone be part of this group? Or an invitation is required?
+                    type: boolean
+                whoCanCreatePolls:
+                    writeOnly: true
+                    type: integer
+                numMemberships:
+                    type: integer
+                    readOnly: true
+                memberships:
+                    description: Members in this group
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                    readOnly: true
+                membershipsRaw:
+                    $ref: '#/components/schemas/Collection'
+                    readOnly: true
+                members:
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                membersRaw:
+                    $ref: '#/components/schemas/Collection'
+                    readOnly: true
+                numPolls:
+                    type: integer
+                    readOnly: true
+                polls:
+                    description: Polls in this group
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                pollsRaw:
+                    $ref: '#/components/schemas/Collection'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Group'
+        'Group:jsonld':
+            description: 'An group such as a school, NGO, corporation, club, etc.'
+            required:
+                - name
+                - publicVisibility
+                - publicMembership
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                createdAt:
+                    format: date-time
+                    description: DateTime when this object is created
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/foundingDate'
+                name:
+                    description: The name of the group
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                publicVisibility:
+                    description: Is this group public and can be seen be anyone?
+                    type: boolean
+                publicMembership:
+                    description: Can anyone be part of this group? Or an invitation is required?
+                    type: boolean
+                whoCanCreatePolls:
+                    writeOnly: true
+                    type: integer
+                numMemberships:
+                    type: integer
+                    readOnly: true
+                memberships:
+                    description: Members in this group
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                    readOnly: true
+                membershipsRaw:
+                    $ref: '#/components/schemas/Collection:jsonld'
+                    readOnly: true
+                members:
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                membersRaw:
+                    $ref: '#/components/schemas/Collection:jsonld'
+                    readOnly: true
+                numPolls:
+                    type: integer
+                    readOnly: true
+                polls:
+                    description: Polls in this group
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                pollsRaw:
+                    $ref: '#/components/schemas/Collection:jsonld'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Group'
+        Poll:
+            description: Poll / Election / Referendum
+            required:
+                - name
+            type: object
+            properties:
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                name:
+                    description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                description:
+                    description: >-
+                        The description of the poll, this value is also the description showed in the Spotify
+                        playlist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                spotifyPlaylistImages:
+                    type: array
+                    items:
+                        type: string
+                    externalDocs:
+                        url: 'http://schema.org/image'
+                spotifyPlaylistPublic:
+                    description: 'If true the playlist will be public, if false it will be private.'
+                    type: boolean
+                spotifyPlaylistCollaborative:
+                    description: |-
+                        If true, the playlist will become collaborative and other users
+                        will be able to modify the playlist in their Spotify client.
+                        Note: You can only set collaborative to true on non-public playlists.
+                    type: boolean
+                spotifyPlaylistUri:
+                    description: Spotify resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotifyPlaylistUriRaw:
+                    description: Return the raw spotify_playlist_uri value
+                    type: string
+                    readOnly: true
+                spotifyWinnerPlaylistUri:
+                    description: Spotify resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotifyWinnerPlaylistUriRaw:
+                    description: Return the raw spotify_winner_playlist_uri value
+                    type: string
+                    readOnly: true
+                spotifyHistoricPlaylistUri:
+                    description: Spotify resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotifyHistoricPlaylistUriRaw:
+                    description: Return the raw spotify_historic_playlist_uri value
+                    type: string
+                    readOnly: true
+                startDate:
+                    format: date-time
+                    description: The start date of this poll
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/datePublished'
+                endDate:
+                    format: date-time
+                    description: The end date of this poll
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/expires'
+                restartDate:
+                    description: |-
+                        String with a crontab style restart command. If setted, this poll is never closed,
+                        the winner song goes to winner playlist and the others to the historic playlist.
+                    type: string
+                publicVisibility:
+                    description: Is this poll visible to anyone or only to the members of the group?
+                    type: boolean
+                publicVotes:
+                    description: Are the votes public meanwhile the poll is active?
+                    type: boolean
+                anonCanVote:
+                    description: Can anyone vote into this poll or only the members of the group?
+                    type: boolean
+                whoCanAddTrack:
+                    writeOnly: true
+                    description: |-
+                        Who can add tracks into this poll?
+                        null => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone
+                    type: integer
+                anonVotesMaxRating:
+                    description: All the ratings given by a anonymous user to this poll can't excede this number
+                    type: integer
+                userVotesMaxRating:
+                    description: All the ratings given by a member to this poll can't excede this number
+                    type: integer
+                multipleUserTracks:
+                    description: Can one user add more than one track to this poll?
+                    type: boolean
+                multipleAnonTracks:
+                    description: Can an anonymous user add more than one track to this poll?
+                    type: boolean
+                group:
+                    format: iri-reference
+                    description: The group owner of this poll
+                    type: string
+                numTracks:
+                    type: integer
+                    readOnly: true
+                tracks:
+                    description: Available tracks for this poll
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                tracksRaw:
+                    $ref: '#/components/schemas/Collection'
+                    readOnly: true
+                trackOrderByVoted:
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                votes:
+                    description: Available votes for this poll
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                numVotes:
+                    type: integer
+                    readOnly: true
+                votesRaw:
+                    $ref: '#/components/schemas/Collection'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Question'
+        'Poll:jsonld':
+            description: Poll / Election / Referendum
+            required:
+                - name
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                name:
+                    description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                description:
+                    description: >-
+                        The description of the poll, this value is also the description showed in the Spotify
+                        playlist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
+                spotifyPlaylistImages:
+                    type: array
+                    items:
+                        type: string
+                    externalDocs:
+                        url: 'http://schema.org/image'
+                spotifyPlaylistPublic:
+                    description: 'If true the playlist will be public, if false it will be private.'
+                    type: boolean
+                spotifyPlaylistCollaborative:
+                    description: |-
+                        If true, the playlist will become collaborative and other users
+                        will be able to modify the playlist in their Spotify client.
+                        Note: You can only set collaborative to true on non-public playlists.
+                    type: boolean
+                spotifyPlaylistUri:
+                    description: Spotify resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotifyPlaylistUriRaw:
+                    description: Return the raw spotify_playlist_uri value
+                    type: string
+                    readOnly: true
+                spotifyWinnerPlaylistUri:
+                    description: Spotify resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotifyWinnerPlaylistUriRaw:
+                    description: Return the raw spotify_winner_playlist_uri value
+                    type: string
+                    readOnly: true
+                spotifyHistoricPlaylistUri:
+                    description: Spotify resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotifyHistoricPlaylistUriRaw:
+                    description: Return the raw spotify_historic_playlist_uri value
+                    type: string
+                    readOnly: true
+                startDate:
+                    format: date-time
+                    description: The start date of this poll
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/datePublished'
+                endDate:
+                    format: date-time
+                    description: The end date of this poll
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/expires'
+                restartDate:
+                    description: |-
+                        String with a crontab style restart command. If setted, this poll is never closed,
+                        the winner song goes to winner playlist and the others to the historic playlist.
+                    type: string
+                publicVisibility:
+                    description: Is this poll visible to anyone or only to the members of the group?
+                    type: boolean
+                publicVotes:
+                    description: Are the votes public meanwhile the poll is active?
+                    type: boolean
+                anonCanVote:
+                    description: Can anyone vote into this poll or only the members of the group?
+                    type: boolean
+                whoCanAddTrack:
+                    writeOnly: true
+                    description: |-
+                        Who can add tracks into this poll?
+                        null => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone
+                    type: integer
+                anonVotesMaxRating:
+                    description: All the ratings given by a anonymous user to this poll can't excede this number
+                    type: integer
+                userVotesMaxRating:
+                    description: All the ratings given by a member to this poll can't excede this number
+                    type: integer
+                multipleUserTracks:
+                    description: Can one user add more than one track to this poll?
+                    type: boolean
+                multipleAnonTracks:
+                    description: Can an anonymous user add more than one track to this poll?
+                    type: boolean
+                group:
+                    format: iri-reference
+                    description: The group owner of this poll
+                    type: string
+                numTracks:
+                    type: integer
+                    readOnly: true
+                tracks:
+                    description: Available tracks for this poll
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                tracksRaw:
+                    $ref: '#/components/schemas/Collection:jsonld'
+                    readOnly: true
+                trackOrderByVoted:
+                    type: array
+                    items:
+                        type: string
+                    readOnly: true
+                votes:
+                    description: Available votes for this poll
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                numVotes:
+                    type: integer
+                    readOnly: true
+                votesRaw:
+                    $ref: '#/components/schemas/Collection:jsonld'
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Question'
+        Session-ReadSession:
+            description: 'attributes={"access_control"="is_granted(''ROLE_ADMIN'')"},'
+            type: object
+            properties:
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                name:
+                    description: 'The name of the user in this session, only used when $user is not defined'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/agent'
+                createdAt:
+                    format: date-time
+                    description: The creation date of this session
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/startTime'
+                user:
+                    format: iri-reference
+                    type: string
+                    readOnly: true
+                tracks:
+                    description: Tracks added in this session
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                    readOnly: true
+                votes:
+                    description: Votes emitted in this session
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/AuthorizeAction'
+        Session-WriteSession:
+            description: 'attributes={"access_control"="is_granted(''ROLE_ADMIN'')"},'
+            type: object
+            properties:
+                name:
+                    description: 'The name of the user in this session, only used when $user is not defined'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/agent'
+            externalDocs:
+                url: 'https://schema.org/AuthorizeAction'
+        'Session:jsonld-ReadSession':
+            description: 'attributes={"access_control"="is_granted(''ROLE_ADMIN'')"},'
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                name:
+                    description: 'The name of the user in this session, only used when $user is not defined'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/agent'
+                createdAt:
+                    format: date-time
+                    description: The creation date of this session
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/startTime'
+                user:
+                    format: iri-reference
+                    type: string
+                    readOnly: true
+                tracks:
+                    description: Tracks added in this session
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                    readOnly: true
+                votes:
+                    description: Votes emitted in this session
+                    type: array
+                    items:
+                        format: iri-reference
+                        type: string
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/AuthorizeAction'
+        'Session:jsonld-WriteSession':
+            description: 'attributes={"access_control"="is_granted(''ROLE_ADMIN'')"},'
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                name:
+                    description: 'The name of the user in this session, only used when $user is not defined'
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/agent'
+            externalDocs:
+                url: 'https://schema.org/AuthorizeAction'
+        Track:
+            description: Track
+            required:
+                - artist
+                - name
+            type: object
+            properties:
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                artist:
+                    description: The name of the artist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/byArtist'
+                name:
+                    description: The name of the track
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                proposalDate:
+                    format: date-time
+                    description: The proposal date of this track
+                    type: string
+                    readOnly: true
+                spotifyUri:
+                    description: Spotify resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotifyUriRaw:
+                    type: string
+                    readOnly: true
+                spotifyImages:
+                    description: All the images from the Spotify track
+                    type: array
+                    items:
+                        type: string
+                    externalDocs:
+                        url: 'http://schema.org/image'
+                youtubeUri:
+                    description: Youtube resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                poll:
+                    format: iri-reference
+                    description: The poll where track is participating
+                    type: string
+                session:
+                    format: iri-reference
+                    description: 'The Session who suggest this Track, used in anonymous sessions'
+                    type: string
+                user:
+                    format: iri-reference
+                    description: The User who suggest this Track
+                    type: string
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/MusicRecording'
+        'Track:jsonld':
+            description: Track
+            required:
+                - artist
+                - name
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                artist:
+                    description: The name of the artist
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/byArtist'
+                name:
+                    description: The name of the track
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/name'
+                proposalDate:
+                    format: date-time
+                    description: The proposal date of this track
+                    type: string
+                    readOnly: true
+                spotifyUri:
+                    description: Spotify resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                spotifyUriRaw:
+                    type: string
+                    readOnly: true
+                spotifyImages:
+                    description: All the images from the Spotify track
+                    type: array
+                    items:
+                        type: string
+                    externalDocs:
+                        url: 'http://schema.org/image'
+                youtubeUri:
+                    description: Youtube resource identifier
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/identifier'
+                poll:
+                    format: iri-reference
+                    description: The poll where track is participating
+                    type: string
+                session:
+                    format: iri-reference
+                    description: 'The Session who suggest this Track, used in anonymous sessions'
+                    type: string
+                user:
+                    format: iri-reference
+                    description: The User who suggest this Track
+                    type: string
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/MusicRecording'
+        User-ReadUser:
+            description: ''
+            required:
+                - username
+                - enabled
+            type: object
+            properties:
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                username:
+                    description: The name of the user
+                    type: string
+                email:
+                    description: The email of the user
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/email'
+                createdAt:
+                    format: date-time
+                    description: The creation date of this user
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/startTime'
+                updatedAt:
+                    format: date-time
+                    description: The last modification date of this user
+                    type: string
+                    readOnly: true
+                enabled:
+                    description: Flag indicating if the user is active
+                    type: boolean
+                publicVisibility:
+                    description: Is this user visible to anyone?
+                    type: boolean
+                publicEmail:
+                    description: Is the email of this user visible to anyone?
+                    type: boolean
+                language:
+                    description: Language of the app
+                    type: string
+                theme:
+                    description: Theme of the app
+                    type: string
+            externalDocs:
+                url: 'https://schema.org/Person'
+        User-WriteUser:
+            description: ''
+            required:
+                - username
+                - enabled
+            type: object
+            properties:
+                username:
+                    description: The name of the user
+                    type: string
+                email:
+                    description: The email of the user
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/email'
+                enabled:
+                    description: Flag indicating if the user is active
+                    type: boolean
+                publicVisibility:
+                    description: Is this user visible to anyone?
+                    type: boolean
+                publicEmail:
+                    description: Is the email of this user visible to anyone?
+                    type: boolean
+                language:
+                    description: Language of the app
+                    type: string
+                theme:
+                    description: Theme of the app
+                    type: string
+            externalDocs:
+                url: 'https://schema.org/Person'
+        'User:jsonld-ReadUser':
+            description: ''
+            required:
+                - username
+                - enabled
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                username:
+                    description: The name of the user
+                    type: string
+                email:
+                    description: The email of the user
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/email'
+                createdAt:
+                    format: date-time
+                    description: The creation date of this user
+                    type: string
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/startTime'
+                updatedAt:
+                    format: date-time
+                    description: The last modification date of this user
+                    type: string
+                    readOnly: true
+                enabled:
+                    description: Flag indicating if the user is active
+                    type: boolean
+                publicVisibility:
+                    description: Is this user visible to anyone?
+                    type: boolean
+                publicEmail:
+                    description: Is the email of this user visible to anyone?
+                    type: boolean
+                language:
+                    description: Language of the app
+                    type: string
+                theme:
+                    description: Theme of the app
+                    type: string
+            externalDocs:
+                url: 'https://schema.org/Person'
+        'User:jsonld-WriteUser':
+            description: ''
+            required:
+                - username
+                - enabled
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                username:
+                    description: The name of the user
+                    type: string
+                email:
+                    description: The email of the user
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/email'
+                enabled:
+                    description: Flag indicating if the user is active
+                    type: boolean
+                publicVisibility:
+                    description: Is this user visible to anyone?
+                    type: boolean
+                publicEmail:
+                    description: Is the email of this user visible to anyone?
+                    type: boolean
+                language:
+                    description: Language of the app
+                    type: string
+                theme:
+                    description: Theme of the app
+                    type: string
+            externalDocs:
+                url: 'https://schema.org/Person'
+        Vote:
+            description: Vote / Rating
+            required:
+                - rating
+            type: object
+            properties:
+                rating:
+                    description: The rating of this vote
+                    type: integer
+                    externalDocs:
+                        url: 'http://schema.org/ratingValue'
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                createdAt:
+                    format: date-time
+                    description: The creation date of this vote
+                    type: string
+                    readOnly: true
+                poll:
+                    format: iri-reference
+                    description: The poll this vote is about
+                    type: string
+                track:
+                    format: iri-reference
+                    description: The track this vote is about
+                    type: string
+                session:
+                    format: iri-reference
+                    type: string
+                user:
+                    format: iri-reference
+                    description: 'The user who emit this vote, optional'
+                    type: string
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Rating'
+        'Vote:jsonld':
+            description: Vote / Rating
+            required:
+                - rating
+            type: object
+            properties:
+                '@context':
+                    type: string
+                    readOnly: true
+                '@id':
+                    type: string
+                    readOnly: true
+                '@type':
+                    type: string
+                    readOnly: true
+                rating:
+                    description: The rating of this vote
+                    type: integer
+                    externalDocs:
+                        url: 'http://schema.org/ratingValue'
+                id:
+                    format: uuid
+                    description: The entity Id
+                    type: string
+                    readOnly: true
+                createdAt:
+                    format: date-time
+                    description: The creation date of this vote
+                    type: string
+                    readOnly: true
+                poll:
+                    format: iri-reference
+                    description: The poll this vote is about
+                    type: string
+                track:
+                    format: iri-reference
+                    description: The track this vote is about
+                    type: string
+                session:
+                    format: iri-reference
+                    type: string
+                user:
+                    format: iri-reference
+                    description: 'The user who emit this vote, optional'
+                    type: string
+                    readOnly: true
+            externalDocs:
+                url: 'https://schema.org/Rating'
+    securitySchemes:
+        apiKey:
+            type: apiKey
+            description: Value for the Authorization header
+            name: Authorization
+            in: header
+security:
+    -
+        apiKey: []
