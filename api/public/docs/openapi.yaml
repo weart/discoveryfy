@@ -3460,6 +3460,12 @@ components:
                     $ref: '#/components/schemas/Poll.UUID'
                     description: Poll unique identifier
                     readOnly: true
+                group-id:
+                    $ref: '#/components/schemas/Group.UUID'
+                    description: The Group Uuid where this Poll belong
+                    readOnly: true
+                    externalDocs:
+                        url: 'http://schema.org/hostingGroup'
                 name:
                     description: 'The name of the poll, this value is also the name showed in the Spotify playlist'
                     type: string
@@ -3558,12 +3564,6 @@ components:
                 multiple-anon-tracks:
                     description: Can an anonymous user add more than one track to this poll?
                     type: boolean
-                group-id:
-                    $ref: '#/components/schemas/Group.UUID'
-                    description: The Group Uuid where this Poll belong
-                    readOnly: true
-                    externalDocs:
-                        url: 'http://schema.org/hostingGroup'
                 num-tracks:
                     description: Number of tracks of this poll
                     minimum: 0
@@ -3660,6 +3660,11 @@ components:
                     type: string
                     externalDocs:
                         url: 'http://schema.org/name'
+                description:
+                    description: The description of the group
+                    type: string
+                    externalDocs:
+                        url: 'http://schema.org/text'
                 public-visibility:
                     description: Is this group public and can be seen be anyone?
                     type: boolean
