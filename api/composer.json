@@ -23,7 +23,9 @@
         "monolog/monolog": "^1.23",
         "psr/log": "^1.0",
         "robmorgan/phinx": "^0.11",
-        "vlucas/phpdotenv": "^3.0"
+        "vlucas/phpdotenv": "^3.0",
+        "jwilsson/spotify-web-api-php": "^2.8",
+        "ramsey/uuid-doctrine": "^1.5"
     },
     "require-dev": {
         "phalcon/devtools": "v4.*",

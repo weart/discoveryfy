@@ -61,4 +61,8 @@ return [
             ],
         ],
     ],
+    'routers' => [
+        \Discoveryfy\Routes\UserRoutes::class,
+        \Discoveryfy\Routes\TestRoutes::class,
+    ]
 ];

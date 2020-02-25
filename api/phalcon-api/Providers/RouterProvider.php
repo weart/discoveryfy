@@ -12,26 +12,20 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Providers;
 
-use Discoveryfy\Constants\Relationships as Rel;
-use Discoveryfy\Controllers\Companies\AddController as CompaniesAddController;
-use Discoveryfy\Controllers\Companies\GetController as CompaniesGetController;
-use Discoveryfy\Controllers\Individuals\GetController as IndividualsGetController;
-use Discoveryfy\Controllers\IndividualTypes\GetController as IndividualTypesGetController;
-use Discoveryfy\Controllers\LoginController;
-use Discoveryfy\Controllers\Products\GetController as ProductsGetController;
-use Discoveryfy\Controllers\ProductTypes\GetController as ProductTypesGetController;
-use Discoveryfy\Controllers\Users\GetController as UsersGetController;
 use Phalcon\Api\Middleware\AuthenticationMiddleware;
 use Phalcon\Api\Middleware\NotFoundMiddleware;
 use Phalcon\Api\Middleware\ResponseMiddleware;
 use Phalcon\Api\Middleware\TokenUserMiddleware;
 use Phalcon\Api\Middleware\TokenValidationMiddleware;
 use Phalcon\Api\Middleware\TokenVerificationMiddleware;
+use Phalcon\Config;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Events\Manager;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\Collection;
+use Phalcon\Api\Routes\RoutesInterface;
+use Phalcon\Api\Routes\RouteInterface;
 
 class RouterProvider implements ServiceProviderInterface
 {
@@ -46,8 +40,10 @@ class RouterProvider implements ServiceProviderInterface
         $application   = $container->getShared('application');
         /** @var Manager $eventsManager */
         $eventsManager = $container->getShared('eventsManager');
+        /** @var Config $config */
+        $config = $container->getShared('config');
 
-        $this->attachRoutes($application);
+        $this->attachRoutes($application, $config);
         $this->attachMiddleware($application, $eventsManager);
 
         $application->setEventsManager($eventsManager);
@@ -77,18 +73,21 @@ class RouterProvider implements ServiceProviderInterface
      *
      * @param Micro $application
      */
-    private function attachRoutes(Micro $application)
+    private function attachRoutes(Micro $application, Config $config)
     {
-        $routes = $this->getRoutes();
+        $routers = $config->get('routers')->toArray();
+        foreach ($routers as $router) {
+            /** @var RoutesInterface $router */
+            $routes = (new $router())->getRoutes();
+            foreach ($routes as $route) {
+                /** @var RouteInterface $route */
+                $collection = new Collection();
+                $collection
+                    ->setHandler($route->getControllerClass(), true)
+                    ->{$route->getHttpMethod()}($route->getHttpRoute(), $route->getControllerMethod());
 
-        foreach ($routes as $route) {
-            $collection = new Collection();
-            $collection
-                ->setHandler($route[0], true)
-                ->setPrefix($route[1])
-                ->{$route[2]}($route[3], 'callAction');
-
-            $application->mount($collection);
+                $application->mount($collection);
+            }
         }
     }
 
@@ -107,53 +106,5 @@ class RouterProvider implements ServiceProviderInterface
             TokenValidationMiddleware::class   => 'before',
             ResponseMiddleware::class          => 'after',
         ];
-    }
-
-    /**
-     * Returns the array for the routes
-     *
-     * @return array
-     */
-    private function getRoutes(): array
-    {
-        $routes = [
-            // Class, Method, Route, Handler
-            [LoginController::class,        '/login',     'post', '/'],
-            [CompaniesAddController::class, '/companies', 'post', '/'],
-            [UsersGetController::class,     '/users',     'get',  '/'],
-            [UsersGetController::class,     '/users',     'get',  '/{recordId:[0-9]+}'],
-        ];
-
-        $routes = $this->getMultiRoutes($routes, CompaniesGetController::class, Rel::COMPANIES);
-        $routes = $this->getMultiRoutes($routes, IndividualsGetController::class, Rel::INDIVIDUALS);
-        $routes = $this->getMultiRoutes($routes, IndividualTypesGetController::class, Rel::INDIVIDUAL_TYPES);
-        $routes = $this->getMultiRoutes($routes, ProductsGetController::class, Rel::PRODUCTS);
-        $routes = $this->getMultiRoutes($routes, ProductTypesGetController::class, Rel::PRODUCT_TYPES);
-
-        return $routes;
-    }
-
-    /**
-     * Adds multiple routes for the same handler abiding by the JSONAPI standard
-     *
-     * @param array  $routes
-     * @param string $class
-     * @param string $relationship
-     *
-     * @return array
-     */
-    private function getMultiRoutes(array $routes, string $class, string $relationship): array
-    {
-        $routes[] = [$class, '/' . $relationship, 'get', '/'];
-        $routes[] = [$class, '/' . $relationship, 'get', '/{recordId:[0-9]+}'];
-        $routes[] = [$class, '/' . $relationship, 'get', '/{recordId:[0-9]+}/{relationships:[a-zA-Z-,.]+}'];
-        $routes[] = [
-            $class,
-            '/' . $relationship,
-            'get',
-            '/{recordId:[0-9]+}/relationships/{relationships:[a-zA-Z-,.]+}',
-        ];
-
-        return $routes;
     }
 }
