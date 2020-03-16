@@ -18,8 +18,10 @@ services:
 #      - ~/.docker-kikdev/logs/:/var/log/apache2/:cached
     depends_on:
       - db
+      - cache
 #    links:
 #      - db
+#      - cache
     network_mode: "host"
 #    networks:
 #      - discoveryfy
@@ -57,7 +59,12 @@ services:
 #        aliases:
 #          - db
 
-#redis?
+  cache:
+    container_name: cache
+    image: "redis:alpine"
+    restart: always
+    ports:
+      - "6379:6379"
 
 volumes:
   db_data: {}

@@ -30,7 +30,7 @@ class Api extends AbstractBootstrap
      */
     public function run()
     {
-        return $this->application->handle($_GET['_url']);
+        return $this->application->handle($_GET['_url'] ?? '/');
 //        return $this->application->handle($_SERVER['REQUEST_URI']);
     }
 

@@ -10,7 +10,10 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Routes;
 
-use Discoveryfy\Controllers\LoginController;
+use Discoveryfy\Controllers\Login\GetController as LoginGetController;
+use Discoveryfy\Controllers\Login\PostController as LoginPostController;
+use Discoveryfy\Controllers\Register\GetController as RegisterGetController;
+use Discoveryfy\Controllers\Register\PostController as RegisterPostController;
 use Phalcon\Api\Routes\ApiRoute;
 use Phalcon\Api\Routes\RoutesInterface;
 
@@ -19,7 +22,10 @@ class UserRoutes implements RoutesInterface
     public function getRoutes(): array
     {
         return [
-            new ApiRoute(LoginController::class, '/login', 'get')
+            new ApiRoute(LoginGetController::class, '/login', 'get'),
+            new ApiRoute(LoginPostController::class, '/login', 'post'),
+            new ApiRoute(RegisterGetController::class, '/register', 'get'),
+            new ApiRoute(RegisterPostController::class, '/register', 'post')
         ];
     }
 }

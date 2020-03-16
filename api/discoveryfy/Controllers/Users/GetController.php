@@ -34,12 +34,12 @@ class GetController extends BaseController
     /** @var array<string,bool> */
     protected $sortFields  = [
         'id'            => true,
-        'status'        => true,
+//        'status'        => true,
         'username'      => true,
-        'password'      => false,
-        'issuer'        => true,
-        'tokenPassword' => false,
-        'tokenId'       => false,
+//        'password'      => false,
+//        'issuer'        => true,
+//        'tokenPassword' => false,
+//        'tokenId'       => false,
     ];
 
     /** @var string */

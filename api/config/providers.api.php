@@ -19,6 +19,9 @@ use Phalcon\Api\Providers\ModelsMetadataProvider;
 use Phalcon\Api\Providers\RequestProvider;
 use Phalcon\Api\Providers\ResponseProvider;
 use Phalcon\Api\Providers\RouterProvider;
+use Phalcon\Api\Providers\FiltersProvider;
+use Phalcon\Api\Providers\SecurityProvider;
+use Phalcon\Api\Providers\AuthProvider;
 
 /**
  * Enabled providers. Order does matter
@@ -33,4 +36,7 @@ return [
     ResponseProvider::class,
     RouterProvider::class,
     CacheDataProvider::class,
+    FiltersProvider::class,
+    SecurityProvider::class,
+    AuthProvider::class
 ];

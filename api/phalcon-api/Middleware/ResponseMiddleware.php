@@ -37,7 +37,9 @@ class ResponseMiddleware implements MiddlewareInterface
     {
         /** @var Response $response */
         $response = $api->getService('response');
-        $response->send();
+        if (true !== $response->isSent()) {
+            $response->send();
+        }
 
         return true;
     }

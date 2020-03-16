@@ -1,8 +1,7 @@
 <?php
 
-
-use Dotenv\Dotenv;
 use Phinx\Seed\AbstractSeed;
+use Phalcon\Security\Random;
 
 class UserSeeder extends AbstractSeed
 {
@@ -16,27 +15,37 @@ class UserSeeder extends AbstractSeed
      */
     public function run()
     {
-        (Dotenv::create(__DIR__, '.env'))->load();
+        $random = new Random();
 
         $data = [
             [
-                'status'    => 1,
-                'username'  => getenv('SEED_ROOT_USER'),
-                'password'  => getenv('SEED_ROOT_PASS'),
-                'issuer'    => getenv('APP_URL'),
-                'tokenId'   => 'asdf',
-                'tokenPassword' => 'fdsa',
+                'id'                => $random->uuid(),
+                'username'          => getenv('SEED_ROOT_USER'),
+                'password'          => getenv('SEED_ROOT_PASS'),
+                'jwt_private_key'   => getenv('SEED_ROOT_KEY'),
+                'email'             => getenv('SEED_ROOT_MAIL'),
+                'enabled'           => true,
+                'public_visibility' => true,
+                'public_email'      => true,
+                'language'          => 'ca',
+                'theme'             => 'default',
+                'rol'               => 'ROLE_ADMIN',
             ],[
-                'status'    => 1,
-                'username'  => 'testuser',
-                'password'  => 'testpassword',
-                'issuer'    => 'https://niden.net',
-                'tokenId'   => '12345',
-                'tokenPassword' => '110011',
+                'id'                => $random->uuid(),
+                'username'          => 'testuser',
+                'password'          => 'testpassword',
+                'jwt_private_key'   => '110011',
+                'email'             => 'test@user.net',
+                'enabled'           => true,
+                'public_visibility' => false,
+                'public_email'      => false,
+                'language'          => 'en',
+                'theme'             => 'default',
+                'rol'               => 'ROLE_USER',
             ]
         ];
 
-        $posts = $this->table('co_users');
+        $posts = $this->table('users');
         $posts->insert($data)
             ->saveData();
     }

@@ -7,7 +7,7 @@
 
 ###> jwt ###
 /config/secrets/prod/prod.decrypt.private.php
-/config/jwt/*.pem
+/config/jwt.pem
 
 ###> tests ###
 /tests/_output/

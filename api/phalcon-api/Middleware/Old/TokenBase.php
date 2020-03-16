@@ -35,7 +35,7 @@ abstract class TokenBase implements MiddlewareInterface
     protected function isValidCheck(Request $request): bool
     {
         return (
-            true !== $request->isLoginPage() &&
+            true !== $request->isPublicPage() &&
             true !== $request->isEmptyBearerToken()
         );
     }

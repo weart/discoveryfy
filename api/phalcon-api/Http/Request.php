@@ -12,11 +12,37 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Http;
 
+use Discoveryfy\Exceptions\BadRequestException;
+use Discoveryfy\Exceptions\NotImplementedException;
 use Phalcon\Http\Request as PhRequest;
 use function str_replace;
 
 class Request extends PhRequest
 {
+    private $acceptedContentType = [
+        'application/json',
+        'application/vnd.api+json',
+        'application/ld+json'
+    ];
+    public function getContentType(): string
+    {
+        if (empty(parent::getContentType())) {
+            throw new BadRequestException('Undefined content type');
+        }
+        $type = trim(parent::getContentType());
+        //Remove charset
+        if (false !== strpos($type, ';')) {
+            $type = strstr($type, ';', true);
+        }
+        if (!in_array($type, $this->acceptedContentType, true)) {
+            throw new BadRequestException('Invalid content type');
+        }
+        if ($type === 'application/ld+json') {
+            throw new NotImplementedException();
+        }
+        return $type;
+    }
+
     /**
      * @return string
      */
@@ -31,13 +57,5 @@ class Request extends PhRequest
     public function isEmptyBearerToken(): bool
     {
         return true === empty($this->getBearerTokenFromHeader());
-    }
-
-    /**
-     * @return bool
-     */
-    public function isLoginPage(): bool
-    {
-        return ('/login' === $this->getURI() || '/test' === $this->getURI());
     }
 }

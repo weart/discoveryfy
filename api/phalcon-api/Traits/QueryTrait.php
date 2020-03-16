@@ -29,51 +29,6 @@ use function sha1;
 trait QueryTrait
 {
     /**
-     * Gets a user from the database based on the JWT token
-     *
-     * @param Config       $config
-     * @param Cache $cache
-     * @param Token        $token
-     *
-     * @return Users|false
-     */
-    protected function getUserByToken(Config $config, Cache $cache, Token $token)
-    {
-        $parameters  = [
-            'issuer'  => $token->getClaim(JWTClaims::CLAIM_ISSUER),
-            'tokenId' => $token->getClaim(JWTClaims::CLAIM_ID),
-            'status'  => Flags::ACTIVE,
-        ];
-
-        $result = $this->getRecords($config, $cache, Users::class, $parameters);
-
-        return $result[0] ?? false;
-    }
-
-    /**
-     * Gets a user from the database based on the username and password
-     *
-     * @param Config       $config
-     * @param Cache $cache
-     * @param string       $username
-     * @param string       $password
-     *
-     * @return Users|false
-     */
-    protected function getUserByUsernameAndPassword(Config $config, Cache $cache, $username, $password)
-    {
-        $parameters = [
-            'username' => $username,
-            'password' => $password,
-            'status'   => Flags::ACTIVE,
-        ];
-
-        $result = $this->getRecords($config, $cache, Users::class, $parameters);
-
-        return $result[0] ?? false;
-    }
-
-    /**
      * Runs a query using the builder
      *
      * @param Config       $config
@@ -140,4 +95,30 @@ trait QueryTrait
 
         return $data;
     }
+
+    /**
+     * Gets a user from the database based on the JWT token
+     *
+     * @param Config       $config
+     * @param Cache $cache
+     * @param Token        $token
+     *
+     * @return Users|false
+     */
+//    protected function getUserByToken(Config $config, Cache $cache, Token $token)
+//    {
+//        //Search the Token in Cache (Redis) and return the user_id
+//        $user_id = $cache->get($token->getClaim(JWTClaims::CLAIM_ID));
+//
+//        $parameters  = [
+////            'issuer'  => $token->getClaim(JWTClaims::CLAIM_ISSUER),
+////            'tokenId' => $token->getClaim(JWTClaims::CLAIM_ID),
+//            'id' => $user_id,
+//            'status'  => Flags::ACTIVE,
+//        ];
+//
+//        $result = $this->getRecords($config, $cache, Users::class, $parameters);
+//
+//        return $result[0] ?? false;
+//    }
 }

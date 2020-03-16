@@ -101,7 +101,7 @@ class CreatePollsTracksVotes extends AbstractMigration
             ->addColumn('artist', 'string', [ 'limit' => 255, 'null' => true, 'comment' => 'Name of the artist' ])
             ->addColumn('name', 'string', [ 'limit' => 255, 'null' => false, 'comment' => 'Name of the track' ])
             ->addColumn('spotify_uri', 'string', [ 'limit' => 255, 'null' => true, 'comment' => 'Spotify track identifier, prepend "spotify:track:" for a valid spotify uri' ])
-            ->addColumn('spotify_images', 'string', [ 'limit' => 255, 'null' => true, 'comment' => 'Json with all the images provided by Spotify' ])
+            ->addColumn('spotify_images', 'json', [ 'default' => null, 'null' => true, 'comment' => 'Json with all the images provided by Spotify' ])
             ->addColumn('youtube_uri', 'string', [ 'limit' => 255, 'null' => true, 'comment' => 'Youtube track identifier' ])
             ->addForeignKey('poll_id', 'polls', 'id', [
                 'delete' => 'CASCADE', 'update' => 'RESTRICT', 'constraint' => 'track_poll_id'

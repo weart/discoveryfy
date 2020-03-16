@@ -101,9 +101,10 @@ class RouterProvider implements ServiceProviderInterface
         return [
             NotFoundMiddleware::class          => 'before',
             AuthenticationMiddleware::class    => 'before',
-            TokenUserMiddleware::class         => 'before',
-            TokenVerificationMiddleware::class => 'before',
-            TokenValidationMiddleware::class   => 'before',
+            //All this validations moved in AuthenticationMiddleware
+//            TokenUserMiddleware::class         => 'before',
+//            TokenVerificationMiddleware::class => 'before',
+//            TokenValidationMiddleware::class   => 'before',
             ResponseMiddleware::class          => 'after',
         ];
     }

@@ -44,7 +44,7 @@ class TokenVerificationMiddleware extends TokenBase
         $response = $api->getService('response');
         if (true === $this->isValidCheck($request)) {
             /**
-             * This is where we will validate the token that was sent to us
+             * This is where we will verify the token that was sent to us
              * using Bearer Authentication
              *
              * Find the user attached to this token
@@ -54,7 +54,7 @@ class TokenVerificationMiddleware extends TokenBase
 
             /** @var Users $user */
             $user = $this->getUserByToken($config, $cache, $token);
-            if (false === $token->verify($signer, $user->get('tokenPassword'))) {
+            if (false === $token->verify($signer, $user->get('jwt_private_key'))) {
                 $this->halt(
                     $api,
                     $response::OK,

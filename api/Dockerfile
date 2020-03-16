@@ -102,7 +102,8 @@ RUN apt-get upgrade -y && apt-get update -y \
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # install redis
-#RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install redis && docker-php-ext-enable redis
+#RUN pecl install redis-3.1.0 && docker-php-ext-enable redis
 
 # set servername
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf

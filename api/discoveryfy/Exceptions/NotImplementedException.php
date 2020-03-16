@@ -2,9 +2,7 @@
 declare(strict_types=1);
 
 /**
- * This file is part of the Phalcon API.
- *
- * (c) Phalcon Team <team@phalcon.io>
+ * This file is part of the Discoveryfy.
  *
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
@@ -12,6 +10,8 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Exceptions;
 
-class ModelException extends InternalServerErrorException
+class NotImplementedException extends Exception
 {
+    public $http_code = 501;
+    public $http_msg = 'Not Implemented';
 }

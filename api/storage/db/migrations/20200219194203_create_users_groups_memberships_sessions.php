@@ -120,5 +120,17 @@ class CreateUsersGroupsMembershipsSessions extends AbstractMigration
                 'delete' => 'CASCADE', 'update' => 'RESTRICT', 'constraint' => 'session_user_id'
             ])
             ->create();
+
+        $security_events = $this->table('security_events', [ 'id' => false, 'primary_key' => [ 'id' ]]);
+        $security_events
+            ->addColumn('id', 'uuid', [ 'null' => false, 'comment' => 'Security event unique identifier' ])
+            ->addColumn('user_id', 'uuid', [ 'null' => true, 'comment' => 'User unique identifier' ])
+            ->addColumn('type', 'enum', [ 'values' => 'login_success,login_failure,email_confirmation,password_change,password_reset', 'null' => false, 'comment' => 'Type of event' ])
+            ->addColumn('ip_address', 'string', [ 'limit' => 255, 'null' => true, 'comment' => 'Request IP address' ])
+            ->addColumn('user_agent', 'string', [ 'limit' => 255, 'null' => true, 'comment' => 'Request user agent' ])
+            ->addForeignKey('user_id', 'users', 'id', [
+                'delete' => 'no_action', 'update' => 'RESTRICT', 'constraint' => 'security_event_user_id'
+            ])
+            ->create();
     }
 }

@@ -17,19 +17,34 @@ return [
     'app'        => [
         'version'      => envValue('VERSION', time()),
         'timezone'     => envValue('APP_TIMEZONE', 'UTC'),
-        'debug'        => envValue('APP_DEBUG', false),
+        'debug'        => (bool) envValue('APP_DEBUG', false),
         'env'          => envValue('APP_ENV', 'development'),
         'devMode'      => (bool)('development' === envValue('APP_ENV', 'development')),
         'baseUri'      => envValue('APP_BASE_URI'),
         'supportEmail' => envValue('APP_SUPPORT_EMAIL'),
         'time'         => microtime(true),
+        'privateKey'   => envValue('PRIVATE_KEY', appPath('config/jwt.pem')),
+    ],
+    'db'         => [
+        'timestamps_from_db' => false
     ],
     'cache'      => [
-        'adapter' => 'memory',
+        'adapter' => 'redis',
         'options' => [
-            'cacheDir' => appPath('storage/cache/data/'),
-            'prefix'   => 'data-',
+            'host' => envValue('REDIS_HOST', 'cache'), //By default: 127.0.0.1
+            'port' => envValue('REDIS_PORT', 6379), //By default: 6379
+//            'index' => 1,
+//            'persistent'   => false,
+            'prefix'   => envValue('CACHE_PREFIX', ''), //By default: ph-reds-
+            'lifetime'   => (int) envValue('CACHE_LIFETIME', 86400), //Two days
+//            'defaultSerializer' => 'Php',
+//            'serializer' => null,
         ],
+//        'adapter' => 'memory',
+//        'options' => [
+//            'cacheDir' => appPath('storage/cache/data/'),
+//            'prefix'   => 'data-',
+//        ],
 //        'adapter' => 'libmemcached',
 //        'options' => [
 //            'libmemcached' => [
@@ -64,5 +79,8 @@ return [
     'routers' => [
         \Discoveryfy\Routes\UserRoutes::class,
         \Discoveryfy\Routes\TestRoutes::class,
+    ],
+    'public_routes' => [
+        '/login', '/register'
     ]
 ];

@@ -12,25 +12,64 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Mvc\Model;
 
-use Monolog\Logger;
 use Discoveryfy\Exceptions\ModelException;
+use Monolog\Logger;
 use Phalcon\Filter;
 use Phalcon\Mvc\Model as PhModel;
 
 abstract class AbstractModel extends PhModel
 {
     /**
-     * Master initializer
+     * The initialize() method is only called once during the request.
+     * This method is intended to perform initializations that apply for all instances of the model created within the application.
+     * If you want to perform initialization tasks for every instance created you can use the onConstruct() method.
      */
     public function initialize()
     {
+        //Just the fields that had changed are used to create the final UPDATE SQL statement.
+        $this->useDynamicUpdate(true);
+
         $this->setup(
             [
-                'phqlLiterals'       => false,
-                'notNullValidations' => false,
+                'phqlLiterals'       => false, //Exception if bound parameters are not used
+                'notNullValidations' => false, //Automatically validate the not null columns present
             ]
         );
+
+//        parent::initialize();
     }
+
+//    public function onConstruct() {}
+
+//    public function beforeSave()
+//    {
+//        $this->validate();
+//    }
+
+    /**
+     * Returns an array of all the fields/filters for this model
+     *
+     * @return array<string,string>
+     */
+    public function getAttributes(): array
+    {
+        //Valid, but check the diff between this and array_merge
+        return $this->getPublicAttributes()+$this->getPrivateAttributes();
+    }
+
+    /**
+     * Returns an array of the public fields/filters for this model
+     *
+     * @return array<string,string>
+     */
+    abstract public function getPublicAttributes(): array;
+
+    /**
+     * Returns an array of the private fields/filters for this model
+     *
+     * @return array<string,string>
+     */
+    abstract public function getPrivateAttributes(): array;
 
     /**
      * Gets a field from this model
@@ -43,33 +82,6 @@ abstract class AbstractModel extends PhModel
     public function get($field)
     {
         return $this->getSetFields('get', $field);
-    }
-
-    /**
-     * Returns an array of the fields/filters for this model
-     *
-     * @return array<string,string>
-     */
-    abstract public function getModelFilters(): array;
-
-    /**
-     * Returns model messages
-     *
-     * @param Logger|null $logger
-     *
-     * @return  string
-     */
-    public function getModelMessages(Logger $logger = null): string
-    {
-        $error = '';
-        foreach ($this->getMessages() as $message) {
-            $error .= $message->getMessage() . '<br />';
-            if (null !== $logger) {
-                $logger->error($message->getMessage());
-            }
-        }
-
-        return $error;
     }
 
     /**
@@ -101,7 +113,7 @@ abstract class AbstractModel extends PhModel
     private function getSetFields(string $type, string $field, $value = '')
     {
         $return      = null;
-        $modelFields = $this->getModelFilters();
+        $modelFields = $this->getAttributes();
         $filter      = $modelFields[$field] ?? false;
 
         if (false === $filter) {
@@ -136,5 +148,25 @@ abstract class AbstractModel extends PhModel
         $filterService = $this->getDI()->get('filter');
 
         return $filterService->sanitize($value, $filter);
+    }
+
+    /**
+     * Returns model messages as one string separated with PHP_EOL char
+     *
+     * @param Logger|null $logger
+     *
+     * @return  string
+     */
+    public function getMessage(Logger $logger = null): string
+    {
+        $error = '';
+        foreach ($this->getMessages() as $message) {
+            $error .= $message->getMessage() . PHP_EOL;
+            if (null !== $logger) {
+                $logger->error($message->getMessage());
+            }
+        }
+
+        return $error;
     }
 }

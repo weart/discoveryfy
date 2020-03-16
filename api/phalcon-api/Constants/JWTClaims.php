@@ -14,6 +14,7 @@ namespace Phalcon\Api\Constants;
 
 class JWTClaims
 {
-    const CLAIM_ID     = 'jti';
-    const CLAIM_ISSUER = 'iss';
+    const CLAIM_ID      = 'jti';
+    const CLAIM_ISSUER  = 'iss';
+    const CLAIM_SUBJECT = 'sub';
 }

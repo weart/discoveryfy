@@ -34,7 +34,7 @@ class CacheDataProvider implements ServiceProviderInterface
             function () use ($config) {
                 $cache = $config->get('cache')->toArray();
                 $adapter = $cache['adapter'];
-                $options = $cache['options'][$adapter] ?? [];
+                $options = $cache['options'] ?? [];
 
                 $serializerFactory = new SerializerFactory();
                 $adapterFactory = new AdapterFactory($serializerFactory);

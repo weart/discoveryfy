@@ -32,5 +32,6 @@ $loader->register();
  */
 require appPath('/vendor/autoload.php');
 
-// Load environment
-(Dotenv::create(appPath()))->overload();
+// Load environment vars
+(Dotenv::create(appPath(), '.env'))->overload();
+(Dotenv::create(appPath(), '.env.local'))->overload();

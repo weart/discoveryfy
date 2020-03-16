@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Http;
 
+use Discoveryfy\Exceptions\NotImplementedException;
 use Phalcon\Http\Response as PhResponse;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Messages\Messages;
@@ -71,7 +72,7 @@ class Response extends PhResponse
      *
      * @return ResponseInterface
      */
-    public function send(): ResponseInterface
+    public function sendJsonApi(): ResponseInterface
     {
         $content   = $this->getContent();
         $timestamp = date('c');
@@ -98,9 +99,17 @@ class Response extends PhResponse
         $data = $jsonapi + $content + $meta;
         $this
             ->setHeader('E-Tag', $eTag)
+            ->setStatusCode(200)
+            ->setContentType('application/vnd.api+json', 'UTF-8')
             ->setJsonContent($data);
 
+        return parent::send();
+    }
 
+    public function sendJsonLd(): ResponseInterface
+    {
+        throw new NotImplementedException();
+        $this->setContentType('application/ld+json', 'UTF-8');
         return parent::send();
     }
 
@@ -144,7 +153,7 @@ class Response extends PhResponse
      *
      * @return Response
      */
-    public function setPayloadSuccess($content = []): Response
+    public function setJsonApiContent($content = []): Response
     {
         $data = (true === is_array($content)) ? $content : ['data' => $content];
         $data = (true === isset($data['data'])) ? $data  : ['data' => $data];

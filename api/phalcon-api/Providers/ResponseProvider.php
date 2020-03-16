@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Providers;
 
-use Phalcon\Api\Http\Response;
+use Phalcon\Api\Http\Response as ApiResponse;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Di\DiInterface;
 
@@ -23,14 +23,16 @@ class ResponseProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container): void
     {
+        $container->setShared('response', function () {
+            return new ApiResponse();
+        });
+        /*
         $container->setShared(
             'response',
             function () {
                 $response = new Response();
 
-                /**
-                 * Assume success. We will work with the edge cases in the code
-                 */
+                //Assume success. We will work with the edge cases in the code
                 $response
                     ->setStatusCode(200)
                     ->setContentType('application/vnd.api+json', 'UTF-8')
@@ -39,5 +41,6 @@ class ResponseProvider implements ServiceProviderInterface
                 return $response;
             }
         );
+        */
     }
 }

@@ -27,7 +27,7 @@ trait ResponseTrait
      * @param int    $status
      * @param string $message
      *
-     * @return mixed
+     * @return false
      */
     protected function halt(Micro $api, int $status, string $message)
     {
@@ -39,5 +39,7 @@ trait ResponseTrait
             ->send();
 
         $api->stop();
+
+        return false;
     }
 }

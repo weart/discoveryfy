@@ -51,7 +51,7 @@ class BaseTransformer extends TransformerAbstract
      */
     public function transform(AbstractModel $model)
     {
-        $modelFields     = array_keys($model->getModelFilters());
+        $modelFields     = array_keys($model->getPublicAttributes());
         $requestedFields = $this->fields[$this->resource] ?? $modelFields;
         $fields          = array_intersect($modelFields, $requestedFields);
         $data            = [];
