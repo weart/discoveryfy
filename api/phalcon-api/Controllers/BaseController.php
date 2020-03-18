@@ -31,6 +31,7 @@ use function substr;
 /**
  * Class BaseController
  *
+ * @see https://docs.phalcon.io/4.0/en/controllers
  * @property Micro               $application
  * @property Cache               $cache
  * @property Config              $config

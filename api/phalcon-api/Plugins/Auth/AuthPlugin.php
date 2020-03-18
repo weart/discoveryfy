@@ -35,9 +35,15 @@ use Phalcon\Security\Random;
 use function Phalcon\Api\Core\envValue;
 
 /**
+ * Class AuthPlugin
  * Manages Authentication
+ *
+ * @see https://docs.phalcon.io/4.0/en/security
+ * @see https://github.com/lcobucci/jwt/blob/3.3/README.md
+ * @see https://tools.ietf.org/html/rfc7519
+ * @package Phalcon\Api\Plugins\Auth
  */
-class Auth extends Injectable
+class AuthPlugin extends Injectable
 {
     /**
      * @var Sessions

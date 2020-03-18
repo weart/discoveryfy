@@ -22,6 +22,9 @@ use Phalcon\Validation\Validator\Email;
 
 /**
  * Class Users
+ *
+ * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Models/Users.php
+ * @package Discoveryfy\Models
  */
 class Users extends TimestampableModel
 {

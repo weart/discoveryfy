@@ -1,69 +1,34 @@
-# Discoveryfy (API)
+# Discoveryfy (API) - WIP
 
-WIP - Phalcon API
+### API documentation
 
-Specs in: ./public/openapi.yaml (@ToDo: JsonLD schemas)
+OpenAPI Specification located in `./public/docs` folder or in `/docs` when server is running.
 
+### Installation
 
-Useful commands
--------
-In order to execute symfony commands:
-```shell
-docker-compose exec php bin/console
+This API uses Phalcon (PHP), SQL & Redis as stack framework. Docker compose created for an easy setup. In the root folder run:
 ```
+docker-compose up -d
+```
+More information in the root README.md.
 
-Create poll:
-```shell
-curl -X POST "https://localhost:8443/polls" -H  "accept: application/ld+json" -H  "Content-Type: application/json" -d "{}"`
-```
+#### Config
 
-Create track:
-```shell
-curl -X POST "http://localhost:8080/tracks" -H  "accept: application/ld+json" -H  "Content-Type: application/json" -d "{\"spotify_uri\": \"spotify:track:1ECc1EhfkRx08o8uIwYOxW\",\"youtube_uri\": \"t67NhxJhrUU\",\"artist\": \"Lágrimas de Sangre\",\"name\": \"Rojos y separatistas\",\"poll\": \"6a3a946c-c0f5-4a2a-9a1c-ab230c051206\"}"
-```
-```
-{
-"spotify_uri": "spotify:track:1ECc1EhfkRx08o8uIwYOxW",
-"youtube_uri": "t67NhxJhrUU",
-"artist": "Lágrimas de Sangre",
-"name": "Rojos y separatistas",
-"poll": "6a3a946c-c0f5-4a2a-9a1c-ab230c051206"
-}
-```
+All config files are inside `./config` folder, but the values are taken from `.env` and `.env.local`.
 
-Create vote:
-```shell
-curl -X POST "https://localhost:8443/votes" -H  "accept: application/ld+json" -H  "Content-Type: application/json" -d "{  \"name\": \"lenin\",  \"poll\": \"6a3a946c-c0f5-4a2a-9a1c-ab230c051206\",  \"track\": \"29b44e2b-7f55-4ef5-b462-43bcaa8f02f9\"}"`
-```
-```
-{
-"name": "lenin",
-"poll": "6a3a946c-c0f5-4a2a-9a1c-ab230c051206",
-"track": "29b44e2b-7f55-4ef5-b462-43bcaa8f02f9"
-}
-```
-
-Executes queries in postgres:
-```shell
-docker-compose exec db psql --dbname api --username api-platform --password
-```
-
-Add fixtures:
-```shell
-docker-compose exec php bin/console doctrine:fixtures:load -n
-```
+#### Private key generation
 
 Generate new SSH Keys:
 ```shell
-docker-compose exec php  mkdir -p config/jwt
-docker-compose exec php  openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096
-docker-compose exec php  openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout
+docker-compose exec api mkdir -p config/jwt
+docker-compose exec api openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096
+docker-compose exec api openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout
 ```
 Edit `.env` file with the keys password.
 
 Or all in one with this cmd from https://api-platform.com/docs/core/jwt/:
 ```shell
-docker-compose exec php sh -c '
+docker-compose exec api sh -c '
     set -e
     apk add openssl
     mkdir -p config/jwt
@@ -82,27 +47,90 @@ $ mv config/jwt/private2.pem config/jwt/private.pem
 ```
 More info: https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/index.md#generate-the-ssh-keys
 
-Roadmap
--------
+### Roadmap
+* Lost password: https://github.com/phalcon/vokuro/blob/4.0.x/src/Models/ResetPasswords.php
 * Organizations
+* Create models
+* CORS - Uncomment middleware in RouterProvider
 * Autofinish polls with a scheduled agent
-* Bug with customized endpoint:
-https://github.com/symfony/symfony/issues/32395
-https://github.com/api-platform/api-platform/issues/588
-* Filters
-https://api-platform.com/docs/core/filters
-* Security
-https://symfony.com/doc/current/security/expressions.html
-https://symfony.com/doc/current/security/voters.html
-https://www.thinkbean.com/drupal-development-blog/restrict-properties-api-platform-serialization-groups
-https://api-platform.com/docs/core/serialization/
-* Session
-https://symfony.com/doc/current/components/http_foundation/sessions.html
-https://stackoverflow.com/questions/15400065/how-to-add-a-custom-field-to-the-session-table/15634139
-https://symfony.com/doc/current/doctrine/pdo_session_storage.html
-https://stackoverflow.com/questions/59073943/session-based-authentication-in-api-platform
-https://symfony.com/doc/current/security/json_login_setup.html
-* Subresources operations
-https://github.com/api-platform/core/issues/2435
-https://github.com/api-platform/api-platform/issues/571
-https://api-platform.com/docs/core/controllers/#creating-custom-operations-and-controllers
+* Private key with password?
+* JSON-LD Schema. First define the specs in OpenApi file, after that in the code.
+    * https://ca.wikipedia.org/wiki/JSON-LD
+* Pull request to the main phalcon/json-api project:
+    * https://github.com/PhilippBaschke/acf-pro-installer/pull/35/files
+
+### Based on the following projects:
+* https://github.com/phalcon/rest-api
+* https://github.com/phalcon/vokuro
+* https://github.com/phalcon/invo
+* https://github.com/krazzer/kikcms
+
+### Useful commands
+
+Phalcon tasks:
+```shell
+docker-compose exec api ./runCli
+```
+
+Run tests:
+```shell
+docker-compose exec api ./runTests
+```
+
+Executes queries in postgres:
+```shell
+docker-compose exec db psql --dbname api --username api-platform --password
+```
+
+Add fixtures:
+```shell
+docker-compose exec php bin/console doctrine:fixtures:load -n
+```
+
+Login in the API (modify N with the correct values):
+```shell
+# Get CSRF Token
+curl -X GET  -H "Content-Type: application/json" http://localhost/login -v
+# Login as anon
+curl -X POST -H "Content-Type: application/json" -H "X-CSRF-TOKEN: N" http://localhost/login -v
+# Login as user
+curl -X POST -H "Content-Type: application/json" -H "X-CSRF-TOKEN: N" --data '{"username":"N","password":"N"}' http://localhost/login -v
+# Check auth
+curl -X GET  -H "Content-Type: application/json" -H "Authorization: Bearer N" http://localhost/polls -v
+```
+
+Create poll:
+```shell
+# Response as a plain json object
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer N" -d '{}' http://localhost/polls -v
+# Response as JSON:API
+curl -X POST -H "Content-Type: application/vnd.api+json" -H "Authorization: Bearer N" -d '{}' http://localhost/polls -v
+```
+
+Create track:
+```shell
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer N" -d "{\"spotify_uri\": \"spotify:track:1ECc1EhfkRx08o8uIwYOxW\",\"youtube_uri\": \"t67NhxJhrUU\",\"artist\": \"Lágrimas de Sangre\",\"name\": \"Rojos y separatistas\",\"poll\": \"6a3a946c-c0f5-4a2a-9a1c-ab230c051206\"}" http://localhost/tracks -v 
+```
+Track object:
+```
+{
+"spotify_uri": "spotify:track:1ECc1EhfkRx08o8uIwYOxW",
+"youtube_uri": "t67NhxJhrUU",
+"artist": "Lágrimas de Sangre",
+"name": "Rojos y separatistas",
+"poll": "6a3a946c-c0f5-4a2a-9a1c-ab230c051206"
+}
+```
+
+Create vote:
+```shell
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer N" -d "{\"name\": \"lenin\",  \"poll\": \"6a3a946c-c0f5-4a2a-9a1c-ab230c051206\",  \"track\": \"29b44e2b-7f55-4ef5-b462-43bcaa8f02f9\"}" http://localhost/votes -v 
+```
+Vote object:
+```
+{
+"name": "lenin",
+"poll": "6a3a946c-c0f5-4a2a-9a1c-ab230c051206",
+"track": "29b44e2b-7f55-4ef5-b462-43bcaa8f02f9"
+}
+```

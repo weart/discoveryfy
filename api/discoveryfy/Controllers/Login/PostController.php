@@ -31,6 +31,9 @@ use Phalcon\Mvc\Controller;
  * Class        PostController
  * OperationId  session.create
  *
+ * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Controllers/UsersController.php
+ * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Controllers/SessionController.php
+ * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Forms/LoginForm.php
  * @property Cache        $cache
  * @property Config       $config
  * @property Request      $request

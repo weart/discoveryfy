@@ -12,16 +12,19 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Transformers;
 
+use Discoveryfy\Exceptions\ModelException;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\TransformerAbstract;
-use Discoveryfy\Exceptions\ModelException;
 use Phalcon\Api\Mvc\Model\AbstractModel;
 use function array_intersect;
 use function array_keys;
 
 /**
  * Class BaseTransformer
+ *
+ * @see https://fractal.thephpleague.com/transformers/
+ * @package Phalcon\Api\Transformers
  */
 class BaseTransformer extends TransformerAbstract
 {

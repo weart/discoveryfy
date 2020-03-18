@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Providers;
 
+//use Phalcon\Api\Filters\UUIDFilter;
+use Discoveryfy\Exceptions\BadRequestException;
 use Phalcon\Api\Http\Request;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Di\DiInterface;
@@ -33,7 +35,16 @@ class RequestProvider implements ServiceProviderInterface
         if (in_array($req->getHeader('Content-Type'), $valid_content_type, true)) {
             //Input not sanitized! Must be done in each param
             $_POST = json_decode(file_get_contents('php://input'), true);
+
+            if (JSON_ERROR_NONE !== json_last_error()) {
+                throw new BadRequestException(json_last_error_msg());
+            }
         }
+
+        //Define default filters?
+//        $req->setParameterFilters('id', UUIDFilter::FILTER_NAME);
+//        $req->getFilteredQuery('id') $req->getFilteredPost('id')
+
         $container->setShared('request', $req);
     }
 }

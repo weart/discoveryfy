@@ -39,6 +39,8 @@ class Response extends PhResponse
 
     private $codes = [
         200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
         301 => 'Moved Permanently',
         302 => 'Found',
         307 => 'Temporary Redirect',

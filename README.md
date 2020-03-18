@@ -17,7 +17,7 @@ Api / Backend:
   * Phalcon: PHP framework for generate a [JSON:API](https://jsonapi.org/) compliant API, [OpenAPI Specification](/docs): [json definition](/openapi.json) & [yaml definition](/openapi.yaml).
   * [jwilsson/spotify-web-api-php](https://github.com/jwilsson/spotify-web-api-php): PHP wrapper for Spotify's Web API. 
   * JWT: Authentication engine
-  * PostgreSQL: Database engine for persist data.
+  * MySQL: Database engine for persist data.
   * Redis?
   * Other possibilites:
     * Django, Laravel, Flask
@@ -54,6 +54,7 @@ docker-compose up --force-recreate -d
 docker-compose up --force-recreate --build -d
 ```
 
+<!--
 ### Configure ngrok
 
 Oauth providers require a public URL for the callback, ngrok expose the local web server into a public URL.
@@ -74,6 +75,7 @@ And launch the daemon:
 ```bash
 /opt/ngrok start --all
 ```
+-->
 
 ## Useful commands
 
@@ -92,6 +94,22 @@ Execute phalcon or composer commands:
 ```shell
 docker-compose exec api phalcon
 docker-compose exec api composer
+```
+
+Execute migration:
+```shell
+docker-compose exec api vendor/bin/phinx migrate -e development
+```
+
+Execute seeding:
+```shell
+docker-compose exec api vendor/bin/phinx seed:run
+```
+
+Enter command in database:
+```shell
+docker exec -ti db /bin/bash
+mysql -u leninux -p discoveryfydb
 ```
 
 ## Backers

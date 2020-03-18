@@ -19,6 +19,11 @@ use Phalcon\Validation\Validator\Uniqueness;
 
 /**
  * Class Sessions
+ *
+ * @see https://docs.phalcon.io/4.0/en/db-models
+ * @see https://docs.phalcon.io/4.0/en/db-models-relationships
+ * @see https://docs.phalcon.io/4.0/en/api/phalcon_mvc
+ * @package Discoveryfy\Models
  */
 class Sessions extends TimestampableModel
 {

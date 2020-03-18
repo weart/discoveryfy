@@ -24,23 +24,13 @@ class ResponseProvider implements ServiceProviderInterface
     public function register(DiInterface $container): void
     {
         $container->setShared('response', function () {
-            return new ApiResponse();
-        });
-        /*
-        $container->setShared(
-            'response',
-            function () {
-                $response = new Response();
-
-                //Assume success. We will work with the edge cases in the code
-                $response
-                    ->setStatusCode(200)
-                    ->setContentType('application/vnd.api+json', 'UTF-8')
-                ;
-
-                return $response;
+            $res = new ApiResponse();
+            //Define default status code
+            if (is_null($res->getStatusCode())) {
+                $res->setStatusCode(ApiResponse::OK);
             }
-        );
-        */
+            //Define default content type?
+            return $res;
+        });
     }
 }

@@ -21,6 +21,8 @@ use Phalcon\Mvc\Micro\MiddlewareInterface;
 
 /**
  * Class AuthenticationMiddleware
+ *
+ * @package Phalcon\Api\Middleware
  */
 class AuthenticationMiddleware implements MiddlewareInterface
 {

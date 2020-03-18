@@ -13,11 +13,12 @@ declare(strict_types=1);
 namespace Phalcon\Api\Providers;
 
 use Phalcon\Api\Middleware\AuthenticationMiddleware;
+//use Phalcon\Api\Middleware\CORSMiddleware;
 use Phalcon\Api\Middleware\NotFoundMiddleware;
 use Phalcon\Api\Middleware\ResponseMiddleware;
-use Phalcon\Api\Middleware\TokenUserMiddleware;
-use Phalcon\Api\Middleware\TokenValidationMiddleware;
-use Phalcon\Api\Middleware\TokenVerificationMiddleware;
+//use Phalcon\Api\Middleware\TokenUserMiddleware;
+//use Phalcon\Api\Middleware\TokenValidationMiddleware;
+//use Phalcon\Api\Middleware\TokenVerificationMiddleware;
 use Phalcon\Config;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
@@ -27,6 +28,12 @@ use Phalcon\Mvc\Micro\Collection;
 use Phalcon\Api\Routes\RoutesInterface;
 use Phalcon\Api\Routes\RouteInterface;
 
+/**
+ * Class RouterProvider
+ *
+ * @see https://github.com/nueko/phalcon-jsonapi/blob/master/app/Application.php#L93
+ * @package Phalcon\Api\Providers
+ */
 class RouterProvider implements ServiceProviderInterface
 {
     /**
@@ -99,13 +106,14 @@ class RouterProvider implements ServiceProviderInterface
     private function getMiddleware(): array
     {
         return [
-            NotFoundMiddleware::class          => 'before',
-            AuthenticationMiddleware::class    => 'before',
+            NotFoundMiddleware::class           => 'before',
+//            CORSMiddleware::class               => 'before',
+            AuthenticationMiddleware::class     => 'before',
             //All this validations moved in AuthenticationMiddleware
 //            TokenUserMiddleware::class         => 'before',
 //            TokenVerificationMiddleware::class => 'before',
 //            TokenValidationMiddleware::class   => 'before',
-            ResponseMiddleware::class          => 'after',
+            ResponseMiddleware::class           => 'after',
         ];
     }
 }

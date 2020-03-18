@@ -14,7 +14,7 @@ namespace Phalcon\Api\Providers;
 
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Api\Plugins\Auth\Auth;
+use Phalcon\Api\Plugins\Auth\AuthPlugin;
 
 class AuthProvider implements ServiceProviderInterface
 {
@@ -30,6 +30,6 @@ class AuthProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $di): void
     {
-        $di->setShared($this->providerName, Auth::class);
+        $di->setShared($this->providerName, AuthPlugin::class);
     }
 }

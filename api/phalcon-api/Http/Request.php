@@ -17,6 +17,12 @@ use Discoveryfy\Exceptions\NotImplementedException;
 use Phalcon\Http\Request as PhRequest;
 use function str_replace;
 
+/**
+ * Class Request
+ *
+ * @see https://www.bookstack.cn/read/phalcon-4.0-en
+ * @package Phalcon\Api\Http
+ */
 class Request extends PhRequest
 {
     private $acceptedContentType = [

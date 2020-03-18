@@ -126,8 +126,8 @@ class PostController extends Controller
         $schema = $this->format(
             'item',
             $user,
-            UserTransformer::class, //or BaseTransformer::class?
-            Users::class
+            BaseTransformer::class
+//            Users::class
 //            $related,
 //            $fields
         );
