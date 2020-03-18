@@ -1,6 +1,6 @@
 <?php
 
-namespace Phalcon\Api\Tests\unit\config;
+namespace Discoveryfy\Tests\unit\config;
 
 use Phalcon\Api\Http\Response;
 use UnitTester;
@@ -34,8 +34,8 @@ class AutoloaderCest
         $I->assertEquals('UTC', getenv('APP_TIMEZONE'));
         $I->assertEquals('api_cache_', getenv('CACHE_PREFIX'));
         $I->assertEquals(86400, getenv('CACHE_LIFETIME'));
-        $I->assertEquals('api', getenv('LOGGER_DEFAULT_FILENAME'));
-        $I->assertEquals('20180401', getenv('VERSION'));
+        $I->assertEquals('api.log', getenv('LOGGER_DEFAULT_FILENAME'));
+        $I->assertEquals('20200315', getenv('APP_VERSION'));
     }
 
     public function checkAutoloader(UnitTester $I)

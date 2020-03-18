@@ -20,7 +20,7 @@ require __DIR__ . '/functions.php';
 $loader     = new Loader();
 $namespaces = [
     'Phalcon\Api'           => appPath('phalcon-api'),
-    'Phalcon\Api\Tests'     => appPath('tests'),
+    'Discoveryfy\Tests'     => appPath('tests'),
     'Discoveryfy'           => appPath('discoveryfy'),
 ];
 

@@ -32,12 +32,15 @@ class RequestProvider implements ServiceProviderInterface
             'application/vnd.api+json',
             'application/ld+json'
         ];
+//        if (in_array($req->getContentType(), $valid_content_type, true)) {
         if (in_array($req->getHeader('Content-Type'), $valid_content_type, true)) {
-            //Input not sanitized! Must be done in each param
-            $_POST = json_decode(file_get_contents('php://input'), true);
+            if ($req->isPost()) {
+                //Input not sanitized! Must be done in each param
+                $_POST = json_decode(file_get_contents('php://input'), true);
 
-            if (JSON_ERROR_NONE !== json_last_error()) {
-                throw new BadRequestException(json_last_error_msg());
+                if (JSON_ERROR_NONE !== json_last_error()) {
+                    throw new BadRequestException(json_last_error_msg());
+                }
             }
         }
 

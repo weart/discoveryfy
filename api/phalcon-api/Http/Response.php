@@ -101,9 +101,12 @@ class Response extends PhResponse
         $data = $jsonapi + $content + $meta;
         $this
             ->setHeader('E-Tag', $eTag)
-            ->setStatusCode(200)
             ->setContentType('application/vnd.api+json', 'UTF-8')
             ->setJsonContent($data);
+
+        if (is_null($this->getStatusCode())) {
+            $this->setStatusCode(self::OK);
+        }
 
         return parent::send();
     }

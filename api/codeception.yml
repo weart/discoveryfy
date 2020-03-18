@@ -24,9 +24,15 @@ settings:
 
 coverage:
   enabled: true
+#  remote: true
   remote: false
   include:
     - ./*.php
+#    - ./bin/*.php
+#    - ./config/*.php
+#    - ./discoveryfy/*.php
+#    - ./phalcon-api/*.php
+#    - ./public/*.php
   exclude:
     - phinx.php
     - storage/*
@@ -55,6 +61,8 @@ modules:
 
 # Get params from .env file
 params:
+  - .env
+  - .env.local
   - tests/.env.test
 
 error_level: "E_ALL"

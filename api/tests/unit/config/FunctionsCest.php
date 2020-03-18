@@ -1,6 +1,6 @@
 <?php
 
-namespace Phalcon\Api\Tests\unit\config;
+namespace Discoveryfy\Tests\unit\config;
 
 use Discoveryfy\Constants\Relationships;
 use UnitTester;
@@ -43,9 +43,8 @@ class FunctionsCest
     public function checkEnvurlWithUrl(UnitTester $I)
     {
         $I->assertEquals(
-            'https://api.discoveryfy.fabri.cat/companies/1',
-//            'http://api.phalcon.ld/companies/1',
-            appUrl(Relationships::COMPANIES, 1)
+            'https://api.discoveryfy.fabri.cat/users/1',
+            appUrl('users', 1)
         );
     }
 }

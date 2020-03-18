@@ -1,6 +1,6 @@
 <?php
 
-namespace Phalcon\Api\Tests\unit\cli;
+namespace Discoveryfy\Tests\unit\cli;
 
 use CliTester;
 use function Phalcon\Api\Core\appPath;

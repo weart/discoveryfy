@@ -1,6 +1,6 @@
 <?php
 
-namespace Phalcon\Api\Tests\cli;
+namespace Discoveryfy\Tests\cli;
 
 use CliTester;
 

@@ -35,8 +35,22 @@ trait ResponseTrait
         $response = $api->getService('response');
         $response
             ->setPayloadError($message)
-            ->setStatusCode($status)
-            ->send();
+            ->setStatusCode($status);
+
+        switch ($api->getService('request')->getContentType()) {
+            case 'application/vnd.api+json':
+                $response->sendJsonApi();
+                break;
+
+            case 'application/ld+json':
+                $response->sendJsonLd();
+                break;
+
+            case 'application/json':
+            default:
+                $response->send();
+                break;
+        }
 
         $api->stop();
 

@@ -35,7 +35,8 @@ class ClearCacheTask extends PhTask
     public function mainAction()
     {
         $this->clearFileCache();
-        $this->clearMemCached();
+        $this->clearRedis();
+//        $this->clearMemCached();
     }
 
     /**
@@ -70,6 +71,12 @@ class ClearCacheTask extends PhTask
         }
 
         echo PHP_EOL . 'Cleared Cache folders' . PHP_EOL;
+    }
+
+    private function clearRedis()
+    {
+        echo 'Clearing Redis cache' . PHP_EOL;
+        echo '@ToDo' . PHP_EOL;
     }
 
     /**

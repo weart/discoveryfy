@@ -1,6 +1,6 @@
 <?php
 
-namespace Phalcon\Api\Tests\unit\config;
+namespace Discoveryfy\Tests\unit\config;
 
 use UnitTester;
 use function is_array;
@@ -15,5 +15,7 @@ class ConfigCest
         $I->assertTrue(is_array($config));
         $I->assertTrue(isset($config['app']));
         $I->assertTrue(isset($config['cache']));
+        $I->assertTrue(isset($config['routers']));
+        $I->assertTrue(isset($config['public_routes']));
     }
 }

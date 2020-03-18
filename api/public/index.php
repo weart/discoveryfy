@@ -11,10 +11,30 @@ declare(strict_types=1);
  */
 
 use Phalcon\Api\Bootstrap\Api;
+use function Phalcon\Api\Core\appPath;
+use function Phalcon\Api\Core\envValue;
 
 require_once __DIR__ . '/../phalcon-api/Core/autoload.php';
+include appPath().'/c3.php';
 
-$bootstrap = new Api();
+/** @var string $logPath */
+$logPath   = envValue('LOGGER_DEFAULT_PATH', 'storage/logs');
 
-$bootstrap->setup();
-$bootstrap->run();
+$appLogName  = sprintf('%s/%s', $logPath, envValue('LOGGER_DEFAULT_FILENAME', 'api.log'));
+$testLogName = sprintf('%s/%s', $logPath, 'c3_error.log');
+
+define('C3_CODECOVERAGE_ERROR_LOG_FILE', $testLogName);
+define('MY_APP_STARTED', true);
+
+try {
+    $bootstrap = new Api();
+    $bootstrap->setup();
+    $bootstrap->run();
+
+} catch (\Exception $e) {
+    /**
+     * @ToDo!
+//    echo $e;
+     */
+    file_put_contents($appLogName, $e->getMessage().PHP_EOL, FILE_APPEND);
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace Phalcon\Api\Tests\unit\cli;
+namespace Discoveryfy\Tests\unit\cli;
 
 use Discoveryfy\Tasks\MainTask;
 use Phalcon\Di\FactoryDefault\Cli;

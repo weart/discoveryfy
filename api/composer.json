@@ -27,6 +27,7 @@
         "jwilsson/spotify-web-api-php": "^2.8"
     },
     "require-dev": {
+        "codeception/c3": "^2.4",
         "codeception/codeception": "^4.0",
         "codeception/module-asserts": "^1.0.0",
         "codeception/module-cli": "^1.0.0",

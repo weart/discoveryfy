@@ -15,7 +15,7 @@ namespace Phalcon\Api\Providers;
 use Phalcon\Cache\AdapterFactory;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Mvc\Model\MetaData\Libmemcached;
+//use Phalcon\Mvc\Model\MetaData\Libmemcached;
 use Phalcon\Mvc\Model\MetaData\Memory;
 use Phalcon\Storage\SerializerFactory;
 use function Phalcon\Api\Core\appPath;

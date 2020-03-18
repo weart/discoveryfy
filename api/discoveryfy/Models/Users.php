@@ -19,6 +19,7 @@ use Phalcon\Validation\Validator\InclusionIn;
 use Phalcon\Validation\Validator\Uniqueness;
 use Phalcon\Validation\Validator\StringLength;
 use Phalcon\Validation\Validator\Email;
+use Phalcon\Validation\Validator\Regex;
 
 /**
  * Class Users
@@ -130,12 +131,12 @@ class Users extends TimestampableModel
     public function getPublicAttributes(): array
     {
         return [
-            'created_at'         => Filter::FILTER_STRING,
-            'updated_at'         => Filter::FILTER_STRING,
+            'created_at'        => Filter::FILTER_STRING,
+            'updated_at'        => Filter::FILTER_STRING,
             'username'          => Filter::FILTER_STRING,
             'email'             => Filter::FILTER_EMAIL,
-            'public_visibility'  => Filter::FILTER_BOOL,
-            'public_email'       => Filter::FILTER_BOOL,
+            'public_visibility' => Filter::FILTER_BOOL,
+            'public_email'      => Filter::FILTER_BOOL,
             'language'          => Filter::FILTER_STRING,
             'theme'             => Filter::FILTER_STRING,
             'rol'               => Filter::FILTER_STRING,
@@ -152,6 +153,11 @@ class Users extends TimestampableModel
         $validator = new Validation();
         $validator->add('id', new Uniqueness([
             'message' => 'This id already exists in the database',
+        ]));
+        $validator->add('id', new Regex([
+            'pattern' => '/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iD',
+            'allowEmpty' => false,
+            'message' => 'Invalid id'
         ]));
         $validator->add('username', new Uniqueness([
             'message' => 'This username already exists in the database',

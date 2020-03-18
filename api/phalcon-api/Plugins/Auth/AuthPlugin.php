@@ -26,7 +26,7 @@ use Lcobucci\JWT\ValidationData;
 use Lcobucci\JWT\Signer\Key;
 use Phalcon\Api\Constants\JWTClaims;
 use Phalcon\Di\Injectable;
-use Phalcon\Http\Response;
+//use Phalcon\Http\Response;
 //use Vokuro\Models\RememberTokens;
 use Discoveryfy\Models\FailedLogins;
 use Discoveryfy\Models\SuccessLogins;

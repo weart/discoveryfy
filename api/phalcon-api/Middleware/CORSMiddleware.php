@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Middleware;
 
-use Phalcon\Api\Traits\ResponseTrait;
-use Phalcon\Events\Event;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
+use Phalcon\Api\Traits\ResponseTrait;
+use Phalcon\Events\Event;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
 
@@ -64,7 +64,7 @@ class CORSMiddleware implements MiddlewareInterface
                 'GET,PUT,POST,DELETE,OPTIONS'
             )
             ->setHeader(
-                'Access-Control-Allow-Headers', //'Access-Control-Request-Headers'
+                'Access-Control-Allow-Headers', //or even a more: 'Access-Control-Request-Headers'
                 'Origin, Content-Type, Authorization' //'X-Requested-With, Content-Range, Content-Disposition,'
             )
             // By default, cookies are not included in CORS requests.
@@ -72,6 +72,10 @@ class CORSMiddleware implements MiddlewareInterface
 //            ->setHeader(
 //                'Access-Control-Allow-Credentials',
 //                'true'
+//            )
+            //The value of this header allows the preflight response to be cached for a specified number of seconds
+//            ->setHeader(
+//                'Access-Control-Max-Age'
 //            )
         ;
 

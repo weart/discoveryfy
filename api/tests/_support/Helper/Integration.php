@@ -6,16 +6,16 @@ use Codeception\Module;
 use Codeception\Exception\TestRuntimeException;
 use Codeception\TestInterface;
 
+//use Discoveryfy\Models\Companies;
+//use Discoveryfy\Models\CompaniesXProducts;
+//use Discoveryfy\Models\Individuals;
+//use Discoveryfy\Models\IndividualTypes;
+//use Discoveryfy\Models\Products;
+//use Discoveryfy\Models\ProductTypes;
 use Phalcon\Api\Bootstrap\Api;
-use Discoveryfy\Models\Companies;
-use Discoveryfy\Models\CompaniesXProducts;
-use Discoveryfy\Models\Individuals;
-use Discoveryfy\Models\IndividualTypes;
-use Discoveryfy\Models\Products;
-use Discoveryfy\Models\ProductTypes;
 use Phalcon\Api\Mvc\Model\AbstractModel;
-use Phalcon\DI\FactoryDefault as PhDI;
 use Phalcon\Config as PhConfig;
+use Phalcon\DI\FactoryDefault as PhDI;
 
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
@@ -68,22 +68,22 @@ class Integration extends Module
      *
      * @return Companies
      */
-    public function addCompanyRecord(
-        string $namePrefix = '',
-        string $addressPrefix = '',
-        string $cityPrefix = '',
-        string $phonePrefix = ''
-    ) {
-        return $this->haveRecordWithFields(
-            Companies::class,
-            [
-                'name'    => uniqid($namePrefix),
-                'address' => uniqid($addressPrefix),
-                'city'    => uniqid($cityPrefix),
-                'phone'   => uniqid($phonePrefix),
-            ]
-        );
-    }
+//    public function addCompanyRecord(
+//        string $namePrefix = '',
+//        string $addressPrefix = '',
+//        string $cityPrefix = '',
+//        string $phonePrefix = ''
+//    ) {
+//        return $this->haveRecordWithFields(
+//            Companies::class,
+//            [
+//                'name'    => uniqid($namePrefix),
+//                'address' => uniqid($addressPrefix),
+//                'city'    => uniqid($cityPrefix),
+//                'phone'   => uniqid($phonePrefix),
+//            ]
+//        );
+//    }
 
     /**
      * @param int $companyId
@@ -91,32 +91,32 @@ class Integration extends Module
      *
      * @return CompaniesXProducts
      */
-    public function addCompanyXProduct(int $companyId, int $productId)
-    {
-        return $this->haveRecordWithFields(
-            CompaniesXProducts::class,
-            [
-                'companyId' => $companyId,
-                'productId' => $productId,
-            ]
-        );
-    }
+//    public function addCompanyXProduct(int $companyId, int $productId)
+//    {
+//        return $this->haveRecordWithFields(
+//            CompaniesXProducts::class,
+//            [
+//                'companyId' => $companyId,
+//                'productId' => $productId,
+//            ]
+//        );
+//    }
 
     /**
      * @param string $namePrefix
      *
      * @return IndividualTypes
      */
-    public function addIndividualTypeRecord(string $namePrefix = '')
-    {
-        return $this->haveRecordWithFields(
-            IndividualTypes::class,
-            [
-                'name'        => uniqid($namePrefix),
-                'description' => uniqid(),
-            ]
-        );
-    }
+//    public function addIndividualTypeRecord(string $namePrefix = '')
+//    {
+//        return $this->haveRecordWithFields(
+//            IndividualTypes::class,
+//            [
+//                'name'        => uniqid($namePrefix),
+//                'description' => uniqid(),
+//            ]
+//        );
+//    }
 
     /**
      * @param string $namePrefix
@@ -125,21 +125,21 @@ class Integration extends Module
      *
      * @return Individuals
      */
-    public function addIndividualRecord(string $namePrefix = '', int $comId = 0, int $typeId = 0)
-    {
-        return $this->haveRecordWithFields(
-            Individuals::class,
-            [
-                'companyId' => $comId,
-                'typeId'    => $typeId,
-                'prefix'    => uniqid(),
-                'first'     => uniqid($namePrefix),
-                'middle'    => uniqid(),
-                'last'      => uniqid(),
-                'suffix'    => uniqid(),
-            ]
-        );
-    }
+//    public function addIndividualRecord(string $namePrefix = '', int $comId = 0, int $typeId = 0)
+//    {
+//        return $this->haveRecordWithFields(
+//            Individuals::class,
+//            [
+//                'companyId' => $comId,
+//                'typeId'    => $typeId,
+//                'prefix'    => uniqid(),
+//                'first'     => uniqid($namePrefix),
+//                'middle'    => uniqid(),
+//                'last'      => uniqid(),
+//                'suffix'    => uniqid(),
+//            ]
+//        );
+//    }
 
     /**
      * @param string $namePrefix
@@ -147,35 +147,35 @@ class Integration extends Module
      *
      * @return Products
      */
-    public function addProductRecord(string $namePrefix = '', int $typeId = 0)
-    {
-        return $this->haveRecordWithFields(
-            Products::class,
-            [
-                'name'        => uniqid($namePrefix),
-                'typeId'      => $typeId,
-                'description' => uniqid(),
-                'quantity'    => 25,
-                'price'       => 19.99,
-            ]
-        );
-    }
+//    public function addProductRecord(string $namePrefix = '', int $typeId = 0)
+//    {
+//        return $this->haveRecordWithFields(
+//            Products::class,
+//            [
+//                'name'        => uniqid($namePrefix),
+//                'typeId'      => $typeId,
+//                'description' => uniqid(),
+//                'quantity'    => 25,
+//                'price'       => 19.99,
+//            ]
+//        );
+//    }
 
     /**
      * @param string $namePrefix
      *
      * @return ProductTypes
      */
-    public function addProductTypeRecord(string $namePrefix = '')
-    {
-        return $this->haveRecordWithFields(
-            ProductTypes::class,
-            [
-                'name'        => uniqid($namePrefix),
-                'description' => uniqid(),
-            ]
-        );
-    }
+//    public function addProductTypeRecord(string $namePrefix = '')
+//    {
+//        return $this->haveRecordWithFields(
+//            ProductTypes::class,
+//            [
+//                'name'        => uniqid($namePrefix),
+//                'description' => uniqid(),
+//            ]
+//        );
+//    }
 
     /**
      * @return mixed
