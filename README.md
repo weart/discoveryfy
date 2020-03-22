@@ -83,6 +83,7 @@ Check machine ip:
 ```bash
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' api
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cache
 ```
 
 Check docker installed php version:

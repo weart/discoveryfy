@@ -12,25 +12,29 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Plugins\Auth;
 
+//use Vokuro\Models\RememberTokens;
 use Discoveryfy\Constants\CacheKeys;
 use Discoveryfy\Exceptions\BadRequestException;
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\ModelException;
+use Discoveryfy\Exceptions\UnauthorizedException;
+use Discoveryfy\Models\FailedLogins;
 use Discoveryfy\Models\SecurityEvents;
 use Discoveryfy\Models\Sessions;
+use Discoveryfy\Models\SuccessLogins;
+use Discoveryfy\Models\Users;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha512;
+use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
-use Lcobucci\JWT\Signer\Key;
 use Phalcon\Api\Constants\JWTClaims;
+use Phalcon\Api\Http\Request;
+use Phalcon\Cache;
+use Phalcon\Config;
 use Phalcon\Di\Injectable;
-//use Phalcon\Http\Response;
-//use Vokuro\Models\RememberTokens;
-use Discoveryfy\Models\FailedLogins;
-use Discoveryfy\Models\SuccessLogins;
-use Discoveryfy\Models\Users;
+use Phalcon\Security;
 use Phalcon\Security\Random;
 use function Phalcon\Api\Core\envValue;
 
@@ -42,17 +46,16 @@ use function Phalcon\Api\Core\envValue;
  * @see https://github.com/lcobucci/jwt/blob/3.3/README.md
  * @see https://tools.ietf.org/html/rfc7519
  * @package Phalcon\Api\Plugins\Auth
+ * @property Sessions     $session
+ * @property Users        $user
+ * @property Cache        $cache
+ * @property Security     $security
+ * @property Config       $config
+ * @property Request      $request
  */
 class AuthPlugin extends Injectable
 {
-    /**
-     * @var Sessions
-     */
     private $session;
-
-    /**
-     * @var Users
-     */
     private $user;
 
     /**
@@ -69,6 +72,50 @@ class AuthPlugin extends Injectable
     public function getUser(): ?Users
     {
         return $this->user ?: null;
+    }
+
+    public function createCSRFLogin(): string
+    {
+        $token = $this->security->getToken();
+        $this->saveCSRF(CacheKeys::getLoginCSRFCacheKey($token));
+        return $token;
+    }
+
+    public function createCSRFRegister(): string
+    {
+        $token = $this->security->getToken();
+        $this->saveCSRF(CacheKeys::getRegisterCSRFCacheKey($token));
+        return $token;
+    }
+
+    public function checkCSRFLogin(): bool
+    {
+        $this->checkCSRFHeader(CacheKeys::getLoginCSRFCacheKey($this->request->getHeader('X-CSRF-TOKEN')));
+        return true;
+    }
+
+    public function checkCSRFRegister(): bool
+    {
+        $this->checkCSRFHeader(CacheKeys::getRegisterCSRFCacheKey($this->request->getHeader('X-CSRF-TOKEN')));
+        return true;
+    }
+
+    private function saveCSRF(string $cache_key): void
+    {
+        if (true !== $this->cache->set($cache_key, null)) {
+            throw new InternalServerErrorException('Problem saving token into cache');
+        }
+    }
+
+    private function checkCSRFHeader(string $cache_key): void
+    {
+        if (!$this->request->hasHeader('X-CSRF-TOKEN')) {
+            throw new UnauthorizedException('CSRF not provided');
+        }
+        if (!$this->cache->has($cache_key)) {
+            throw new BadRequestException('Invalid CSRF token');
+        }
+        //Delete CSRF token?
     }
 
     /**
@@ -130,15 +177,16 @@ class AuthPlugin extends Injectable
     {
         (new SecurityEvents())->createLoginFailureEvent($this->request, $user);
 
-        $attempts = SecurityEvents::count([
-            // @ToDo: created_at raises exception
-            'ip_address = :ip: AND created_at >= :created_at:',
-//            'ip_address = :ip:',
-            'bind' => [
-                'ip' => $this->request->getClientAddress(),
-                'created_at' => (time() - 3600 * 6),
-            ],
-        ]);
+        /** @var Config $config */
+        $config = $this->getDI()->get('config');
+        $since_dt = (new \Datetime('now', new \DateTimeZone($config->path('app.timezone', 'UTC'))))
+            ->sub(new \DateInterval('PT6H'))
+            ->format('Y-m-d H:i:s');
+//        $since_ts = time() - (3600 * 6);
+
+        $ip = $this->request->getClientAddress();
+
+        $attempts = SecurityEvents::getNumLoginAttempts($ip, $since_dt);
 
         if (false !== $this->config->path('app.debug')) {
             switch ($attempts) {

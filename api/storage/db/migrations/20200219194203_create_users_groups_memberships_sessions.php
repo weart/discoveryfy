@@ -125,6 +125,7 @@ class CreateUsersGroupsMembershipsSessions extends AbstractMigration
         $security_events
             ->addColumn('id', 'uuid', [ 'null' => false, 'comment' => 'Security event unique identifier' ])
             ->addColumn('user_id', 'uuid', [ 'null' => true, 'comment' => 'User unique identifier' ])
+            ->addColumn('created_at', 'timestamp', [ 'default' => 'CURRENT_TIMESTAMP', 'update' => '', 'timezone' => true ])
             ->addColumn('type', 'enum', [ 'values' => 'login_success,login_failure,email_confirmation,password_change,password_reset', 'null' => false, 'comment' => 'Type of event' ])
             ->addColumn('ip_address', 'string', [ 'limit' => 255, 'null' => true, 'comment' => 'Request IP address' ])
             ->addColumn('user_agent', 'string', [ 'limit' => 255, 'null' => true, 'comment' => 'Request user agent' ])

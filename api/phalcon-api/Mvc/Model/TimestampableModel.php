@@ -89,7 +89,7 @@ abstract class TimestampableModel extends AbstractModel
 
     public function getCreatedAt(): \DateTime
     {
-        if ($this->created_at instanceof RawValue) {
+        if (is_null($this->created_at) || $this->created_at instanceof RawValue) {
             throw new InternalServerErrorException('Field only available after persist the object in the db');
         }
         return new \DateTime($this->created_at);
@@ -97,7 +97,7 @@ abstract class TimestampableModel extends AbstractModel
 
     public function getUpdatedAt(): \DateTime
     {
-        if ($this->updated_at instanceof RawValue) {
+        if (is_null($this->updated_at) || $this->updated_at instanceof RawValue) {
             throw new InternalServerErrorException('Field only available after persist the object in the db');
         }
         //Check getDirtyState() function?

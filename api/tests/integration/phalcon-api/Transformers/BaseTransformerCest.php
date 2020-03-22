@@ -4,11 +4,10 @@ namespace Discoveryfy\Tests\integration\Phalcon\Api\Transformers;
 
 use Discoveryfy\Exceptions\ModelException;
 use Discoveryfy\Models\Users;
-use Discoveryfy\Tests\integration\Phalcon\Api\BaseCest;
 use IntegrationTester;
 use Phalcon\Api\Transformers\BaseTransformer;
 
-class BaseTransformerCest extends BaseCest
+class BaseTransformerCest
 {
     /**
      * @param IntegrationTester $I
@@ -18,15 +17,15 @@ class BaseTransformerCest extends BaseCest
     public function checkTransformer(IntegrationTester $I)
     {
         /** @var Users $user */
-        $user = $I->haveRecordWithFields($this->getDefaultModel(), $this->getDefaultModelAttributes());
+        $user = $I->haveRecordWithFields($I->getDefaultModel(), $I->getDefaultModelAttributes());
 
         $transformer = new BaseTransformer();
         $expected    = [
             //Private attributes
-//            'id'                => $user->get('id'),
 //            'enabled'           => $user->get('enabled'),
 //            'password'          => $user->get('password'),
             // Public attributes
+            'id'                => $user->get('id'),
             'created_at'        => $user->get('created_at'),
             'updated_at'        => $user->get('updated_at'),
             'username'          => $user->get('username'),

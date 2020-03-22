@@ -75,7 +75,6 @@ class Sessions extends TimestampableModel
     public function getPrivateAttributes(): array
     {
         return [
-            'id'                => UUIDFilter::FILTER_NAME,
             'user_id'           => UUIDFilter::FILTER_NAME,
         ];
     }
@@ -86,6 +85,7 @@ class Sessions extends TimestampableModel
     public function getPublicAttributes(): array
     {
         return [
+            'id'                => UUIDFilter::FILTER_NAME,
             'created_at'        => Filter::FILTER_STRING,
             'updated_at'        => Filter::FILTER_STRING,
             'name'              => Filter::FILTER_STRING,

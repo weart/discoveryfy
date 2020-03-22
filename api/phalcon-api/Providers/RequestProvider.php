@@ -34,7 +34,7 @@ class RequestProvider implements ServiceProviderInterface
         ];
 //        if (in_array($req->getContentType(), $valid_content_type, true)) {
         if (in_array($req->getHeader('Content-Type'), $valid_content_type, true)) {
-            if ($req->isPost()) {
+            if ($req->isPost() && !empty($req->getRawBody())) {
                 //Input not sanitized! Must be done in each param
                 $_POST = json_decode(file_get_contents('php://input'), true);
 

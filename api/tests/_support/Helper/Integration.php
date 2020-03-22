@@ -12,10 +12,13 @@ use Codeception\TestInterface;
 //use Discoveryfy\Models\IndividualTypes;
 //use Discoveryfy\Models\Products;
 //use Discoveryfy\Models\ProductTypes;
+use Discoveryfy\Models\Users;
 use Phalcon\Api\Bootstrap\Api;
 use Phalcon\Api\Mvc\Model\AbstractModel;
 use Phalcon\Config as PhConfig;
 use Phalcon\DI\FactoryDefault as PhDI;
+use Phalcon\Security\Random;
+use Phalcon\Security;
 
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
@@ -58,6 +61,76 @@ class Integration extends Module
             $this->diContainer->get('db')->rollback();
         }
         $this->diContainer->get('db')->close();
+    }
+
+    public function getDefaultModel(): string
+    {
+        return Users::class;
+    }
+
+    public function getDefaultModelAttributes(array $whitelist = [], array $blacklist = []): array
+    {
+        $rtn = $this->getKnownUserAttributes();
+        if (empty($whitelist) && empty($blacklist)) {
+            return $rtn;
+        }
+        $rtn = array_filter($rtn, function ($val) use ($blacklist) {
+            return !in_array($val, $blacklist, true);
+        });
+        return array_filter($rtn, function ($val) use ($whitelist) {
+            return in_array($val, $whitelist, true);
+        });
+    }
+
+    private function getKnownUserAttributes()
+    {
+        $security = $this->getSecurityService();
+        return [
+            'id'                => 'f756ffbe-6143-46f0-b914-f898b1f05f84',
+            'enabled'           => true,
+            'created_at'        => '2020-03-18 17:43:09',
+            'updated_at'        => null,
+            'username'          => 'testuser',
+            'password'          => $security->hash('testpassword'),
+            'email'             => 'test@user.net',
+            'public_visibility' => false,
+            'public_email'      => false,
+            'language'          => 'en',
+            'theme'             => 'default',
+            'rol'               => 'ROLE_USER',
+        ];
+    }
+
+    /**
+     * Taken from SecurityProvider
+     */
+    private function getSecurityService(): Security
+    {
+        $security = new Security();
+        // set Work factor (how many times we go through)
+        $security->setWorkFactor(12); // can be a number from 1-12
+        // set Default Hash
+        $security->setDefaultHash(Security::CRYPT_BLOWFISH_Y); // choose default hash
+        return $security;
+    }
+
+    private function getRandomUserAttributes()
+    {
+        $datetime = new \Datetime('now', new \DateTimeZone('UTC'));
+        return [
+            'id'                => (new Random())->uuid(),
+            'enabled'           => true,
+            'created_at'        => $datetime->format('Y-m-d H:i:s'),
+            'updated_at'        => $datetime->format('Y-m-d H:i:s'),
+            'username'          => 'test_'.(new Random())->hex(5),
+            'password'          => 'test_'.(new Random())->hex(5),
+            'email'             => 'test_'.(new Random())->hex(5).'@test.com',
+            'public_visibility' => true,
+            'public_email'      => true,
+            'language'          => 'en',
+            'theme'             => 'default',
+            'rol'               => 'ROLE_USER',
+        ];
     }
 
     /**

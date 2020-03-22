@@ -5,7 +5,6 @@ namespace Discoveryfy\Tests\integration\Phalcon\Api;
 use Codeception\Stub;
 use Discoveryfy\Exceptions\ModelException;
 use Discoveryfy\Models\Users;
-use Discoveryfy\Tests\integration\Phalcon\Api\BaseCest;
 use Exception;
 use IntegrationTester;
 use Monolog\Logger;
@@ -15,14 +14,14 @@ use function Phalcon\Api\Core\appPath;
 /**
  * Class ModelCest
  */
-class ModelCest extends BaseCest
+class ModelCest
 {
     /**
      * @param IntegrationTester $I
      */
     public function modelGetSetFields(IntegrationTester $I)
     {
-        $I->haveRecordWithFields($this->getDefaultModel(), $this->getDefaultModelAttributes());
+        $I->haveRecordWithFields($I->getDefaultModel(), $I->getDefaultModelAttributes());
     }
 
     /**
@@ -52,7 +51,7 @@ class ModelCest extends BaseCest
     public function modelGetNonExistingFields(IntegrationTester $I)
     {
         /** @var Users $result */
-        $user = $I->haveRecordWithFields($this->getDefaultModel(), $this->getDefaultModelAttributes());
+        $user = $I->haveRecordWithFields($I->getDefaultModel(), $I->getDefaultModelAttributes());
 
         $I->expectThrowable(
             ModelException::class,
@@ -72,7 +71,7 @@ class ModelCest extends BaseCest
     public function modelUpdateFields(IntegrationTester $I)
     {
         /** @var Users $result */
-        $user = $I->haveRecordWithFields($this->getDefaultModel(), $this->getDefaultModelAttributes());
+        $user = $I->haveRecordWithFields($I->getDefaultModel(), $I->getDefaultModelAttributes());
 
         $user->set('username', 'UPDATED_NAME')->save();
 
@@ -88,7 +87,7 @@ class ModelCest extends BaseCest
     public function modelUpdateFieldsNotSanitized(IntegrationTester $I)
     {
         /** @var Users $result */
-        $user = $I->haveRecordWithFields($this->getDefaultModel(), $this->getDefaultModelAttributes());
+        $user = $I->haveRecordWithFields($I->getDefaultModel(), $I->getDefaultModelAttributes());
 
         $user->set('password', 'abcde\nfg')->save();
         $I->assertEquals($user->get('password'), 'abcde\nfg');

@@ -60,12 +60,13 @@ class ResponseCest
         $response = new Response();
 
         $response
-            ->setPayloadError('error content');
+            ->setPayloadError($response::INTERNAL_SERVER_ERROR, 'error content');
 
         $payload = $this->checkPayload($I, $response, true);
 
         $I->assertFalse(isset($payload['data']));
-        $I->assertEquals('error content', $payload['errors'][0]);
+        $I->assertEquals('error content', $payload['errors'][0]['title']);
+        $I->assertEquals($response::INTERNAL_SERVER_ERROR, $payload['errors'][0]['code']);
     }
 
     public function checkResponseWithModelErrors(UnitTester $I)
@@ -82,8 +83,8 @@ class ResponseCest
 
         $I->assertFalse(isset($payload['data']));
         $I->assertEquals(2, count($payload['errors']));
-        $I->assertEquals('hello', $payload['errors'][0]);
-        $I->assertEquals('goodbye', $payload['errors'][1]);
+        $I->assertEquals('hello', $payload['errors'][0]['title']);
+        $I->assertEquals('goodbye', $payload['errors'][1]['title']);
     }
 
     public function checkResponseWithValidationErrors(UnitTester $I)
@@ -102,8 +103,8 @@ class ResponseCest
 
         $I->assertFalse(isset($payload['data']));
         $I->assertEquals(2, count($payload['errors']));
-        $I->assertEquals('hello', $payload['errors'][0]);
-        $I->assertEquals('goodbye', $payload['errors'][1]);
+        $I->assertEquals('hello', $payload['errors'][0]['title']);
+        $I->assertEquals('goodbye', $payload['errors'][1]['title']);
     }
 
     public function checkHttpCodes(UnitTester $I)

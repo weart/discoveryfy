@@ -16,16 +16,21 @@ class BootstrapCest
         $actual = ob_get_contents();
         ob_end_clean();
 
-        $results = json_decode($actual, true);
+        //By default the Content-Type is application-json
+        $response = json_decode($actual, true);
 
-        //Content-Type: application-json
-//        $I->assertEquals('1.0', $results['jsonapi']['version']);
-//        $I->assertTrue(empty($results['data']));
-//        $I->assertEquals(HttpCode::getDescription(404), $results['errors'][0]);
+        $I->assertEquals($response, [
+            'errors' => [
+                [
+                    'code' => 404,
+                    'status' => 404,
+                    'title' => '404 (Not Found)'
+                ]
 
-        //Content-Type: undefined
-        $I->assertEquals($results['code'], 400);
-        $I->assertEquals($results['status'], 'error');
-        $I->assertEquals($results['message'], 'Undefined content type');
+            ]
+        ]);
+//        $I->assertEquals('1.0', $response['jsonapi']['version']);
+//        $I->assertTrue(empty($response['data']));
+//        $I->assertEquals(HttpCode::getDescription(404), $response['errors'][0]);
     }
 }

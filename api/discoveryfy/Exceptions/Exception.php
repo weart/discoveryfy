@@ -14,6 +14,10 @@ use Phalcon\Exception as PhException;
 
 abstract class Exception extends PhException
 {
+    public $http_code;
+    public $http_msg;
+    public $app_code;
+
     public function __construct($message = null, $code = 0, Exception $previous = null)
     {
         if (empty($message) && isset($this->http_msg)) {
@@ -30,11 +34,17 @@ abstract class Exception extends PhException
         return "Error {$this->http_code}: {$this->http_msg}";
     }
 
+    public function setAppCode(int $app_code)
+    {
+        $this->app_code = $app_code;
+    }
+
     public function toJson()
     {
         return [
-            'status' => $this->http_code,
-            'title' => $this->http_msg
+            'status'    => $this->http_code ?? $this->getCode(), //HTTP status code applicable to this problem, expressed as a string value
+            'code'      => $this->app_code ?? $this->getCode(), //application-specific error code, expressed as a string value
+            'title'     => $this->getMessage() //a short, human-readable summary of the problem
         ];
     }
 }

@@ -9,13 +9,14 @@ use function Phalcon\Api\Core\envValue;
 
 class Data
 {
+    public static $loginUrl                         = '/login';
+    public static $registerUrl                      = '/register';
     public static $wrongUrl                         = '/sommething';
 
 //    public static $companiesSortUrl                 = '/companies?sort=%s';
 //    public static $companiesUrl                     = '/companies';
 //    public static $companiesRecordUrl               = '/companies/%s';
 //    public static $companiesRecordIncludesUrl       = '/companies/%s?includes=%s';
-//    public static $loginUrl                         = '/login';
 //    public static $individualsUrl                   = '/individuals';
 //    public static $individualsRecordUrl             = '/individuals/%s';
 //    public static $individualsRecordIncludesUrl     = '/individuals/%s?includes=%s';

@@ -49,7 +49,7 @@ class TestController extends Controller
         } else {
             $this
                 ->response
-                ->setPayloadError('Incorrect credentials')
+                ->setPayloadError($this->response::BAD_REQUEST, 'Incorrect credentials')
             ;
         }
     }

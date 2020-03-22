@@ -32,12 +32,21 @@ class Request extends PhRequest
     ];
     public function getContentType(): string
     {
-        if (empty(parent::getContentType())) {
-            throw new BadRequestException('Undefined content type');
+//        if (!$this->hasHeader('accept') && !$this->hasHeader('Content-Type')) {
+//            throw new BadRequestException('Undefined content type');
+//        }
+        $type = trim((
+            $this->getHeader('accept') !== '*/*' ?
+            $this->getHeader('accept') : parent::getContentType() //$this->getHeader('Content-Type');
+        ));
+        //If Type is any or empty, by default the most simple type is used: application/json
+        if (empty($type) || $type === '*/*') {
+//            throw new BadRequestException('Undefined content type');
+            $type = 'application/json';
         }
-        $type = trim(parent::getContentType());
         //Remove charset
         if (false !== strpos($type, ';')) {
+            //Raise Exception if different than utf8?
             $type = strstr($type, ';', true);
         }
         if (!in_array($type, $this->acceptedContentType, true)) {

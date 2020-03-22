@@ -34,7 +34,7 @@ trait ResponseTrait
         /** @var Response $response */
         $response = $api->getService('response');
         $response
-            ->setPayloadError($message)
+            ->setPayloadError($status, $message)
             ->setStatusCode($status);
 
         switch ($api->getService('request')->getContentType()) {

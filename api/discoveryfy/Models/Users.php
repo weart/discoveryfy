@@ -119,7 +119,6 @@ class Users extends TimestampableModel
     public function getPrivateAttributes(): array
     {
         return [
-            'id'                => UUIDFilter::FILTER_NAME,
             'enabled'           => Filter::FILTER_BOOL,
             'password'          => Filter::FILTER_STRING,
         ];
@@ -131,6 +130,7 @@ class Users extends TimestampableModel
     public function getPublicAttributes(): array
     {
         return [
+            'id'                => UUIDFilter::FILTER_NAME,
             'created_at'        => Filter::FILTER_STRING,
             'updated_at'        => Filter::FILTER_STRING,
             'username'          => Filter::FILTER_STRING,

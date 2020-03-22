@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Providers;
 
+use Phalcon\Api\Http\Response;
 use Phalcon\Api\Middleware\AuthenticationMiddleware;
 //use Phalcon\Api\Middleware\CORSMiddleware;
 use Phalcon\Api\Middleware\NotFoundMiddleware;
@@ -96,6 +97,20 @@ class RouterProvider implements ServiceProviderInterface
                 $application->mount($collection);
             }
         }
+
+        $application->error(function (\Throwable $exception) use ($application) {
+            /** @var Response $res */
+            $res   = $application->getService('response');
+
+//            $errorHandler  = $application->getShared('errorHandler'); //Save service in DI and save the error?
+//            $errorHandler->saveException($exception);
+
+//            $ContentType = $application->getService('request')->getContentType(); //Avoid: can throw an exception
+            $ContentType = $application->getService('request')->getHeader('Content-Type');
+            $debug = (bool) $application->getService('config')->path('app.debug');
+
+            return $res->sendException($exception, $ContentType, $debug);
+        });
     }
 
     /**

@@ -18,8 +18,9 @@ use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 //use Discoveryfy\Models\Users;
 //use Discoveryfy\Models\Sessions;
-use Phalcon\Cache;
-use Phalcon\Config;
+use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
+use Phalcon\Api\Traits\FractalTrait;
+use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Filter;
 use Phalcon\Mvc\Controller;
 
@@ -34,24 +35,17 @@ use Phalcon\Mvc\Controller;
  * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Controllers/UsersController.php
  * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Controllers/SessionController.php
  * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Forms/LoginForm.php
- * @property Cache        $cache
- * @property Config       $config
+ * @property Auth         $auth
  * @property Request      $request
  * @property Response     $response
  */
 class PostController extends Controller
 {
+    use FractalTrait;
+
     public function callAction()
     {
-        //Check CSRF token (move this to Auth?)
-        if (!$this->request->hasHeader('X-CSRF-TOKEN')) {
-            throw new UnauthorizedException('CSRF not provided');
-        }
-
-        if (!$this->cache->has(CacheKeys::getLoginCSRFCacheKey($this->request->getHeader('X-CSRF-TOKEN')))) {
-            throw new BadRequestException('Invalid CSRF token');
-        }
-        //Delete CSRF token?
+        $this->auth->checkCSRFLogin();
 
         //Check credentials: username & password are optional
         if (!empty($this->request->getPost())) {
@@ -61,10 +55,9 @@ class PostController extends Controller
                     'password' => $this->request->getPost('password', Filter::FILTER_STRING)
                 ]);
 
-            } else if ($this->request->hasPost('username')) {
+            } elseif ($this->request->hasPost('username')) {
                 throw new NotImplementedException('Recover password');
 //                $this->auth->recoverPassword($this->request->hasPost('username'));
-
             } else {
                 throw new BadRequestException();
             }
@@ -73,45 +66,18 @@ class PostController extends Controller
         //Create Session & JWT token
         $token = $this->auth->createSessionToken();
 
-        //@ToDo: Improve this with some kind of automatic schema generator
-        $attrs = [
-            'jwt' => $token,
-            'session' => [ //@ToDo: $this->auth->getSession()->dump() or ->toArray()
-                'id' => $this->auth->getSession()->get('id'),
-//                'created-at' => $this->auth->getSession()->get('created_at'),
-                'created-at' => $this->auth->getSession()->getCreatedAt(),
-                'name' => $this->auth->getSession()->get('name'),
-            ]
+        $response =
+        [
+            [
+                'type' => 'jwt',
+                'id'    => $token
+            ],
+            $this->format('item', $this->auth->getSession(), BaseTransformer::class, 'session')['data']
         ];
         if ($this->auth->getUser()) { //Saved in auth, otherwise getRelated('user') can be used
-            $attrs += [
-                'user' => [ //@ToDo: $this->auth->getSession()->dump() or ->toArray()
-                    'id' => $this->auth->getUser()->get('id'),
-                ]
-            ];
+            $response[] = $this->format('item', $this->auth->getUser(), BaseTransformer::class, 'user')['data'];
         }
 
-        switch ($this->request->getContentType()) {
-            case 'application/vnd.api+json':
-                $this->response->setJsonApiContent([
-                    'type' => 'Login.Response',
-                    'attributes' => $attrs
-                ])->sendJsonApi();
-                break;
-
-            case 'application/ld+json':
-                $this->response->setJsonContent([
-                    '@context' => 'string',
-                    '@id' => 'string',
-                    '@type' => 'string',
-                    'jwt' => $token
-                ])->sendJsonLd();
-                break;
-
-            case 'application/json':
-            default:
-                $this->response->setJsonContent($attrs)->send();
-                break;
-        }
+        return $this->response->sendApiContent($this->request->getContentType(), $response);
     }
 }

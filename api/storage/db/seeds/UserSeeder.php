@@ -2,6 +2,7 @@
 
 use Phinx\Seed\AbstractSeed;
 use Phalcon\Security\Random;
+use Phalcon\Security;
 
 class UserSeeder extends AbstractSeed
 {
@@ -16,12 +17,13 @@ class UserSeeder extends AbstractSeed
     public function run()
     {
         $random = new Random();
+        $security = $this->getSecurityService();
 
         $data = [
             [
                 'id'                => $random->uuid(),
                 'username'          => getenv('SEED_ROOT_USER'),
-                'password'          => getenv('SEED_ROOT_PASS'),
+                'password'          => $security->hash(getenv('SEED_ROOT_PASS')),
                 'email'             => getenv('SEED_ROOT_MAIL'),
                 'enabled'           => true,
                 'public_visibility' => true,
@@ -33,7 +35,7 @@ class UserSeeder extends AbstractSeed
 //                'id'                => $random->uuid(),
                 'id'                => 'f756ffbe-6143-46f0-b914-f898b1f05f84',
                 'username'          => 'testuser',
-                'password'          => 'testpassword',
+                'password'          => $security->hash('testpassword'),
                 'email'             => 'test@user.net',
                 'enabled'           => true,
                 'public_visibility' => false,
@@ -47,5 +49,18 @@ class UserSeeder extends AbstractSeed
         $posts = $this->table('users');
         $posts->insert($data)
             ->saveData();
+    }
+
+    /**
+     * Taken from SecurityProvider
+     */
+    private function getSecurityService(): Security
+    {
+        $security = new Security();
+        // set Work factor (how many times we go through)
+        $security->setWorkFactor(12); // can be a number from 1-12
+        // set Default Hash
+        $security->setDefaultHash(Security::CRYPT_BLOWFISH_Y); // choose default hash
+        return $security;
     }
 }

@@ -12,13 +12,16 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Http;
 
+use Discoveryfy\Exceptions\BadRequestException;
+use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\NotImplementedException;
 use Phalcon\Http\Response as PhResponse;
 use Phalcon\Http\ResponseInterface;
-use Phalcon\Messages\Messages;
+use Phalcon\Messages\Message;
 use function date;
 use function json_decode;
 use function sha1;
+use function is_array;
 
 class Response extends PhResponse
 {
@@ -67,6 +70,58 @@ class Response extends PhResponse
         }
 
         return $code;
+    }
+
+    /**
+     * Deals with format content negotiation
+     *
+     * @param string $ContentType
+     * @param array $data
+     * @return ResponseInterface
+     */
+    public function sendApiContent(string $ContentType, array $data): ResponseInterface
+    {
+        if ($ContentType === 'application/vnd.api+json') {
+            return $this->setJsonApiContent($data)->sendJsonApi();
+
+        } elseif ($ContentType === 'application/json') {
+            if (isset($data['id'])) { //Only one item
+                if (isset($data['attributes'])) {
+                    return $this->setJsonContent($this->array_flatten($data))->send();
+                } else {
+                    return $this->setJsonContent($data['id'])->send();
+                }
+            }
+            $rtn = [];
+            foreach ($data as $obj) {
+                $rtn[] = $this->array_flatten($obj);
+            }
+            return $this->setJsonContent($rtn)->send();
+
+
+        } elseif ($ContentType === 'application/ld+json') {
+            throw new NotImplementedException();
+//            $this->setJsonContent([
+//                '@context' => 'string',
+//                '@id' => 'string',
+//                '@type' => 'string',
+//                'User.Read' => $schema
+//            ])->sendJsonLd();
+        }
+        throw new BadRequestException();
+    }
+
+    protected function array_flatten($array, $prefix = '')
+    {
+        $result = array();
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $result = $result + $this->array_flatten($value, $prefix . $key . '.');
+            } else {
+                $result[$prefix . $key] = $value;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -121,34 +176,101 @@ class Response extends PhResponse
     /**
      * Sets the payload code as Error
      *
-     * @param string $detail
+     * @param array $error
      *
      * @return Response
      */
-    public function setPayloadError(string $detail = ''): Response
+    public function setPayloadJsonApiError(array $error): Response
     {
-        $this->setJsonContent(['errors' => [$detail]]);
+        if (!isset($error['code'])) {
+            throw new InternalServerErrorException('Error code is mandatory');
+        }
+        if (is_null($this->getStatusCode()) && isset($this->codes[$error['code']])) {
+//            Non-standard statuscode given without a message
+            $this->setStatusCode($error['code'], $this->getHttpCodeDescription($error['code']));
+        }
+        if (!isset($error['title'])) {
+            $error['title'] = $this->getHttpCodeDescription($error['code']);
+        }
+        if (!isset($error['status'])) {
+            $error['status'] = $error['code'];
+        }
+
+        if (empty($this->getContent())) {
+            $this->setJsonContent(['errors' => [$error]]);
+
+        } else {
+            /** @var array $content */
+            $content = json_decode($this->getContent(), true);
+            if (!isset($content['errors'])) {
+                throw new InternalServerErrorException('Mixing errors with a normal response?');
+            }
+            $content['errors'][] = $error;
+            $this->setJsonContent($content);
+        }
 
         return $this;
+    }
+
+    public function setPayloadError(int $httpCode = self::BAD_REQUEST, ?string $title = null, ?int $appCode = null)
+    {
+        return $this->setPayloadJsonApiError([
+            'code'    => $httpCode,
+            'status'  => $appCode,
+            'title' => $title,
+        ]);
     }
 
     /**
      * Traverses the errors collection and sets the errors in the payload
      *
-     * @param Messages $errors
-     *
+     * @param iterable<Message|string|array> $errors
      * @return Response
      */
-    public function setPayloadErrors($errors): Response
+    public function setPayloadErrors(iterable $errors): Response
     {
-        $data = [];
         foreach ($errors as $error) {
-            $data[] = $error->getMessage();
+            if ($error instanceof Message) {
+                $this->setPayloadError($error->getCode() ?? self::INTERNAL_SERVER_ERROR, $error->getMessage());
+
+            } else if (is_string($error)) {
+                $this->setPayloadError(self::INTERNAL_SERVER_ERROR, $error);
+
+            } else if (is_array($error)) {
+                $this->setPayloadJsonApiError($error);
+
+            } else {
+                throw new InternalServerErrorException('Invalid error');
+            }
         }
 
-        $this->setJsonContent(['errors' => $data]);
-
         return $this;
+    }
+
+    public function sendException(\Throwable $e, string $ContentType, bool $debug = false): ResponseInterface
+    {
+        if (is_subclass_of($e, \Discoveryfy\Exceptions\Exception::class)) {
+            $this
+                ->setStatusCode($e->getCode())
+                ->setPayloadJsonApiError($e->toJson()); //In non debug mode send all?
+
+        } else {
+            $msg = $debug ? $e->getMessage() : $this->getHttpCodeDescription(self::INTERNAL_SERVER_ERROR);
+
+            $this
+                ->setPayloadJsonApiError([
+                    'code'  => $e->getCode(),
+                    'title' => $msg,
+                ]);
+        }
+
+        if ($ContentType === 'application/vnd.api+json') {
+            return $this->sendJsonApi();
+
+//        } elseif ($ContentType === 'application/ld+json') {
+//        } elseif ($ContentType === 'application/json') { //By default
+        }
+        return parent::send();
     }
 
     /**

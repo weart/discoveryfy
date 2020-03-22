@@ -18,6 +18,7 @@ use Phalcon\Api\Filters\UUIDFilter;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Mvc\Model\AbstractModel;
 use Phalcon\Config;
+use Phalcon\Db\Column;
 use Phalcon\Db\RawValue;
 use Phalcon\Filter;
 use Phalcon\Mvc\Model\Behavior\Timestampable;
@@ -54,7 +55,7 @@ class SecurityEvents extends AbstractModel
             //Sets a list of attributes that must be skipped from the generated INSERT/UPDATE statement
             $this->skipAttributes(
                 [
-                    'createdAt',
+                    'created_at',
                 ]
             );
 
@@ -120,7 +121,7 @@ class SecurityEvents extends AbstractModel
 
     public function getCreatedAt(): \DateTime
     {
-        if ($this->created_at instanceof RawValue) {
+        if (is_null($this->created_at) || $this->created_at instanceof RawValue) {
             throw new InternalServerErrorException('Field only available after persist the object in the db');
         }
         return new \DateTime($this->created_at);
@@ -201,5 +202,18 @@ class SecurityEvents extends AbstractModel
 //            throw new ModelException($this->getModelMessages()[0]);
         }
         return $this;
+    }
+
+    public static function getNumLoginAttempts(string $ip, string $since_datetime): int
+    {
+        return self::count([
+            'ip_address = :ip: AND created_at >= :created_at: AND type  = :type:',
+            'bind'       => [
+                'ip' => $ip,
+                'created_at' => $since_datetime,
+                'type' => 'login_failure'
+            ],
+            'bindTypes'  => [ Column::BIND_PARAM_STR, Column::BIND_PARAM_STR, Column::BIND_PARAM_STR ],
+        ]);
     }
 }
