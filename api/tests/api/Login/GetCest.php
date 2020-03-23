@@ -7,7 +7,7 @@ use Page\Data;
 use Phalcon\Api\Http\Response;
 //use function json_decode;
 
-class GetCest
+class LoginGetCest
 {
     public function getCSRFTokenJson(ApiTester $I)
     {

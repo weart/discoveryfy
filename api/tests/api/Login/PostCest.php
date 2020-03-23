@@ -7,9 +7,8 @@ use ApiTester;
 use Codeception\Util\HttpCode;
 use Page\Data;
 use Phalcon\Api\Http\Response;
-use function json_decode;
 
-class PostCest
+class LoginPostCest
 {
     /**
      * INVALID LOGIN USER: Json / JsonApi
@@ -68,6 +67,9 @@ class PostCest
         $I->haveHttpHeader('accept', 'application/vnd.api+json');
         $I->sendPOST(Data::$loginUrl);
         $I->seeResponseCodeIs(Response::OK);
+        $I->cantSeeResponseMatchesJsonType([
+            'errors' => 'array'
+        ]);
         $I->seeResponseContainsJson(['type' => 'jwt']);
         $I->seeResponseContainsJson(['type' => 'session']);
     }
@@ -84,7 +86,10 @@ class PostCest
         $I->haveHttpHeader('accept', 'application/json');
         $I->sendPOST(Data::$loginUrl, Data::loginJson());
         $I->seeResponseCodeIs(Response::OK);
-        //@TODO!! [jwt],[session]{,[user]}
+        $I->cantSeeResponseMatchesJsonType([
+            'errors' => 'array'
+        ]);
+        //@TODO: Improve testing, the format will be [ [jwt],[session]{,[user]} ]
 //        $I->seeResponseContainsJson([
 //            'jwt' => 'string',
 //            'session' => 'array',
@@ -123,12 +128,13 @@ class PostCest
         $I->haveHttpHeader('accept', 'application/vnd.api+json');
         $I->sendPOST(Data::$loginUrl, Data::loginJson());
         $I->seeResponseCodeIs(Response::OK);
-        //@TODO!!
+        //@TODO: Improve testing, the format will be 'data' => [ [jwt],[session]{,[user]} ]
         $I->seeResponseIsJsonApiSuccessful();
-//        $I->seeSuccessJsonResponse('data', [
-//            'jwt' => 'string',
-//            'session' => 'array',
-//        ]);
+        $I->seeSuccessJsonResponse('data', [
+            'type' => 'jwt',
+            'type' => 'session',
+            'type' => 'user'
+        ]);
         $I->seeResponseContainsJson(['type' => 'jwt']);
         $I->seeResponseContainsJson(['type' => 'session']);
         $I->seeResponseContainsJson(['type' => 'user']);

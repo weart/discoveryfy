@@ -59,7 +59,13 @@ class BaseTransformer extends TransformerAbstract
         $fields          = array_intersect($modelFields, $requestedFields);
         $data            = [];
         foreach ($fields as $field) {
-            $data[$field] = $model->get($field);
+            if ($field === 'created_at') {
+                $data[$field] = $model->getCreatedAt()->format(\DateTime::ATOM);
+            } else if ($field === 'updated_at' && !empty($model->get($field))) {
+                $data[$field] = $model->getUpdatedAt()->format(\DateTime::ATOM);
+            } else {
+                $data[$field] = $model->get($field);
+            }
         }
 
         return $data;

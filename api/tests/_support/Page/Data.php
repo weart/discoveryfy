@@ -5,6 +5,7 @@ namespace Page;
 //use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\ModelException;
 use Phalcon\Api\Mvc\Model\AbstractModel;
+use Phalcon\Security\Random;
 use function Phalcon\Api\Core\envValue;
 
 class Data
@@ -39,6 +40,20 @@ class Data
         return [
             'username' => 'testuser',
             'password' => 'testpassword',
+        ];
+    }
+
+    public static function registerJson()
+    {
+        return [
+            'username'          => 'test_'.(new Random())->hex(5),
+            'password'          => 'test_'.(new Random())->hex(5),
+            'email'             => 'test_'.(new Random())->hex(5).'@test.com',
+            'public-visibility' => true,
+            'public-email'      => true,
+            'language'          => 'en',
+            'theme'             => 'default',
+            'rol'               => 'ROLE_USER',
         ];
     }
 

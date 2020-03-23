@@ -85,6 +85,9 @@ class Response extends PhResponse
             return $this->setJsonApiContent($data)->sendJsonApi();
 
         } elseif ($ContentType === 'application/json') {
+            if (isset($data['data'])) { //Take data from json api envelope
+                $data = $data['data'];
+            }
             if (isset($data['id'])) { //Only one item
                 if (isset($data['attributes'])) {
                     return $this->setJsonContent($this->array_flatten($data))->send();
