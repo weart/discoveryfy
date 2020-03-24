@@ -74,12 +74,17 @@ class Integration extends Module
         if (empty($whitelist) && empty($blacklist)) {
             return $rtn;
         }
-        $rtn = array_filter($rtn, function ($val) use ($blacklist) {
-            return !in_array($val, $blacklist, true);
-        });
-        return array_filter($rtn, function ($val) use ($whitelist) {
-            return in_array($val, $whitelist, true);
-        });
+        if (!empty($blacklist)) {
+            $rtn = array_filter($rtn, function ($key) use ($blacklist) {
+                return !in_array($key, $blacklist, true);
+            }, ARRAY_FILTER_USE_KEY);
+        }
+        if (!empty($whitelist)) {
+            $rtn = array_filter($rtn, function ($key) use ($whitelist) {
+                return in_array($key, $whitelist, true);
+            }, ARRAY_FILTER_USE_KEY);
+        }
+        return $rtn;
     }
 
     private function getKnownUserAttributes()

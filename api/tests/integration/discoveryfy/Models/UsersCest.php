@@ -1,6 +1,6 @@
 <?php
 
-namespace Discoveryfy\Tests\integration\Phalcon\Api\Models;
+namespace Discoveryfy\Tests\integration\Discoveryfy\Models;
 
 use Discoveryfy\Models\Users;
 use IntegrationTester;

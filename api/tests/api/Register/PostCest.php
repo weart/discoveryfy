@@ -50,10 +50,6 @@ class RegisterPostCest
         $user_data = Data::registerJson();
         $I->sendPOST(Data::$registerUrl, $user_data);
 
-//        $I->seeResponseCodeIs(Response::CREATED);
-//        $I->cantSeeResponseMatchesJsonType([
-//            'errors' => 'array'
-//        ]);
         $I->seeResponseIsJsonApiSuccessful(Response::CREATED);
         $I->seeSuccessJsonResponse('data', [
             'type'                          => 'user',

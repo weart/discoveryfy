@@ -1,6 +1,6 @@
 <?php
 
-namespace Discoveryfy\Tests\integration\Phalcon\Api;
+namespace Discoveryfy\Tests\integration\Phalcon\Api\Mvc\Model;
 
 use Codeception\Stub;
 use Discoveryfy\Exceptions\ModelException;
@@ -12,9 +12,9 @@ use Phalcon\Messages\Message;
 use function Phalcon\Api\Core\appPath;
 
 /**
- * Class ModelCest
+ * Class AbstractModelCest
  */
-class ModelCest
+class AbstractModelCest
 {
     /**
      * @param IntegrationTester $I

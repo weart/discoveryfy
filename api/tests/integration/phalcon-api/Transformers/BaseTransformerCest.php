@@ -26,8 +26,10 @@ class BaseTransformerCest
 //            'password'          => $user->get('password'),
             // Public attributes
             'id'                => $user->get('id'),
-            'created_at'        => $user->get('created_at'),
-            'updated_at'        => $user->get('updated_at'),
+//            'created_at'        => $user->get('created_at'),
+//            'updated_at'        => $user->get('updated_at'),
+            'created_at'        => $user->getCreatedAt()->format(\DateTime::ATOM),
+            'updated_at'        => $user->getUpdatedAt()->format(\DateTime::ATOM),
             'username'          => $user->get('username'),
             'email'             => $user->get('email'),
             'public_visibility' => $user->get('public_visibility'),
