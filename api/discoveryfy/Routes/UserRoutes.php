@@ -10,10 +10,10 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Routes;
 
-use Discoveryfy\Controllers\Login\GetController as LoginGetController;
-use Discoveryfy\Controllers\Login\PostController as LoginPostController;
-use Discoveryfy\Controllers\Register\GetController as RegisterGetController;
-use Discoveryfy\Controllers\Register\PostController as RegisterPostController;
+use Discoveryfy\Controllers\Sessions\GetController as SessionGetController;
+use Discoveryfy\Controllers\Sessions\PutController as SessionPutController;
+use Discoveryfy\Controllers\Users\GetController as UserGetController;
+use Discoveryfy\Controllers\Users\PutController as UserPutController;
 use Phalcon\Api\Routes\ApiRoute;
 use Phalcon\Api\Routes\RoutesInterface;
 
@@ -22,10 +22,10 @@ class UserRoutes implements RoutesInterface
     public function getRoutes(): array
     {
         return [
-            new ApiRoute(LoginGetController::class, '/login', 'get'),
-            new ApiRoute(LoginPostController::class, '/login', 'post'),
-            new ApiRoute(RegisterGetController::class, '/register', 'get'),
-            new ApiRoute(RegisterPostController::class, '/register', 'post')
+            new ApiRoute(SessionGetController::class, '/sessions/{session_uuid}', 'get'),
+            new ApiRoute(SessionPutController::class, '/sessions/{session_uuid}', 'put'),
+            new ApiRoute(UserGetController::class, '/users/{user_uuid}', 'get'),
+            new ApiRoute(UserPutController::class, '/users/{user_uuid}', 'put')
         ];
     }
 }

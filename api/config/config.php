@@ -77,6 +77,7 @@ return [
         ],
     ],
     'routers' => [
+        \Discoveryfy\Routes\PublicRoutes::class,
         \Discoveryfy\Routes\UserRoutes::class,
         \Discoveryfy\Routes\TestRoutes::class,
     ],

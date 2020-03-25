@@ -12,6 +12,7 @@ namespace Discoveryfy\Models;
 
 use Phalcon\Api\Filters\UUIDFilter;
 use Phalcon\Api\Mvc\Model\TimestampableModel;
+use Phalcon\Api\Validators\UuidValidator;
 use Phalcon\Filter;
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 use Phalcon\Validation;
@@ -19,7 +20,6 @@ use Phalcon\Validation\Validator\InclusionIn;
 use Phalcon\Validation\Validator\Uniqueness;
 use Phalcon\Validation\Validator\StringLength;
 use Phalcon\Validation\Validator\Email;
-use Phalcon\Validation\Validator\Regex;
 
 /**
  * Class Users
@@ -144,45 +144,36 @@ class Users extends TimestampableModel
     }
 
     /**
-     * Validates the id uniqueness
-     *
      * @return bool
      */
-    public function validation()
+    public function validation(): bool
     {
-        $validator = new Validation();
-        $validator->add('id', new Uniqueness([
-            'message' => 'This id already exists in the database',
-        ]));
-        $validator->add('id', new Regex([
-            'pattern' => '/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iD',
-            'allowEmpty' => false,
-            'message' => 'Invalid id'
-        ]));
-        $validator->add('username', new Uniqueness([
-            'message' => 'This username already exists in the database',
-        ]));
-        $validator->add('username', new StringLength([
-            'min' => 3,
-            'includedMinimum' => false,
-            'messageMinimum' => 'The username must have minimum 4 characters'
-        ]));
-        $validator->add('email', new Email([
-            'message' => 'The email field is not valid'
-        ]));
-        $validator->add(
-            [
-                'language',
-                'theme',
-                'rol'
-            ],
-            new InclusionIn([ 'domain' => [ //message not provided
-                'language'          => [ 'en', 'es', 'ca' ],
-                'theme'             => [ 'default' ],
-                'rol'               => [ 'ROLE_ADMIN', 'ROLE_USER' ]
-            ]])
-        );
-
+        $validator = (new Validation())
+            ->add('id', new Uniqueness([
+                'message' => 'This id already exists in the database',
+            ]))
+            ->add('id', new UuidValidator())
+            ->add('username', new Uniqueness([
+                'message' => 'This username already exists in the database',
+            ]))
+            ->add('username', new StringLength([
+                'min' => 3,
+                'includedMinimum' => false,
+                'messageMinimum' => 'The username must have minimum 4 characters'
+            ]))
+            ->add('email', new Email([
+                'message' => 'The email field is not valid'
+            ]))
+            ->add('language', new InclusionIn([ 'domain' => [ //message not provided
+                'en', 'es', 'ca'
+            ]]))
+            ->add('theme', new InclusionIn([ 'domain' => [ //message not provided
+                'default'
+            ]]))
+            ->add('rol', new InclusionIn([ 'domain' => [ //message not provided
+                'ROLE_ADMIN', 'ROLE_USER'
+            ]]))
+        ;
         return $this->validate($validator);
     }
 
@@ -195,5 +186,10 @@ class Users extends TimestampableModel
     {
         $this->password = $password;
         return $this;
+    }
+
+    public function isAdmin(): bool
+    {
+        return ($this->get('rol') === 'ROLE_ADMIN');
     }
 }

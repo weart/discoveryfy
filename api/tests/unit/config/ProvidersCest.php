@@ -12,6 +12,7 @@ use Phalcon\Api\Providers\RequestProvider;
 use Phalcon\Api\Providers\ResponseProvider;
 use Phalcon\Api\Providers\RouterProvider;
 use Phalcon\Api\Providers\CacheDataProvider;
+use Phalcon\Api\Providers\ModelsCacheProvider;
 use Phalcon\Api\Providers\FiltersProvider;
 use Phalcon\Api\Providers\SecurityProvider;
 use Phalcon\Api\Providers\AuthProvider;
@@ -33,9 +34,10 @@ class ProvidersCest
         $I->assertEquals(ResponseProvider::class, $providers[6]);
         $I->assertEquals(RouterProvider::class, $providers[7]);
         $I->assertEquals(CacheDataProvider::class, $providers[8]);
-        $I->assertEquals(FiltersProvider::class, $providers[9]);
-        $I->assertEquals(SecurityProvider::class, $providers[10]);
-        $I->assertEquals(AuthProvider::class, $providers[11]);
+        $I->assertEquals(ModelsCacheProvider::class, $providers[9]);
+        $I->assertEquals(FiltersProvider::class, $providers[10]);
+        $I->assertEquals(SecurityProvider::class, $providers[11]);
+        $I->assertEquals(AuthProvider::class, $providers[12]);
     }
 
     public function checkCliProviders(UnitTester $I)

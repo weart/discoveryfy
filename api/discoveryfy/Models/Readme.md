@@ -1,6 +1,4 @@
-# Skipper: Changes To Be Done
-
-### Already done in the models
+# Skipper image is outdated: Changes To Be Done
 
 Poll:
   * Change order
@@ -13,10 +11,11 @@ User:
   * Add field Language (string)
   * Add field Theme (string)
 
+Organization: description
+SecurityEvents: entire
+Comments: entire
 
-
-ToDo:
-
+### Models filtering / security
 
 Filters:
   * Organization:

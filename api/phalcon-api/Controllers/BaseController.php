@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Controllers;
 
+use Discoveryfy\Exceptions\BadRequestException;
+use Phalcon\Api\Filters\UUIDFilter;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Traits\FractalTrait;
 use Phalcon\Api\Traits\QueryTrait;
@@ -19,6 +21,7 @@ use Phalcon\Api\Traits\ResponseTrait;
 use Phalcon\Cache;
 use Phalcon\Config;
 use Phalcon\Filter;
+use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\Controller;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Model\MetaData\Libmemcached as ModelsMetadataCache;
@@ -51,10 +54,11 @@ class BaseController extends Controller
     protected $includes = [];
 
     /** @var string */
-    protected $method = 'collection';
+    protected $method = 'collection'; //Valid methods: item or collection
 
     /** @var string */
-    protected $orderBy = 'name';
+//    protected $orderBy = 'name';
+    protected $orderBy = '';
 
     /** @var string */
     protected $resource = '';
@@ -68,9 +72,10 @@ class BaseController extends Controller
     /**
      * Get the model/models
      *
-     * @param int $id
+     * @param string $id
+     * @return ResponseInterface
      */
-    public function callAction($id = 0)
+    public function callAction(string $id = ''): ResponseInterface
     {
         $parameters = $this->checkIdParameter($id);
         $fields     = $this->checkFields();
@@ -78,25 +83,27 @@ class BaseController extends Controller
         $validSort  = $this->checkSort();
 
         if (true !== $validSort) {
-            $this->sendError($this->response::BAD_REQUEST);
-        } else {
-            $results = $this->getRecords($this->config, $this->cache, $this->model, $parameters, $this->orderBy);
-            if (count($parameters) > 0 && 0 === count($results)) {
-                $this->sendError($this->response::NOT_FOUND);
-            } else {
-                $data = $this->format(
-                    $this->method,
-                    $results,
-                    $this->transformer,
-                    $this->resource,
-                    $related,
-                    $fields
-                );
-                $this
-                    ->response
-                    ->setPayloadSuccess($data);
-            }
+            return $this->sendError($this->response::BAD_REQUEST);
         }
+
+        $results = $this->getRecords($this->config, $this->cache, $this->model, $parameters, $this->orderBy);
+        if (count($parameters) > 0 && 0 === $results->count()) {
+            return $this->setPayloadError($this->response::NOT_FOUND);
+        }
+        if ($this->method === 'item') {
+            if ($results->count() !== 1) {
+                return $this->setPayloadError($this->response::INTERNAL_SERVER_ERROR);
+            }
+            $results = $results->getFirst();
+        }
+        return $this->response->sendApiContent($this->request->getContentType(), $this->format(
+            $this->method,
+            $results,
+            $this->transformer,
+            $this->resource,
+            $related,
+            $fields
+        ));
     }
 
     private function checkFields(): array
@@ -113,19 +120,20 @@ class BaseController extends Controller
     /**
      * Checks the passed id parameter and returns the relevant array back
      *
-     * @param int $recordId
+     * @param string $recordId
      *
      * @return array
      */
-    private function checkIdParameter($recordId = 0): array
+    private function checkIdParameter(string $recordId = ''): array
     {
         $parameters = [];
 
-        /** @var int $localId */
-        $localId = $this->filter->sanitize($recordId, Filter::FILTER_ABSINT);
+        if (empty($recordId)) {
+            return $parameters;
+        }
 
-        if ($localId > 0) {
-            $parameters['id'] = $localId;
+        if (false === ($parameters['id'] = $this->filter->sanitize($recordId, UUIDFilter::FILTER_NAME))) {
+            throw new BadRequestException('Invalid uuid');
         }
 
         return $parameters;

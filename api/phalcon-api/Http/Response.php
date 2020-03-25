@@ -85,10 +85,13 @@ class Response extends PhResponse
             return $this->setJsonApiContent($data)->sendJsonApi();
 
         } elseif ($ContentType === 'application/json') {
-            if (isset($data['data'])) { //Take data from json api envelope
+            if (isset($data['data'])) { // Take data from json api envelope
                 $data = $data['data'];
             }
-            if (isset($data['id'])) { //Only one item
+            if (count($data) === 1) { // Array with only one item
+                $data = $data[0];
+            }
+            if (isset($data['id'])) { // Object with only one item
                 if (isset($data['attributes'])) {
                     return $this->setJsonContent($this->array_flatten($data))->send();
                 } else {
@@ -283,10 +286,23 @@ class Response extends PhResponse
      *
      * @return Response
      */
-    public function setJsonApiContent($content = []): Response
+    public function setJsonApiContent($data = []): Response
     {
-        $data = (true === is_array($content)) ? $content : ['data' => $content];
-        $data = (true === isset($data['data'])) ? $data  : ['data' => $data];
+        // If content is not array, convert content to array like 'data' => $content
+//        $data = (true === is_array($content)) ? $data : ['data' => $data];
+        if (!is_array($data)) {
+            $data = ['data' => $data];
+        }
+        // If data not has a format like 'data' => content, assign the data key
+//        $data = (true === isset($data['data'])) ? $data  : ['data' => $data];
+        if (!isset($data['data'])) {
+            $data = ['data' => $data];
+        }
+
+        // If data only contains one element, data can contain only the element
+        if (is_array($data['data']) && count($data['data']) === 1 && isset($data['data'][0])) {
+            $data['data'] = $data['data'][0];
+        }
 
         $this->setJsonContent($data);
 

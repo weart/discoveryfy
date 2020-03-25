@@ -71,6 +71,9 @@ class AuthPlugin extends Injectable
      */
     public function getUser(): ?Users
     {
+        if (!isset($this->user) && !empty($this->session->get('user_id'))) {
+            $this->loadUser();
+        }
         return $this->user ?: null;
     }
 
@@ -336,11 +339,22 @@ class AuthPlugin extends Injectable
 
     public function loadUser()
     {
-        if (!isset($this->session)) {
+        if (!isset($this->session) || empty($this->session->get('user_id'))) {
             throw new InternalServerErrorException('Undefined session');
         }
         if (!isset($this->user)) { //Manual relationship loading
-            $this->user = Users::findFirst(['id' => $this->session->get('user_id')]);
+            $this->user = Users::findFirst([
+                'id = :user_id:',
+                'bind'          => ['user_id' => $this->session->get('user_id')],
+                'bindTypes'     => ['user_id' => \Phalcon\Db\Column::BIND_PARAM_STR],
+                'cache'         => [
+                    'key'       => CacheKeys::getModelCacheKey('user', $this->session->get('user_id')),
+//                    'lifetime'  => 84600,
+                ],
+            ]);
+            if ($this->user->get('id') !== $this->session->get('user_id')) {
+                throw new InternalServerErrorException('Invalid user recovered');
+            }
         }
 //        if (!$this->session->isRelationshipLoaded('users')) { //Phalcon relationship loading
 //            $this->user = $this->session->getRelated('users');

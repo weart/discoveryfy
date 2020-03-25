@@ -16,6 +16,7 @@ use Phalcon\Api\Providers\DatabaseProvider;
 use Phalcon\Api\Providers\ErrorHandlerProvider;
 use Phalcon\Api\Providers\LoggerProvider;
 use Phalcon\Api\Providers\ModelsMetadataProvider;
+use Phalcon\Api\Providers\ModelsCacheProvider;
 use Phalcon\Api\Providers\RequestProvider;
 use Phalcon\Api\Providers\ResponseProvider;
 use Phalcon\Api\Providers\RouterProvider;
@@ -36,6 +37,7 @@ return [
     ResponseProvider::class,
     RouterProvider::class,
     CacheDataProvider::class,
+    ModelsCacheProvider::class,
     FiltersProvider::class,
     SecurityProvider::class,
     AuthProvider::class

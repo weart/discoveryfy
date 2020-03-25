@@ -15,59 +15,28 @@ use Phalcon\Api\Mvc\Model\TimestampableModel;
 use Phalcon\Api\Validators\UuidValidator;
 use Phalcon\Filter;
 use Phalcon\Validation;
+use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
 
 /**
- * Class Sessions
+ * Class Tracks
  *
- * @see https://docs.phalcon.io/4.0/en/db-models
- * @see https://docs.phalcon.io/4.0/en/db-models-relationships
- * @see https://docs.phalcon.io/4.0/en/api/phalcon_mvc
  * @package Discoveryfy\Models
  */
-class Sessions extends TimestampableModel
+class Tracks extends TimestampableModel
 {
-    // Private attributes
-    protected $id;
-    protected $user_id;
-    // Public attributes
-    protected $name;
 
     /**
-     * @inheritDoc
+     * Returns the source table from the database
+     *
+     * @return void
      */
     public function initialize(): void
     {
-        $this->setSource('sessions');
-
-        //References to users, votes & tracks
-        $this->belongsTo('user_id', Users::class, 'id', [
-            'alias'    => 'user',
-            'reusable' => true,
-        ]);
-        $this->hasMany('id', Votes::class, 'session_id', [
-            'alias'    => 'votes',
-            'reusable' => true,
-        ]);
-        $this->hasMany('id', Tracks::class, 'session_id', [
-            'alias'    => 'tracks',
-            'reusable' => true,
-        ]);
+        $this->setSource('tracks');
 
         parent::initialize();
     }
-
-    /**
-     * Column Mapping: Property rename them to match the respective columns in the database
-     *
-     * @return array
-     */
-//    public function columnMap(): array
-//    {
-//        return parent::columnMap() + [ //created_at & updated_at
-//                'user_id' => 'userId'
-//            ];
-//    }
 
     /**
      * @return array<string,string>
@@ -75,6 +44,8 @@ class Sessions extends TimestampableModel
     public function getPrivateAttributes(): array
     {
         return [
+            'poll_id'           => UUIDFilter::FILTER_NAME,
+            'session_id'        => UUIDFilter::FILTER_NAME,
             'user_id'           => UUIDFilter::FILTER_NAME,
         ];
     }
@@ -85,10 +56,15 @@ class Sessions extends TimestampableModel
     public function getPublicAttributes(): array
     {
         return [
+            //created_at & updated_at
             'id'                => UUIDFilter::FILTER_NAME,
             'created_at'        => Filter::FILTER_STRING,
             'updated_at'        => Filter::FILTER_STRING,
+            'artist'            => Filter::FILTER_STRING,
             'name'              => Filter::FILTER_STRING,
+            'spotify_uri'       => Filter::FILTER_STRING,
+            'spotify_images'    => Filter::FILTER_STRING, //array, saved in json
+            'youtube_uri'       => Filter::FILTER_STRING
         ];
     }
 
@@ -102,6 +78,13 @@ class Sessions extends TimestampableModel
                 'message' => 'The id already exists in the database',
             ]))
             ->add('id', new UuidValidator())
+            ->add('poll_id', new UuidValidator())
+            ->add('session_id', new UuidValidator())
+            ->add('user_id', new UuidValidator([
+                'allowEmpty' => true
+            ]))
+            ->add('artist', new PresenceOf()) //AlnumValidator?
+            ->add('name', new PresenceOf())
         ;
         return $this->validate($validator);
     }

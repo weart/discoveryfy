@@ -45,7 +45,7 @@ class UsersCest
         $I->assertFalse($user->validation(), 'Invalid string');
         $msgs = $user->getMessages();
         $I->assertCount(1, $msgs);
-        $I->assertEquals('Invalid id', ($msgs[0])->getMessage());
+        $I->assertEquals('Invalid uuid', ($msgs[0])->getMessage());
 //        $I->assertEquals('This username already exists in the database', ($msgs[0])->getMessage());
     }
 
@@ -56,10 +56,10 @@ class UsersCest
 
         $user->set('id', 1234);
         $user->set('username', 'test_invalid_id'); //Avoid 'This username already exists in the database' validation
-        $I->assertFalse($user->validation(), 'Invalid id');
+        $I->assertFalse($user->validation(), 'Invalid uuid');
         $msgs = $user->getMessages();
         $I->assertCount(1, $msgs);
-        $I->assertEquals('Invalid id', ($msgs[0])->getMessage());
+        $I->assertEquals('Invalid uuid', ($msgs[0])->getMessage());
     }
 
     public function checkValidationIdValid(IntegrationTester $I)

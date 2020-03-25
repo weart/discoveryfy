@@ -21,6 +21,12 @@ use Phalcon\Storage\SerializerFactory;
 
 class CacheDataProvider implements ServiceProviderInterface
 {
+
+    /**
+     * @var string
+     */
+    public static $providerName = 'cache';
+
     /**
      * @param DiInterface $container
      */
@@ -29,19 +35,16 @@ class CacheDataProvider implements ServiceProviderInterface
         /** @var Config $config */
         $config = $container->getShared('config');
 
-        $container->setShared(
-            'cache',
-            function () use ($config) {
-                $cache = $config->get('cache')->toArray();
-                $adapter = $cache['adapter'];
-                $options = $cache['options'] ?? [];
+        $container->setShared(self::$providerName, function () use ($config) {
+            $cache = $config->get('cache')->toArray();
+            $adapter = $cache['adapter'];
+            $options = $cache['options'] ?? [];
 
-                $serializerFactory = new SerializerFactory();
-                $adapterFactory = new AdapterFactory($serializerFactory);
-                $adapter = $adapterFactory->newInstance($adapter, $options);
+            $serializerFactory = new SerializerFactory();
+            $adapterFactory = new AdapterFactory($serializerFactory);
+            $adapter = $adapterFactory->newInstance($adapter, $options);
 
-                return new Cache($adapter);
-            }
-        );
+            return new Cache($adapter);
+        });
     }
 }

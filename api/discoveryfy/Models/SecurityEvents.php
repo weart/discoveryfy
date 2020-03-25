@@ -26,9 +26,9 @@ use Phalcon\Security\Random;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\InclusionIn;
 use Phalcon\Validation\Validator\Uniqueness;
-use Phalcon\Validation\Validator\StringLength;
 use Phalcon\Validation\Validator\Ip;
 use Phalcon\Validation\Validator\Ip as IpValidator;
+use Phalcon\Api\Validators\UuidValidator;
 
 class SecurityEvents extends AbstractModel
 {
@@ -128,15 +128,17 @@ class SecurityEvents extends AbstractModel
     }
 
     /**
-     * Validates the id uniqueness
-     *
      * @return bool
      */
-    public function validation()
+    public function validation(): bool
     {
         $validator = (new Validation())
             ->add('id', new Uniqueness([
                 'message' => 'The id already exists in the database',
+            ]))
+            ->add('id', new UuidValidator())
+            ->add('user_id', new UuidValidator([
+                'allowEmpty' => true
             ]))
             ->add('type', new InclusionIn([
                 'message' => ':field is not a valid type',

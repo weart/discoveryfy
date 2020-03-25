@@ -15,4 +15,5 @@ namespace Discoveryfy\Constants;
 class Relationships
 {
     const USERS            = 'users';
+    const SESSION          = 'sessions';
 }

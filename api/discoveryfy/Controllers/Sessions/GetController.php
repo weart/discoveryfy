@@ -8,11 +8,11 @@ declare(strict_types=1);
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Discoveryfy\Controllers\Users;
+namespace Discoveryfy\Controllers\Sessions;
 
 use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\UnauthorizedException;
-use Discoveryfy\Models\Users;
+use Discoveryfy\Models\Sessions;
 use Phalcon\Api\Controllers\BaseController;
 //use Phalcon\Api\Http\Request;
 //use Phalcon\Api\Http\Response;
@@ -21,11 +21,11 @@ use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Http\ResponseInterface;
 
 /**
- * Retrieves a User
+ * Get one session
  *
- * Module       Users
+ * Module       Sessions
  * Class        GetController
- * OperationId  user.get
+ * OperationId  session.get
  *
  * @property Auth         $auth
  * #property Request      $request
@@ -34,10 +34,10 @@ use Phalcon\Http\ResponseInterface;
 class GetController extends BaseController
 {
     /** @var string */
-    protected $model       = Users::class;
+    protected $model       = Sessions::class;
 
     /** @var string */
-    protected $resource    = Relationships::USERS;
+    protected $resource    = Relationships::SESSION;
 
     /** @var string */
     protected $transformer = BaseTransformer::class;
@@ -45,14 +45,15 @@ class GetController extends BaseController
     /** @var string */
     protected $method = 'item';
 
-    public function callAction(string $user_uuid = ''): ResponseInterface
+    public function callAction(string $session_uuid = ''): ResponseInterface
     {
-        if (!$this->auth->getUser()) {
-            throw new UnauthorizedException('Only available for registered users');
+//        if (!$this->auth->getUser()) {
+//            throw new UnauthorizedException('Only available for registered users');
+//        }
+        if ($this->auth->getSession()->get('id') !== $session_uuid && !$this->auth->getUser()->isAdmin()) {
+            // Save security_event?
+            throw new UnauthorizedException('Session unauthorized for this action');
         }
-        if ($this->auth->getUser()->get('id') !== $user_uuid && !$this->auth->getUser()->isAdmin()) {
-            throw new UnauthorizedException('User unauthorized for this action');
-        }
-        return parent::callAction($user_uuid);
+        return parent::callAction($session_uuid);
     }
 }

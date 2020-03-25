@@ -18,7 +18,7 @@ use Discoveryfy\Exceptions\NotImplementedException;
 use Discoveryfy\Exceptions\UnauthorizedException;
 use Discoveryfy\Models\SecurityEvents;
 use Discoveryfy\Transformers\UserTransformer;
-use Discoveryfy\Validators\UserValidator;
+use Discoveryfy\Validators\UuidValidator;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Discoveryfy\Models\Users;

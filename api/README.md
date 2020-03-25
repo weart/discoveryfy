@@ -53,7 +53,7 @@ More info: https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Res
 * Create models
 * CORS - Uncomment middleware in RouterProvider
 * Autofinish polls with a scheduled agent
-* Private key with password?
+* Test against schema: https://github.com/aWuttig/codeception-api-validator / https://github.com/mlambley/swagception
 * JSON-LD Schema. First define the specs in OpenApi file, after that in the code.
     * https://ca.wikipedia.org/wiki/JSON-LD
 * Pull request to the main phalcon/json-api project:

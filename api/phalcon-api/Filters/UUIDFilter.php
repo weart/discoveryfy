@@ -18,11 +18,14 @@ class UUIDFilter
      * Determine if a given string is a valid UUID.
      * @see Illuminate\Support\Str (Laravel framework)
      * @example 710cb0bd-1553-4119-8762-f565e687d50c is a valid uuid
-     * @param  string $value
+     * @param  string|null $value
      * @return false|string
      */
-    public function __invoke(string $value)
+    public function __invoke(?string $value)
     {
+        if (empty($value)) {
+            return false;
+        }
         if (preg_match('/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iD', $value) !== 1) {
             return false;
         }

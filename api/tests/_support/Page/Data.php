@@ -12,6 +12,8 @@ class Data
 {
     public static $loginUrl                         = '/login';
     public static $registerUrl                      = '/register';
+    public static $usersUrl                         = '/users/%s';
+    public static $sessionsUrl                      = '/sessions/%s';
     public static $wrongUrl                         = '/sommething';
 
 //    public static $companiesSortUrl                 = '/companies?sort=%s';
@@ -30,7 +32,6 @@ class Data
 //    public static $productTypesUrl                  = '/product-types';
 //    public static $productTypesRecordUrl            = '/product-types/%s';
 //    public static $productTypesRecordIncludesUrl    = '/product-types/%s?includes=%s';
-//    public static $usersUrl                         = '/users';
 
     /**
      * @return array

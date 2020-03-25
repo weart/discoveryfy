@@ -13,7 +13,7 @@ namespace Phalcon\Api\Middleware;
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
-use Phalcon\Api\Plugins\Auth\Auth;
+use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 use Phalcon\Api\Traits\ResponseTrait;
 use Phalcon\Config;
 use Phalcon\Mvc\Micro;
