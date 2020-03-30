@@ -103,5 +103,4 @@ abstract class TimestampableModel extends AbstractModel
         //Check getDirtyState() function?
         return new \DateTime($this->updated_at);
     }
-
 }

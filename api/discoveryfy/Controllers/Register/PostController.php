@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Discoveryfy\Controllers\Register;
 
 use Discoveryfy\Constants\CacheKeys;
+use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\BadRequestException;
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\ModelException;
@@ -24,8 +25,8 @@ use Phalcon\Api\Http\Response;
 use Discoveryfy\Models\Users;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 use Phalcon\Api\Traits\FractalTrait;
-use Phalcon\Api\Traits\QueryTrait;
-use Phalcon\Api\Traits\ResponseTrait;
+//use Phalcon\Api\Traits\QueryTrait;
+//use Phalcon\Api\Traits\ResponseTrait;
 use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Cache;
 use Phalcon\Config;
@@ -38,7 +39,7 @@ use Phalcon\Security\Random;
  *
  * Module       Register
  * Class        PostController
- * OperationId     user.create
+ * OperationId  user.create
  *
  * @property Auth         $auth
  * @property Request      $request
@@ -46,9 +47,21 @@ use Phalcon\Security\Random;
  */
 class PostController extends Controller
 {
-    use QueryTrait;
     use FractalTrait;
-    use ResponseTrait;
+//    use QueryTrait;
+//    use ResponseTrait;
+
+    /** @var string */
+//    protected $model       = Users::class;
+
+    /** @var string */
+    protected $resource    = Relationships::USER;
+
+    /** @var string */
+    protected $transformer = BaseTransformer::class;
+
+    /** @var string */
+    protected $method = 'item';
 
     public function callAction()
     {
@@ -83,9 +96,7 @@ class PostController extends Controller
             if (false === $user->validationHasFailed()) {
                 throw new InternalServerErrorException('Error creating user');
             }
-            return $this->response
-                ->setPayloadErrors($user->getMessages())
-                ->send();
+            return $this->response->sendApiErrors($this->request->getContentType(), $user->getMessages());
         }
 
         //@ToDo: Send mail with token, & create event when mail is confirmed
@@ -95,7 +106,7 @@ class PostController extends Controller
             ->setStatusCode($this->response::CREATED)
             ->sendApiContent(
                 $this->request->getContentType(),
-                $this->format('item', $user, BaseTransformer::class, 'user') //User.Read
+                $this->format($this->method, $user, $this->transformer, $this->resource)
             );
     }
 }

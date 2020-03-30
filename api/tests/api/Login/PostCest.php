@@ -57,7 +57,7 @@ class LoginPostCest
         $I->sendPOST(Data::$loginUrl);
         $I->seeResponseCodeIs(Response::OK);
         $I->seeResponseContainsJson(['type' => 'jwt']);
-        $I->seeResponseContainsJson(['type' => 'session']);
+        $I->seeResponseContainsJson(['type' => 'sessions']);
     }
 
     public function loginAnonUserJsonApi(ApiTester $I)
@@ -71,7 +71,7 @@ class LoginPostCest
             'errors' => 'array'
         ]);
         $I->seeResponseContainsJson(['type' => 'jwt']);
-        $I->seeResponseContainsJson(['type' => 'session']);
+        $I->seeResponseContainsJson(['type' => 'sessions']);
     }
 
     /**
@@ -89,35 +89,35 @@ class LoginPostCest
         $I->cantSeeResponseMatchesJsonType([
             'errors' => 'array'
         ]);
-        //@TODO: Improve testing, the format will be [ [jwt],[session]{,[user]} ]
+        //@TODO: Improve testing, the format will be [ [jwt],[sessions]{,[users]} ]
 //        $I->seeResponseContainsJson([
 //            'jwt' => 'string',
-//            'session' => 'array',
+//            'sessions' => 'array',
 //        ]);
 //        $I->seeResponseMatchesJsonType([
 //            'type' => 'string',
 //            'id' => 'string'
 //        ], '$..');
-//        Step  See response matches json type {"type":"session"},"$[*].type"
-//         Fail  Key `type` doesn't exist in ["jwt","session","user"]
+//        Step  See response matches json type {"type":"sessions"},"$[*].type"
+//         Fail  Key `type` doesn't exist in ["jwt","sessions","users"]
 //        $I->seeResponseMatchesJsonType([
 //            'type' => 'jwt',
-//            'type' => 'session',
-//            'type' => 'user'
+//            'type' => 'sessions',
+//            'type' => 'users'
 //        ], '$[*]');
 //        $I->seeResponseContainsJson([
 //            ['type' => 'jwt'],
-//            ['type' => 'session'],
-//            ['type' => 'user'],
+//            ['type' => 'sessions'],
+//            ['type' => 'users'],
 //        ]);
-//        $I->seeResponseContainsJson(['type' => 'session']);
-//        $I->seeResponseContainsJson(['type' => 'user']);
+//        $I->seeResponseContainsJson(['type' => 'sessions']);
+//        $I->seeResponseContainsJson(['type' => 'users']);
 
         // response: {name: john, email: john@gmail.com}
 //        $I->seeResponseContainsJson(array('name' => 'john'));
         $I->seeResponseContainsJson(['type' => 'jwt']);
-        $I->seeResponseContainsJson(['type' => 'session']);
-        $I->seeResponseContainsJson(['type' => 'user']);
+        $I->seeResponseContainsJson(['type' => 'sessions']);
+        $I->seeResponseContainsJson(['type' => 'users']);
     }
 
     public function loginKnownUserJsonApi(ApiTester $I)
@@ -128,16 +128,16 @@ class LoginPostCest
         $I->haveHttpHeader('accept', 'application/vnd.api+json');
         $I->sendPOST(Data::$loginUrl, Data::loginJson());
         $I->seeResponseCodeIs(Response::OK);
-        //@TODO: Improve testing, the format will be 'data' => [ [jwt],[session]{,[user]} ]
+        //@TODO: Improve testing, the format will be 'data' => [ [jwt],[sessions]{,[users]} ]
         $I->seeResponseIsJsonApiSuccessful();
         $I->seeSuccessJsonResponse('data', [
             'type' => 'jwt',
-            'type' => 'session',
-            'type' => 'user'
+            'type' => 'sessions',
+            'type' => 'users'
         ]);
         $I->seeResponseContainsJson(['type' => 'jwt']);
-        $I->seeResponseContainsJson(['type' => 'session']);
-        $I->seeResponseContainsJson(['type' => 'user']);
+        $I->seeResponseContainsJson(['type' => 'sessions']);
+        $I->seeResponseContainsJson(['type' => 'users']);
     }
 
     /**

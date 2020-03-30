@@ -22,7 +22,7 @@ class TimestampableModelCest
         //test using php timestamps
         $config->set('db.timestamps_from_db', true);
         $whitelist = [];
-        $blacklist = ['created_at', 'updated_at'];
+        $blacklist = ['created_at', 'updated_at', 'deleted_at'];
         /**
          * @var $fixture TimestampableModel
          */
@@ -35,7 +35,7 @@ class TimestampableModelCest
         //test using database timestamps
         $config->set('db.timestamps_from_db', false);
         $whitelist = [];
-        $blacklist = ['created_at', 'updated_at'];
+        $blacklist = ['created_at', 'updated_at', 'deleted_at'];
         /**
          * @var $fixture TimestampableModel
          */
@@ -52,7 +52,7 @@ class TimestampableModelCest
     public function modelModifyFieldChangeUpdatedAt(IntegrationTester $I)
     {
         $whitelist = [];
-        $blacklist = ['created_at', 'updated_at'];
+        $blacklist = ['created_at', 'updated_at', 'deleted_at'];
         /**
          * @var $fixture TimestampableModel
          */

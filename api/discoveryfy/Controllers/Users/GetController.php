@@ -37,7 +37,7 @@ class GetController extends BaseController
     protected $model       = Users::class;
 
     /** @var string */
-    protected $resource    = Relationships::USERS;
+    protected $resource    = Relationships::USER;
 
     /** @var string */
     protected $transformer = BaseTransformer::class;

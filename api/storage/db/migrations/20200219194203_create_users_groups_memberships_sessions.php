@@ -49,6 +49,7 @@ class CreateUsersGroupsMembershipsSessions extends AbstractMigration
         $users_table
             ->addColumn('id', 'uuid', [ 'null' => false, 'comment' => 'User unique identifier' ])
             ->addTimestampsWithTimezone() //Add fields: created_at and updated_at
+            ->addColumn('deleted_at', 'timestamp', [ 'null' => true, 'default' => null, 'timezone' => true]) //SoftDelete
             ->addColumn('username', 'string', [ 'limit' => 255, 'null' => false, 'comment' => 'Nickname of the user, must be unique' ])
             ->addColumn('password', 'string', [ 'limit' => 255, 'null' => false, 'comment' => 'Only encrypted passwords!' ])
             ->addColumn('email', 'string', [ 'limit' => 255, 'null' => false ])
@@ -69,6 +70,7 @@ class CreateUsersGroupsMembershipsSessions extends AbstractMigration
         $orgs_table
             ->addColumn('id', 'uuid', [ 'null' => false, 'comment' => 'Organization unique identifier' ])
             ->addTimestampsWithTimezone() //Add fields: created_at and updated_at
+            ->addColumn('deleted_at', 'timestamp', [ 'null' => true, 'default' => null, 'timezone' => true]) //SoftDelete
             ->addColumn('name', 'string', [ 'limit' => 255, 'null' => false, 'comment' => 'Name of the organization' ])
             ->addColumn('description', 'string', [ 'limit' => 255, 'null' => true, 'comment' => 'Description of the organization' ])
             ->addColumn('public_visibility', 'boolean', [ 'default' => false, 'null' => false, 'signed' => false, 'comment' => 'Is this group public and can be seen be anyone?' ])

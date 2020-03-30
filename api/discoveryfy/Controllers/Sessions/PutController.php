@@ -64,9 +64,7 @@ class PutController extends BaseController
             if (false === $this->auth->getSession()->validationHasFailed()) {
                 throw new InternalServerErrorException('Error changing session name');
             }
-            return $this->response
-                ->setPayloadErrors($this->auth->getSession()->getMessages())
-                ->send();
+            return $this->response->sendApiErrors($this->request->getContentType(), $this->auth->getSession()->getMessages());
         }
 
         return parent::callAction($session_uuid);

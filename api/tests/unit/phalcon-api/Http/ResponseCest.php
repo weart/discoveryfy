@@ -11,35 +11,25 @@ use function json_decode;
 
 class ResponseCest
 {
+    const contentTypeJson = 'application/json';
+    const contentTypeJsonApi = 'application/vnd.api+json';
+    const contentTypeJsonLc = 'application/ld+json';
+
     public function checkResponseWithStringPayload(UnitTester $I)
     {
         $response = new Response();
 
         $response
-            ->setJsonApiContent('test');
+            ->sendApiContent(self::contentTypeJson, ['id' => 'test']);
 
         $contents = $response->getContent();
         $I->assertTrue(is_string($contents));
 
-        $payload = $this->checkPayload($I, $response);
+//        $payload = $this->checkPayload($I, $response);
 
         $I->assertFalse(isset($payload['errors']));
-        $I->assertEquals('test', $payload['data']);
-    }
-
-    private function checkPayload(UnitTester $I, Response $response, bool $error = false): array
-    {
-        $contents = $response->getContent();
-        $I->assertTrue(is_string($contents));
-
-        $payload = json_decode($contents, true);
-        if (true === $error) {
-            $I->assertTrue(isset($payload['errors']));
-        } else {
-            $I->assertTrue(isset($payload['data']));
-        }
-
-        return $payload;
+//        $I->assertEquals('test', $payload['data']);
+        $I->assertEquals('"test"', $contents);
     }
 
     public function checkResponseWithArrayPayload(UnitTester $I)
@@ -47,12 +37,12 @@ class ResponseCest
         $response = new Response();
 
         $response
-            ->setJsonApiContent(['a' => 'b']);
+            ->sendApiContent(self::contentTypeJsonApi, ['id' => 'abc']);
 
         $payload = $this->checkPayload($I, $response);
 
         $I->assertFalse(isset($payload['errors']));
-        $I->assertEquals(['a' => 'b'], $payload['data']);
+        $I->assertEquals(['id' => 'abc'], $payload['data']);
     }
 
     public function checkResponseWithErrorCode(UnitTester $I)
@@ -60,7 +50,7 @@ class ResponseCest
         $response = new Response();
 
         $response
-            ->setPayloadError($response::INTERNAL_SERVER_ERROR, 'error content');
+            ->sendApiError(self::contentTypeJsonApi, $response::INTERNAL_SERVER_ERROR, 'error content');
 
         $payload = $this->checkPayload($I, $response, true);
 
@@ -77,7 +67,7 @@ class ResponseCest
         ];
         $response = new Response();
         $response
-            ->setPayloadErrors($messages);
+            ->sendApiErrors(self::contentTypeJsonApi, $messages);
 
         $payload = $this->checkPayload($I, $response, true);
 
@@ -97,7 +87,7 @@ class ResponseCest
 
         $response = new Response();
         $response
-            ->setPayloadErrors($group);
+            ->sendApiErrors(self::contentTypeJsonApi, $group);
 
         $payload = $this->checkPayload($I, $response, true);
 
@@ -107,12 +97,28 @@ class ResponseCest
         $I->assertEquals('goodbye', $payload['errors'][1]['title']);
     }
 
+    private function checkPayload(UnitTester $I, Response $response, bool $error = false): array
+    {
+        $contents = $response->getContent();
+        $I->assertTrue(is_string($contents), 'Content is not a string, is a: '.gettype($contents));
+
+        $payload = json_decode($contents, true);
+        if (true === $error) {
+            $I->assertTrue(isset($payload['errors']));
+        } else {
+            $I->assertTrue(isset($payload['data']));
+        }
+
+        return $payload;
+    }
+
     public function checkHttpCodes(UnitTester $I)
     {
         $response = new Response();
         $I->assertEquals('200 (OK)', $response->getHttpCodeDescription($response::OK));
         $I->assertEquals('201 (Created)', $response->getHttpCodeDescription($response::CREATED));
         $I->assertEquals('202 (Accepted)', $response->getHttpCodeDescription($response::ACCEPTED));
+        $I->assertEquals('204 (No Content)', $response->getHttpCodeDescription($response::NO_CONTENT));
         $I->assertEquals('301 (Moved Permanently)', $response->getHttpCodeDescription($response::MOVED_PERMANENTLY));
         $I->assertEquals('302 (Found)', $response->getHttpCodeDescription($response::FOUND));
         $I->assertEquals('307 (Temporary Redirect)', $response->getHttpCodeDescription($response::TEMPORARY_REDIRECT));

@@ -24,6 +24,7 @@ class UsersCest
             'password'          => Filter::FILTER_STRING,
             'created_at'        => Filter::FILTER_STRING,
             'updated_at'        => Filter::FILTER_STRING,
+            'deleted_at'        => Filter::FILTER_STRING,
             'username'          => Filter::FILTER_STRING,
             'email'             => Filter::FILTER_EMAIL,
             'public_visibility' => Filter::FILTER_BOOL,

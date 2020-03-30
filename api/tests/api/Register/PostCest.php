@@ -24,7 +24,7 @@ class RegisterPostCest
             'errors' => 'array'
         ]);
         $I->seeResponseContainsJson([
-            'type'                          => 'user',
+            'type'                          => 'users',
             'attributes.username'           => $user_data['username'],
             'attributes.email'              => $user_data['email'],
             'attributes.public_visibility'  => $user_data['public-visibility'],
@@ -52,7 +52,7 @@ class RegisterPostCest
 
         $I->seeResponseIsJsonApiSuccessful(Response::CREATED);
         $I->seeSuccessJsonResponse('data', [
-            'type'                          => 'user',
+            'type'                          => 'users',
             'attributes' => [
                 'username'                  => $user_data['username'],
                 'email'                     => $user_data['email'],

@@ -22,6 +22,38 @@ class TestRoutes implements RoutesInterface
             new ApiRoute(TestController::class, '/test', 'get')
         ];
     }
+    // Class, Method, Route, Handler
+//        return [LoginController::class,        '/login',     'post', '/'];
+
+    /* Maybe is better to use a more Phalcon native way?
+    $routes = new Group(
+        [
+            'module'     => 'blog',
+            'controller' => 'index',
+        ]
+    );
+
+    // All the routes start with /blog
+    $routes->setPrefix('/blog');
+
+    // Add a route to the group
+    $routes->add('/save', [
+        'action' => 'save',
+    ]);
+
+    // Add another route to the group
+    $routes->add('/edit/{id}', [
+        'action' => 'edit',
+    ]);
+
+    // This route maps to a controller different than the default
+    $routes->add('/blog', [
+        'controller' => 'about',
+        'action'     => 'index',
+    ]);
+
+    return $routes;
+    */
 }
 
 

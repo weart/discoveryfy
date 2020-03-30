@@ -109,9 +109,9 @@ class UsersGetCest
         foreach ($obj as $data) {
             if ($data['type'] === 'jwt') {
                 $jwt = $data['id'];
-            } else if ($data['type'] === 'user') {
+            } else if ($data['type'] === 'users') {
                 $user_id = $data['id'];
-            } else if ($data['type'] === 'session') {
+            } else if ($data['type'] === 'sessions') {
                 $session_id = $data['id'];
             }
         }

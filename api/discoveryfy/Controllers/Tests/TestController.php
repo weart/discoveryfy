@@ -43,14 +43,9 @@ class TestController extends Controller
         $test = $this->request->get('test', Filter::FILTER_BOOL);
 
         if (false !== $test) {
-            $this
-                ->response
-                ->setPayloadSuccess(['test' => 'ok']);
+            return $this->response->sendApiContent($this->request->getContentType(), ['test' => 'ok']);
         } else {
-            $this
-                ->response
-                ->setPayloadError($this->response::BAD_REQUEST, 'Incorrect credentials')
-            ;
+            return $this->response->sendApiError($this->request->getContentType(), $this->response::BAD_REQUEST, 'Incorrect credentials');
         }
     }
 }

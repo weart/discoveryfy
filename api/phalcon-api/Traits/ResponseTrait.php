@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Traits;
 
+use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Mvc\Micro;
 
@@ -21,36 +22,22 @@ use Phalcon\Mvc\Micro;
 trait ResponseTrait
 {
     /**
-     * Halt execution after setting the message in the response
+     * Halt execution after setting the error in the response
      *
      * @param Micro  $api
-     * @param int    $status
-     * @param string $message
-     *
+     * @param int    $httpCode
+     * @param string $title
      * @return false
      */
-    protected function halt(Micro $api, int $status, string $message)
+    protected function halt(Micro $api, int $httpCode, string $title)
     {
         /** @var Response $response */
         $response = $api->getService('response');
-        $response
-            ->setPayloadError($status, $message)
-            ->setStatusCode($status);
 
-        switch ($api->getService('request')->getContentType()) {
-            case 'application/vnd.api+json':
-                $response->sendJsonApi();
-                break;
+        /** @var Request $request */
+        $request = $api->getService('request');
 
-            case 'application/ld+json':
-                $response->sendJsonLd();
-                break;
-
-            case 'application/json':
-            default:
-                $response->send();
-                break;
-        }
+        $response->sendApiError($request->getContentType(), $httpCode, $title);
 
         $api->stop();
 

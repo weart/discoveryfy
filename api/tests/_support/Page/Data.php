@@ -252,7 +252,7 @@ class Data
     {
         return [
             'id'         => $record->get('id'),
-            'type'       => Relationships::USERS,
+            'type'       => Relationships::USER,
             'attributes' => [
                 'status'        => $record->get('status'),
                 'username'      => $record->get('username'),
@@ -264,7 +264,7 @@ class Data
                 'self' => sprintf(
                     '%s/%s/%s',
                     envValue('APP_URL'),
-                    Relationships::USERS,
+                    Relationships::USER,
                     $record->get('id')
                 ),
             ],

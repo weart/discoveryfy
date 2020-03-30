@@ -83,16 +83,16 @@ class BaseController extends Controller
         $validSort  = $this->checkSort();
 
         if (true !== $validSort) {
-            return $this->sendError($this->response::BAD_REQUEST);
+            return $this->response->sendApiError($this->request->getContentType(), $this->response::BAD_REQUEST);
         }
 
         $results = $this->getRecords($this->config, $this->cache, $this->model, $parameters, $this->orderBy);
         if (count($parameters) > 0 && 0 === $results->count()) {
-            return $this->setPayloadError($this->response::NOT_FOUND);
+            return $this->response->sendApiError($this->request->getContentType(), $this->response::NOT_FOUND);
         }
         if ($this->method === 'item') {
             if ($results->count() !== 1) {
-                return $this->setPayloadError($this->response::INTERNAL_SERVER_ERROR);
+                return $this->response->sendApiError($this->request->getContentType(), $this->response::INTERNAL_SERVER_ERROR);
             }
             $results = $results->getFirst();
         }
@@ -121,7 +121,6 @@ class BaseController extends Controller
      * Checks the passed id parameter and returns the relevant array back
      *
      * @param string $recordId
-     *
      * @return array
      */
     private function checkIdParameter(string $recordId = ''): array
@@ -151,7 +150,7 @@ class BaseController extends Controller
         if (true !== empty($includes)) {
             $requestedIncludes = explode(',', $includes);
             foreach ($requestedIncludes as $include) {
-                if (true === in_array($include, $this->includes)) {
+                if (true === in_array($include, $this->includes, true)) {
                     $related[] = strtolower($include);
                 }
             }
@@ -217,19 +216,5 @@ class BaseController extends Controller
         }
 
         return [$trueField, $direction];
-    }
-
-    /**
-     * Sets the response with an error code
-     *
-     * @param int $code
-     */
-    private function sendError(int $code)
-    {
-        $this
-            ->response
-            ->setPayloadError($this->response->getHttpCodeDescription($code))
-            ->setStatusCode($code)
-        ;
     }
 }

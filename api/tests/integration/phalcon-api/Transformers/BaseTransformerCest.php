@@ -30,6 +30,7 @@ class BaseTransformerCest
 //            'updated_at'        => $user->get('updated_at'),
             'created_at'        => $user->getCreatedAt()->format(\DateTime::ATOM),
             'updated_at'        => $user->getUpdatedAt()->format(\DateTime::ATOM),
+//            'deleted_at'        => $user->getDeletedAt()->format(\DateTime::ATOM),
             'username'          => $user->get('username'),
             'email'             => $user->get('email'),
             'public_visibility' => $user->get('public_visibility'),

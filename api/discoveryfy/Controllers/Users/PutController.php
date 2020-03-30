@@ -41,7 +41,7 @@ class PutController extends BaseController
     protected $model       = Users::class;
 
     /** @var string */
-    protected $resource    = Relationships::USERS;
+    protected $resource    = Relationships::USER;
 
     /** @var string */
     protected $transformer = BaseTransformer::class;
@@ -59,18 +59,26 @@ class PutController extends BaseController
             throw new UnauthorizedException('User unauthorized for this action');
         }
 
-        // Improve this with something more beautiful
-        if ($this->request->hasPut('username')) {
-            $this->auth->getUser()->set('username', $this->request->getPut('username', Filter::FILTER_STRIPTAGS));
+        $attrs = [
+            'username'          => Filter::FILTER_STRIPTAGS,
+            'email'             => Filter::FILTER_EMAIL,
+//            'public_visibility' => Filter::FILTER_BOOL,
+//            'public_email'      => Filter::FILTER_BOOL,
+            'language'          => Filter::FILTER_STRIPTAGS,
+            'theme'             => Filter::FILTER_STRIPTAGS,
+        ];
+        foreach ($attrs as $attr => $filter) {
+            if ($this->request->hasPut($attr)) {
+                $this->auth->getUser()->set($attr, $this->request->getPut($attr, $filter));
+            }
         }
+        // Different behaviour than standard: password must be hashed
         if ($this->request->hasPut('password')) {
             $this->auth->getUser()
                 ->setPasswordHash($this->security->hash($this->request->getPut('password', Filter::FILTER_STRING)));
 //            ->set('password', $this->security->hash($this->request->getPut('password', Filter::FILTER_STRING)))
         }
-        if ($this->request->hasPut('email')) {
-            $this->auth->getUser()->set('email', $this->request->getPut('email', Filter::FILTER_EMAIL));
-        }
+        // Different behaviour than standard: request param and column name are not the equals
         if ($this->request->hasPut('public_visibility')) {
             $this->auth->getUser()
                 ->set('public_visibility', $this->request->getPut('public-visibility', Filter::FILTER_BOOL, false));
@@ -79,21 +87,13 @@ class PutController extends BaseController
             $this->auth->getUser()
                 ->set('public_email', $this->request->getPut('public-email', Filter::FILTER_BOOL, false));
         }
-        if ($this->request->hasPut('language')) {
-            $this->auth->getUser()
-                ->set('language', $this->request->getPut('language', Filter::FILTER_STRIPTAGS, 'en'));
-        }
-        if ($this->request->hasPut('theme')) {
-            $this->auth->getUser()
-                ->set('theme', $this->request->getPut('theme', Filter::FILTER_STRIPTAGS, 'default'));
-        }
-
+        // Different behaviour than standard: only admins can modify this columns
         if ($this->auth->getUser()->isAdmin()) {
             if ($this->request->hasPut('enabled')) {
                 $this->auth->getUser()
                     ->set('enabled', $this->request->getPut('enabled', Filter::FILTER_BOOL, true));
             }
-            if ($this->request->hasPut('enabled')) {
+            if ($this->request->hasPut('rol')) {
                 $this->auth->getUser()
                     ->set('rol', $this->request->getPut('rol', Filter::FILTER_STRIPTAGS, 'ROLE_USER'));
             }
@@ -103,9 +103,7 @@ class PutController extends BaseController
             if (false === $this->auth->getUser()->validationHasFailed()) {
                 throw new InternalServerErrorException('Error changing user');
             }
-            return $this->response
-                ->setPayloadErrors($this->auth->getUser()->getMessages())
-                ->send();
+            return $this->response->sendApiErrors($this->request->getContentType(), $this->auth->getUser()->getMessages());
         }
 
         return parent::callAction($user_uuid);

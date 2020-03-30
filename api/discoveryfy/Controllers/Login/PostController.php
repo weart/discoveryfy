@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Discoveryfy\Controllers\Login;
 
 use Discoveryfy\Constants\CacheKeys;
+use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\BadRequestException;
 use Discoveryfy\Exceptions\NotImplementedException;
 use Discoveryfy\Exceptions\UnauthorizedException;
@@ -72,10 +73,10 @@ class PostController extends Controller
                 'type' => 'jwt',
                 'id'    => $token
             ],
-            $this->format('item', $this->auth->getSession(), BaseTransformer::class, 'session')['data']
+            $this->format('item', $this->auth->getSession(), BaseTransformer::class, Relationships::SESSION)['data']
         ];
         if ($this->auth->getUser()) { //Saved in auth, otherwise getRelated('user') can be used
-            $response[] = $this->format('item', $this->auth->getUser(), BaseTransformer::class, 'user')['data'];
+            $response[] = $this->format('item', $this->auth->getUser(), BaseTransformer::class, Relationships::USER)['data'];
         }
 
         return $this->response->sendApiContent($this->request->getContentType(), $response);

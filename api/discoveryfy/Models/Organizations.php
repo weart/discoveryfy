@@ -13,7 +13,9 @@ namespace Discoveryfy\Models;
 use Phalcon\Api\Filters\UUIDFilter;
 use Phalcon\Api\Mvc\Model\TimestampableModel;
 use Phalcon\Api\Validators\UuidValidator;
+use Phalcon\Db\RawValue;
 use Phalcon\Filter;
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\InclusionIn;
 use Phalcon\Validation\Validator\StringLength;
@@ -41,6 +43,13 @@ class Organizations extends TimestampableModel
     public function initialize(): void
     {
         $this->setSource('organizations');
+
+        $this->addBehavior(
+            new SoftDelete([
+                'field' => 'deleted_at',
+                'value' => date('Y-m-d H:i:s'),
+            ])
+        );
 
         /*
         $this->hasManyToMany(
@@ -73,7 +82,9 @@ class Organizations extends TimestampableModel
      */
     public function getPrivateAttributes(): array
     {
-        return [];
+        return [
+            'deleted_at'            => Filter::FILTER_STRING,
+        ];
     }
 
     /**
@@ -103,13 +114,13 @@ class Organizations extends TimestampableModel
                 'message' => 'This id already exists in the database',
             ]))
             ->add('id', new UuidValidator())
-            ->add('username', new Uniqueness([
-                'message' => 'This username already exists in the database',
-            ]))
-            ->add('username', new StringLength([
+//            ->add('name', new Uniqueness([
+//                'message' => 'This name already exists in the database',
+//            ]))
+            ->add('name', new StringLength([
                 'min' => 3,
                 'includedMinimum' => false,
-                'messageMinimum' => 'The username must have minimum 4 characters'
+                'messageMinimum' => 'The name must have minimum 4 characters'
             ]))
             ->add('who_can_create_polls', new InclusionIn([
                 'message' => 'The field who_can_create_polls must be MEMBERS, ADMINS or OWNERS',
@@ -117,5 +128,13 @@ class Organizations extends TimestampableModel
             ]))
         ;
         return $this->validate($validator);
+    }
+
+    public function getDeletedAt(): ?\DateTime
+    {
+        if (empty($this->deleted_at) || $this->deleted_at instanceof RawValue) {
+            return null;
+        }
+        return new \DateTime($this->deleted_at);
     }
 }

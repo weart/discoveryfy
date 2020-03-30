@@ -95,6 +95,7 @@ class Integration extends Module
             'enabled'           => true,
             'created_at'        => '2020-03-18 17:43:09',
             'updated_at'        => null,
+//            'deleted_at'        => null,
             'username'          => 'testuser',
             'password'          => $security->hash('testpassword'),
             'email'             => 'test@user.net',

@@ -24,6 +24,7 @@ return [
         'supportEmail' => envValue('APP_SUPPORT_EMAIL'),
         'time'         => microtime(true),
         'privateKey'   => envValue('PRIVATE_KEY', appPath('config/jwt.pem')),
+        'sessionTTL'   => (int) envValue('SESSION_TTL', 604800) //1 week
     ],
     'db'         => [
         'timestamps_from_db' => false
@@ -79,6 +80,7 @@ return [
     'routers' => [
         \Discoveryfy\Routes\PublicRoutes::class,
         \Discoveryfy\Routes\UserRoutes::class,
+        \Discoveryfy\Routes\GroupsRoutes::class,
         \Discoveryfy\Routes\TestRoutes::class,
     ],
     'public_routes' => [

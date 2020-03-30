@@ -272,7 +272,7 @@ class AuthPlugin extends Injectable
             ->getToken($signer, new Key($this->getPrivateKey()));
 
         // Save Token in Cache
-        if (true !== $this->cache->set(CacheKeys::getJWTCacheKey($token), null)) {
+        if (true !== $this->cache->set(CacheKeys::getJWTCacheKey($token), null, $this->config->path('app.sessionTTL'))) {
             throw new InternalServerErrorException('Problem saving token into cache');
         }
 

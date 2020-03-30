@@ -13,6 +13,7 @@ namespace Discoveryfy\Models;
 use Phalcon\Api\Filters\UUIDFilter;
 use Phalcon\Api\Mvc\Model\TimestampableModel;
 use Phalcon\Api\Validators\UuidValidator;
+use Phalcon\Db\RawValue;
 use Phalcon\Filter;
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 use Phalcon\Validation;
@@ -54,6 +55,14 @@ class Users extends TimestampableModel
                 [
                     'field' => 'enabled',
                     'value' => 0
+                ]
+            )
+        );
+        $this->addBehavior(
+            new SoftDelete(
+                [
+                    'field' => 'deleted_at',
+                    'value' => date('Y-m-d H:i:s'),
                 ]
             )
         );
@@ -121,6 +130,7 @@ class Users extends TimestampableModel
         return [
             'enabled'           => Filter::FILTER_BOOL,
             'password'          => Filter::FILTER_STRING,
+            'deleted_at'        => Filter::FILTER_STRING,
         ];
     }
 
@@ -191,5 +201,13 @@ class Users extends TimestampableModel
     public function isAdmin(): bool
     {
         return ($this->get('rol') === 'ROLE_ADMIN');
+    }
+
+    public function getDeletedAt(): ?\DateTime
+    {
+        if (empty($this->deleted_at) || $this->deleted_at instanceof RawValue) {
+            return null;
+        }
+        return new \DateTime($this->deleted_at);
     }
 }
