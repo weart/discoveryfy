@@ -120,7 +120,7 @@ class Integration extends Module
         return $security;
     }
 
-    private function getRandomUserAttributes()
+    public function getRandomUserAttributes()
     {
         $datetime = new \Datetime('now', new \DateTimeZone('UTC'));
         return [
@@ -138,6 +138,21 @@ class Integration extends Module
             'rol'               => 'ROLE_USER',
         ];
     }
+
+    public function getKnownGroupAttributes()
+    {
+        return [
+            'id'                    => '52bff0b0-4d4f-4df7-b55a-d55dbac5d033', //Fixed id in seeder
+//            'created_at'            => $datetime->format('Y-m-d H:i:s'),
+//            'updated_at'            => $datetime->format('Y-m-d H:i:s'),
+            'name'                  => 'Discoveryfy Testing Group',
+            'description'           => 'Nothing to see here, this is just for testing',
+            'public_visibility'     => false,
+            'public_membership'     => false,
+            'who_can_create_polls'  => 'OWNERS',
+        ];
+    }
+
 
     /**
      * @param string $namePrefix

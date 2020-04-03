@@ -15,9 +15,11 @@ use Phalcon\Api\Mvc\Model\TimestampableModel;
 use Phalcon\Api\Validators\UuidValidator;
 use Phalcon\Filter;
 use Phalcon\Validation;
+use Phalcon\Validation\Validator\Date;
 use Phalcon\Validation\Validator\InclusionIn;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
+use Phalcon\Validation\Validator\Regex;
 
 /**
  * Class Polls
@@ -84,6 +86,14 @@ class Polls extends TimestampableModel
      */
     public function validation(): bool
     {
+        $crontab_regex = "/(\*|[0-5]?[0-9]|\*\/[0-9]+)\s+"
+            ."(\*|1?[0-9]|2[0-3]|\*\/[0-9]+)\s+"
+            ."(\*|[1-2]?[0-9]|3[0-1]|\*\/[0-9]+)\s+"
+            ."(\*|[0-9]|1[0-2]|\*\/[0-9]+|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+"
+            ."(\*\/[0-9]+|\*|[0-7]|sun|mon|tue|wed|thu|fri|sat)\s*"
+            ."(\*\/[0-9]+|\*|[0-9]+)?/i";
+        $date_format = 'Y-m-d H:i:s';
+
         $validator = (new Validation())
             ->add('id', new Uniqueness([
                 'message' => 'This id already exists in the database',
@@ -91,6 +101,12 @@ class Polls extends TimestampableModel
             ->add('id', new UuidValidator())
             ->add('organization_id', new UuidValidator())
             ->add('name', new PresenceOf())
+            ->add('start_date', new Date(['format' => $date_format])) //message not provided
+            ->add('end_date', new Date(['format' => $date_format])) //message not provided
+            ->add('restart_date', new Regex([ //message not provided
+                'allowEmpty' => false,
+                'pattern' => $crontab_regex
+            ]))
             ->add('who_can_add_track', new InclusionIn([ 'domain' => [ //message not provided
                 'ANYONE', 'USERS', 'MEMBERS', 'ADMINS', 'OWNERS'
             ]]))

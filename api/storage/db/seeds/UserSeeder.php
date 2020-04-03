@@ -1,8 +1,8 @@
 <?php
 
-use Phinx\Seed\AbstractSeed;
-use Phalcon\Security\Random;
 use Phalcon\Security;
+use Phalcon\Security\Random;
+use Phinx\Seed\AbstractSeed;
 
 class UserSeeder extends AbstractSeed
 {
@@ -16,14 +16,11 @@ class UserSeeder extends AbstractSeed
      */
     public function run()
     {
-        $random = new Random();
-        $security = $this->getSecurityService();
-
         $data = [
             [
-                'id'                => $random->uuid(),
+                'id'                => $this->getRandomService()->uuid(),
                 'username'          => getenv('SEED_ROOT_USER'),
-                'password'          => $security->hash(getenv('SEED_ROOT_PASS')),
+                'password'          => $this->getSecurityService()->hash(getenv('SEED_ROOT_PASS')),
                 'email'             => getenv('SEED_ROOT_MAIL'),
                 'enabled'           => true,
                 'public_visibility' => true,
@@ -32,10 +29,10 @@ class UserSeeder extends AbstractSeed
                 'theme'             => 'default',
                 'rol'               => 'ROLE_ADMIN',
             ],[
-//                'id'                => $random->uuid(),
+//                'id'                => $this->getRandomService()->uuid(),
                 'id'                => 'f756ffbe-6143-46f0-b914-f898b1f05f84',
                 'username'          => 'testuser',
-                'password'          => $security->hash('testpassword'),
+                'password'          => $this->getSecurityService()->hash('testpassword'),
                 'email'             => 'test@user.net',
                 'enabled'           => true,
                 'public_visibility' => false,
@@ -46,15 +43,13 @@ class UserSeeder extends AbstractSeed
             ]
         ];
 
-        $posts = $this->table('users');
-        $posts->insert($data)
-            ->saveData();
+        $this->table('users')->insert($data)->saveData();
     }
 
     /**
      * Taken from SecurityProvider
      */
-    private function getSecurityService(): Security
+    protected function getSecurityService(): Security
     {
         $security = new Security();
         // set Work factor (how many times we go through)
@@ -62,5 +57,10 @@ class UserSeeder extends AbstractSeed
         // set Default Hash
         $security->setDefaultHash(Security::CRYPT_BLOWFISH_Y); // choose default hash
         return $security;
+    }
+
+    protected function getRandomService(): Random
+    {
+        return (new Random());
     }
 }

@@ -11,33 +11,31 @@ declare(strict_types=1);
 namespace Discoveryfy\Controllers\Groups;
 
 use Discoveryfy\Constants\Relationships;
-use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
-use Discoveryfy\Models\Memberships;
 use Discoveryfy\Models\Organizations;
-use Discoveryfy\Models\Users;
-use Phalcon\Api\Controllers\BaseItemApiController;
+use Phalcon\Api\Controllers\BaseCollectionApiController;
 //use Phalcon\Api\Http\Request;
 //use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Http\ResponseInterface;
+use Phalcon\Mvc\Model\ResultsetInterface;
 
 /**
- * Retrieves a Group
+ * Retrieves a list of Groups
  *
  * Module       Groups
- * Class        GetItemController
- * OperationId  group.get
+ * Class        GetCollectionController
+ * OperationId  groups.list
  * Operation    GET
- * OperationUrl /groups/{group_uuid}
- * Security     Logged user is part of the group, or the group has public visibility
+ * OperationUrl /groups
+ * Security     Logged user is part of the groups, or the groups have public visibility
  *
  * @property Auth         $auth
  * #property Request      $request
  * #property Response     $response
  */
-class GetItemController extends BaseItemApiController
+class GetCollectionController extends BaseCollectionApiController
 {
     /** @var string */
     protected $model       = Organizations::class;
@@ -49,7 +47,7 @@ class GetItemController extends BaseItemApiController
 //    protected $transformer = BaseTransformer::class;
 
     /** @var string */
-//    protected $method = 'item';
+//    protected $method = 'collection';
 
     /** @var array */
     protected $includes = [
@@ -66,12 +64,9 @@ class GetItemController extends BaseItemApiController
         return $parameters;
     }
 
-    protected function findRecord(array $parameters)
+    protected function getRecords(array $parameters = [], string $orderBy = ''): ResultsetInterface
     {
-        $rtn = Organizations::isPublicVisibilityOrMember($parameters['id'], $this->auth->getUser()->get('id'));
-        if ($rtn->count() !== 1) {
-            throw new UnauthorizedException('Only available when the group has public_visibility or you belong to the group');
-        }
-        return $rtn->org;
+        $user_id = $this->auth->getUser() ? $this->auth->getUser()->get('id') : null;
+        return Organizations::getPublicVisibilityOrMemberGroups($user_id, $orderBy);
     }
 }

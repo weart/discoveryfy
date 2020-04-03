@@ -21,6 +21,9 @@ use Phalcon\Mvc\Controller;
  * Module       Register
  * Class        GetController
  * OperationId  user.create.csrf
+ * Operation    GET
+ * OperationUrl /register
+ * Security     Public
  *
  * @property Auth         $auth
  * @property Request      $request

@@ -32,6 +32,9 @@ use Phalcon\Mvc\Controller;
  * Module       Login
  * Class        PostController
  * OperationId  session.create
+ * Operation    POST
+ * OperationUrl /login
+ * Security     Request must have a CSRF token
  *
  * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Controllers/UsersController.php
  * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Controllers/SessionController.php

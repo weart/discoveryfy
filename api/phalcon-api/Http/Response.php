@@ -75,7 +75,14 @@ class Response extends PhResponse
     }
 
     /*************************\
-     * Public Send functions *
+     * Public Send functions
+     *
+     * A successful response SHOULD be:
+     * 200 (OK) if the response includes an entity describing the status:
+     * 201 (Created) if the resource is new and the response includes the entity
+     * 202 (Accepted) if the action has not yet been enacted, (not used in this api)
+     * 204 (No Content) if the action has been enacted but the response does not include an entity.
+     * 500 (Internal Server Error) if the action fails
     \*************************/
 
     /**
@@ -122,6 +129,16 @@ class Response extends PhResponse
         return $this->sendByContentType($ContentType);
     }
 
+    public function sendApiContentCreated(string $ContentType, array $data)
+    {
+        return
+            $this->setStatusCode(
+                self::CREATED,
+                $this->getHttpCodeDescription(self::CREATED)
+            )
+            ->sendApiContent($ContentType, $data);
+    }
+
     public function sendApiError(string $ContentType, int $httpCode = self::BAD_REQUEST, ?string $title = null, ?int $appCode = null): ResponseInterface
     {
         return $this
@@ -155,10 +172,18 @@ class Response extends PhResponse
         return $this->sendByContentType($ContentType);
     }
 
+    public function sendNoContent()
+    {
+        return $this->setStatusCode(
+            self::NO_CONTENT,
+            $this->getHttpCodeDescription(self::NO_CONTENT)
+        )->send();
+    }
+
     protected function sendByContentType(string $ContentType)
     {
         if (is_null($this->getStatusCode())) {
-            $this->setStatusCode(self::OK);
+            $this->setStatusCode(self::OK, $this->getHttpCodeDescription(self::OK));
         }
         if ($ContentType === 'application/vnd.api+json') {
             return $this->sendJsonApi();

@@ -70,6 +70,7 @@ class AuthenticationMiddleware implements MiddlewareInterface
     }
 
     /**
+     * @ToDo detect {vars} in url
      * @param Config $config
      * @param string $uri
      * @return bool

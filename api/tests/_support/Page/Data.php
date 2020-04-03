@@ -10,28 +10,24 @@ use function Phalcon\Api\Core\envValue;
 
 class Data
 {
-    public static $loginUrl                         = '/login';
-    public static $registerUrl                      = '/register';
-    public static $usersUrl                         = '/users/%s';
-    public static $sessionsUrl                      = '/sessions/%s';
-    public static $wrongUrl                         = '/sommething';
+    public static $loginUrl             = '/login';
+    public static $registerUrl          = '/register';
+    public static $usersUrl             = '/users/%s';
+    public static $sessionsUrl          = '/sessions/%s';
+    public static $groupsUrl            = '/groups';
+    public static $groupUrl             = '/groups/%s';
+    public static $membersUrl           = '/groups/%s/members';
+    public static $memberUrl            = '/groups/%s/members/%s';
+    public static $groupPollsUrl        = '/groups/%s/polls';
+    public static $pollsUrl             = '/polls';
+    public static $pollUrl              = '/polls/%s';
+    public static $pollTracksUrl        = '/polls/%s/tracks';
+    public static $pollTrackUrl         = '/polls/%s/tracks/%s';
+    public static $pollTrackRateUrl     = '/polls/%s/tracks/%s/rate';
+    public static $wrongUrl             = '/sommething';
 
 //    public static $companiesSortUrl                 = '/companies?sort=%s';
-//    public static $companiesUrl                     = '/companies';
-//    public static $companiesRecordUrl               = '/companies/%s';
 //    public static $companiesRecordIncludesUrl       = '/companies/%s?includes=%s';
-//    public static $individualsUrl                   = '/individuals';
-//    public static $individualsRecordUrl             = '/individuals/%s';
-//    public static $individualsRecordIncludesUrl     = '/individuals/%s?includes=%s';
-//    public static $individualTypesUrl               = '/individual-types';
-//    public static $individualTypesRecordUrl         = '/individual-types/%s';
-//    public static $individualTypesRecordIncludesUrl = '/individual-types/%s?includes=%s';
-//    public static $productsUrl                      = '/products';
-//    public static $productsRecordUrl                = '/products/%s';
-//    public static $productsRecordIncludesUrl        = '/products/%s?includes=%s';
-//    public static $productTypesUrl                  = '/product-types';
-//    public static $productTypesRecordUrl            = '/product-types/%s';
-//    public static $productTypesRecordIncludesUrl    = '/product-types/%s?includes=%s';
 
     /**
      * @return array
@@ -55,6 +51,17 @@ class Data
             'language'          => 'en',
             'theme'             => 'default',
             'rol'               => 'ROLE_USER',
+        ];
+    }
+
+    public static function groupJson()
+    {
+        return [
+            'name'                  => 'test_'.(new Random())->hex(5),
+            'description'           => 'test_'.(new Random())->hex(5),
+            'public_visibility'     => false,
+            'public_membership'     => false,
+            'who_can_create_polls'  => 'OWNERS',
         ];
     }
 

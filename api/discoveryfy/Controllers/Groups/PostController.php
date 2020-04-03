@@ -16,8 +16,9 @@ use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
 use Discoveryfy\Models\Memberships;
 use Discoveryfy\Models\Organizations;
-//use Phalcon\Api\Controllers\BaseController;
-use Phalcon\Mvc\Controller;
+use Phalcon\Api\Controllers\BaseController;
+//use Phalcon\Mvc\Controller;
+use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
@@ -33,12 +34,15 @@ use Phalcon\Security\Random;
  * Module       Groups
  * Class        PostController
  * OperationId  group.create
+ * Operation    POST
+ * OperationUrl /groups
+ * Security     Only allowed to logged users
  *
  * @property Auth         $auth
  * @property Request      $request
  * @property Response     $response
  */
-class PostController extends Controller //BaseController
+class PostController extends BaseItemApiController
 {
     use FractalTrait;
 
@@ -49,16 +53,21 @@ class PostController extends Controller //BaseController
     protected $resource    = Relationships::GROUP;
 
     /** @var string */
-    protected $transformer = BaseTransformer::class;
+//    protected $transformer = BaseTransformer::class;
 
     /** @var string */
-    protected $method = 'item';
+//    protected $method = 'item';
 
-    public function callAction(): ResponseInterface
+    protected function checkSecurity(array $parameters): array
     {
         if (!$this->auth->getUser()) {
             throw new UnauthorizedException('Only available for registered users');
         }
+        return $parameters;
+    }
+
+    public function coreAction(array $parameters): ResponseInterface
+    {
         if (empty($this->request->getPost())) {
             throw new BadRequestException('Empty post');
         }
@@ -73,13 +82,15 @@ class PostController extends Controller //BaseController
         $this->db->begin();
 
         // @ToDo: Double filtering, here and in the setter, maybe one can be removed?
+        // @see: Memberships as an internal implementation of Organizations?
+        // https://forum.phalcon.io/discussion/81/save-related-records-oncreate-in-transaction-like-way
         $org = new Organizations();
         $org
             ->set('id', (new Random())->uuid())
             ->set('name', $this->request->getPost('name', Filter::FILTER_STRIPTAGS))
             ->set('description', $this->request->getPost('description', Filter::FILTER_STRIPTAGS))
-            ->set('public_visibility', $this->request->getPost('public-visibility', Filter::FILTER_BOOL, false))
-            ->set('public_membership', $this->request->getPost('public-membership', Filter::FILTER_BOOL, false))
+            ->set('public_visibility', $this->request->getPost('public_visibility', Filter::FILTER_BOOL, false))
+            ->set('public_membership', $this->request->getPost('public_membership', Filter::FILTER_BOOL, false))
             ->set('who_can_create_polls', $this->request->getPost('who_can_create_polls', Filter::FILTER_STRIPTAGS, 'OWNERS'))
         ;
 
@@ -101,12 +112,9 @@ class PostController extends Controller //BaseController
 
         $this->db->commit();
 
-//        return parent::callAction($group_uuid);
-        return $this->response
-            ->setStatusCode($this->response::CREATED)
-            ->sendApiContent(
-                $this->request->getContentType(),
-                $this->format($this->method, $org, $this->transformer, $this->resource)
-            );
+        return $this->response->sendApiContentCreated(
+            $this->request->getContentType(),
+            $this->format($this->method, $org, $this->transformer, $this->resource)
+        );
     }
 }

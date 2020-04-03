@@ -16,6 +16,7 @@ use Discoveryfy\Models\Users;
 use Phalcon\Api\Controllers\BaseController;
 //use Phalcon\Api\Http\Request;
 //use Phalcon\Api\Http\Response;
+use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Http\ResponseInterface;
@@ -26,12 +27,15 @@ use Phalcon\Http\ResponseInterface;
  * Module       Users
  * Class        GetController
  * OperationId  user.get
+ * Operation    GET
+ * OperationUrl /users/{user_uuid}
+ * Security     Only the current logged user or app admin
  *
  * @property Auth         $auth
  * #property Request      $request
  * #property Response     $response
  */
-class GetController extends BaseController
+class GetController extends BaseItemApiController
 {
     /** @var string */
     protected $model       = Users::class;
@@ -40,19 +44,24 @@ class GetController extends BaseController
     protected $resource    = Relationships::USER;
 
     /** @var string */
-    protected $transformer = BaseTransformer::class;
+//    protected $transformer = BaseTransformer::class;
 
     /** @var string */
-    protected $method = 'item';
+//    protected $method = 'item';
 
-    public function callAction(string $user_uuid = ''): ResponseInterface
+    public function checkSecurity(array $parameters): array
     {
         if (!$this->auth->getUser()) {
             throw new UnauthorizedException('Only available for registered users');
         }
-        if ($this->auth->getUser()->get('id') !== $user_uuid && !$this->auth->getUser()->isAdmin()) {
+        if ($this->auth->getUser()->get('id') !== $parameters['id'] && !$this->auth->getUser()->isAdmin()) {
             throw new UnauthorizedException('User unauthorized for this action');
         }
-        return parent::callAction($user_uuid);
+        return $parameters;
+    }
+
+    public function getRecord(array $parameters)
+    {
+        return $this->auth->getUser();
     }
 }

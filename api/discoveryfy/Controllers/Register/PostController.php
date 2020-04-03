@@ -10,28 +10,27 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Controllers\Register;
 
-use Discoveryfy\Constants\CacheKeys;
+//use Discoveryfy\Constants\CacheKeys;
 use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\BadRequestException;
 use Discoveryfy\Exceptions\InternalServerErrorException;
-use Discoveryfy\Exceptions\ModelException;
-use Discoveryfy\Exceptions\NotImplementedException;
-use Discoveryfy\Exceptions\UnauthorizedException;
-use Discoveryfy\Models\SecurityEvents;
-use Discoveryfy\Transformers\UserTransformer;
-use Discoveryfy\Validators\UuidValidator;
+//use Discoveryfy\Exceptions\NotImplementedException;
+//use Discoveryfy\Exceptions\UnauthorizedException;
+//use Discoveryfy\Models\SecurityEvents;
+use Discoveryfy\Models\Users;
+use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
-use Discoveryfy\Models\Users;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 use Phalcon\Api\Traits\FractalTrait;
 //use Phalcon\Api\Traits\QueryTrait;
 //use Phalcon\Api\Traits\ResponseTrait;
-use Phalcon\Api\Transformers\BaseTransformer;
-use Phalcon\Cache;
-use Phalcon\Config;
+//use Phalcon\Api\Transformers\BaseTransformer;
+//use Phalcon\Cache;
+//use Phalcon\Config;
 use Phalcon\Filter;
-use Phalcon\Mvc\Controller;
+//use Phalcon\Mvc\Controller;
+use Phalcon\Http\ResponseInterface;
 use Phalcon\Security\Random;
 
 /**
@@ -40,12 +39,15 @@ use Phalcon\Security\Random;
  * Module       Register
  * Class        PostController
  * OperationId  user.create
+ * Operation    POST
+ * OperationUrl /register
+ * Security     Request must have a CSRF token
  *
  * @property Auth         $auth
  * @property Request      $request
  * @property Response     $response
  */
-class PostController extends Controller
+class PostController extends BaseItemApiController
 {
     use FractalTrait;
 //    use QueryTrait;
@@ -58,25 +60,30 @@ class PostController extends Controller
     protected $resource    = Relationships::USER;
 
     /** @var string */
-    protected $transformer = BaseTransformer::class;
+//    protected $transformer = BaseTransformer::class;
 
     /** @var string */
-    protected $method = 'item';
+//    protected $method = 'item';
 
-    public function callAction()
+    public function checkSecurity($parameters): array
     {
         $this->auth->checkCSRFRegister();
+        return $parameters;
+    }
 
+    public function coreAction(): ResponseInterface
+    {
         if (empty($this->request->getPost())) {
             throw new BadRequestException('Empty post');
         }
-
+        // @ToDo: Move this into model validation
         if ($this->request->getPost('username') !== $this->request->getPost('username', Filter::FILTER_STRIPTAGS)) {
             throw new BadRequestException('Invalid username');
         }
         if ($this->request->getPost('password') !== $this->request->getPost('password', Filter::FILTER_STRING)) {
             throw new BadRequestException('Invalid password');
         }
+
         $user = new Users();
         $user
             ->set('id', (new Random())->uuid())
@@ -102,11 +109,10 @@ class PostController extends Controller
         //@ToDo: Send mail with token, & create event when mail is confirmed
 //        (new SecurityEvents())->createEmailConfirmationEvent($this->request, $user);
 
-        return $this->response
-            ->setStatusCode($this->response::CREATED)
-            ->sendApiContent(
-                $this->request->getContentType(),
-                $this->format($this->method, $user, $this->transformer, $this->resource)
-            );
+//        return $this->sendApiData($user);
+        return $this->response->sendApiContentCreated(
+            $this->request->getContentType(),
+            $this->format($this->method, $user, $this->transformer, $this->resource)
+        );
     }
 }

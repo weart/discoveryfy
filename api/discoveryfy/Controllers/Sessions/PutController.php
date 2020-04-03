@@ -18,7 +18,7 @@ use Discoveryfy\Models\Sessions;
 use Discoveryfy\Validators\UuidValidator;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
-use Phalcon\Api\Controllers\BaseController;
+use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Filter;
@@ -28,14 +28,17 @@ use Phalcon\Http\ResponseInterface;
  * Replaces the name of the Session
  *
  * Module       Sessions
- * Class        PostController
+ * Class        PostApiController
  * OperationId  session.put
+ * Operation    PUT
+ * OperationUrl /sessions/{session_uuid}
+ * Security     Only the current logged session or app admin
  *
  * @property Auth         $auth
  * @property Request      $request
  * @property Response     $response
  */
-class PutController extends BaseController
+class PutController extends BaseItemApiController
 {
     /** @var string */
     protected $model       = Sessions::class;
@@ -44,17 +47,22 @@ class PutController extends BaseController
     protected $resource    = Relationships::SESSION;
 
     /** @var string */
-    protected $transformer = BaseTransformer::class;
+//    protected $transformer = BaseTransformer::class;
 
     /** @var string */
-    protected $method = 'item';
+//    protected $method = 'item';
 
-    public function callAction(string $session_uuid = ''): ResponseInterface
+    public function checkSecurity(array $parameters): array
     {
-        if ($this->auth->getSession()->get('id') !== $session_uuid && !$this->auth->getUser()->isAdmin()) {
+        if ($this->auth->getSession()->get('id') !== $parameters['id'] && !$this->auth->getUser()->isAdmin()) {
             // Save security_event?
             throw new UnauthorizedException('Session unauthorized for this action');
         }
+        return $parameters;
+    }
+
+    public function coreAction(array $parameters): ResponseInterface
+    {
         if (!$this->request->hasPut('name')) {
             throw new BadRequestException('Undefined name');
         }
@@ -67,6 +75,6 @@ class PutController extends BaseController
             return $this->response->sendApiErrors($this->request->getContentType(), $this->auth->getSession()->getMessages());
         }
 
-        return parent::callAction($session_uuid);
+        return $this->sendApiData($this->auth->getSession());
     }
 }

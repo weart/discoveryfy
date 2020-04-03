@@ -22,7 +22,7 @@ use Phalcon\Filter;
 use Phalcon\Mvc\Controller;
 
 /**
- * Class LoginController
+ * Class TestController
  *
  * @property Cache $cache
  * @property Config       $config

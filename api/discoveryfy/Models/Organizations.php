@@ -10,12 +10,18 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Models;
 
+use Discoveryfy\Exceptions\InternalServerErrorException;
+use Discoveryfy\Exceptions\UnauthorizedException;
 use Phalcon\Api\Filters\UUIDFilter;
 use Phalcon\Api\Mvc\Model\TimestampableModel;
 use Phalcon\Api\Validators\UuidValidator;
 use Phalcon\Db\RawValue;
+use Phalcon\DI;
 use Phalcon\Filter;
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
+use Phalcon\Mvc\Model\Query\Builder;
+use Phalcon\Mvc\Model\Resultset\Complex;
+use Phalcon\Mvc\Model\Row;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\InclusionIn;
 use Phalcon\Validation\Validator\StringLength;
@@ -136,5 +142,112 @@ class Organizations extends TimestampableModel
             return null;
         }
         return new \DateTime($this->deleted_at);
+    }
+
+    /**
+     * Inside the return three objects are returned: org, member & user_id
+     *
+     * @param string $group_uuid
+     * @param string $user_uuid
+     * #return Complex
+     * @return Row
+     * @throws InternalServerErrorException
+     * @throws UnauthorizedException
+     */
+    public static function getUserMembership(string $group_uuid, string $user_uuid): Row
+    {
+        /** #var Complex $res */
+        /** @var Row $res */
+        $res = self::getBuilder()
+//            ->columns('org.*, member.rol as member_rol, user.id as user_id')
+            ->columns('org.*, member.*, user.id as user_id')
+            ->from([ 'org' => self::class]) //Organizations::class
+            ->innerJoin(Memberships::class, 'org.id = member.organization_id', 'member')
+            ->innerJoin(Users::class, 'member.user_id = user.id', 'user')
+            ->where('org.id = :org_uuid: AND user.id = :user_uuid:')
+            ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'user_uuid' => \PDO::PARAM_STR ])
+            ->setBindParams([ 'org_uuid' => $group_uuid, 'user_uuid' => $user_uuid ])
+            ->getQuery()->execute();
+
+        if ($res->count() === 0) {
+            throw new UnauthorizedException('This user not belong to this group');
+        }
+        if ($res->count() > 1) {
+            throw new InternalServerErrorException('Only one membership should be possible');
+        }
+        $res = $res->getFirst();
+        if ($res->user_id !== $user_uuid || $res->org->get('id') !== $group_uuid) {
+            throw new InternalServerErrorException('Strange error in the query');
+        }
+        return $res;
+    }
+
+    // Organization::public_visibility == true || $user_uuid->rol !== INVITED
+    public static function isPublicVisibilityOrMember(string $group_uuid, ?string $user_uuid): Complex
+    {
+        $q = self::getBuilder()
+            ->columns('org.*, member.*, user.id as user_id')
+            ->from([ 'org' => Organizations::class])
+            ->where('org.id = :org_uuid:')
+            ->andWhere('org.public_visibility = :public_visibility:')
+            ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'public_visibility' => \PDO::PARAM_BOOL ])
+            ->setBindParams([ 'org_uuid' => $group_uuid, 'public_visibility' => true ]);
+
+        if ($user_uuid) {
+            $q
+                ->leftJoin(Memberships::class, 'org.id = member.organization_id', 'member')
+                ->innerJoin(Users::class, 'member.user_id = user.id', 'user')
+                ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);
+        }
+        return $q->getQuery()->execute();
+    }
+
+    // Organization::public_membership == true || $user_uuid->rol !== INVITED
+    public static function isPublicMembershipOrMember(string $group_uuid, string $user_uuid): Complex
+    {
+        return self::getBuilder()
+            ->columns('org.*, member.*, user.id as user_id')
+            ->from([ 'org' => Organizations::class])
+            ->innerJoin(Memberships::class, 'org.id = member.organization_id', 'member')
+            ->innerJoin(Users::class, 'member.user_id = user.id', 'user')
+            ->where('org.id = :org_uuid:')
+            ->andWhere('(org.public_membership = :public_membership: OR (user.id = :user_uuid: AND member.rol != :member_rol:))')
+            ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'public_membership' => \PDO::PARAM_BOOL, 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
+            ->setBindParams([ 'org_uuid' => $group_uuid, 'public_membership' => true, 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ])
+            ->getQuery()->execute();
+    }
+
+    public static function getPublicVisibilityOrMemberGroups(?string $user_uuid, string $orderBy = ''): Complex
+    {
+        $q = self::getBuilder()
+            ->columns('org.*, member.*, user.id as user_id')
+            ->from([ 'org' => Organizations::class])
+            ->where('org.public_visibility = :public_visibility:')
+            ->setBindTypes([ 'public_visibility' => \PDO::PARAM_BOOL ])
+            ->setBindParams([ 'public_visibility' => true ]);
+
+        if ($user_uuid) {
+            $q
+                ->leftJoin(Memberships::class, 'org.id = member.organization_id', 'member')
+                ->innerJoin(Users::class, 'member.user_id = user.id', 'user')
+                ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);
+        }
+        if (true !== empty($orderBy)) {
+            $q->orderBy($orderBy);
+        }
+        return $q->getQuery()->execute();
+    }
+
+    // In non static context this function can be called directly this way: $this->modelsManager->createBuilder()
+    public static function getBuilder(): Builder
+    {
+        $builder = new Builder();
+        $di = DI::getDefault();
+        $builder->setDI($di);
+        return $builder;
     }
 }

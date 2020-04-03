@@ -63,6 +63,8 @@ class BaseTransformer extends TransformerAbstract
                 $data[$field] = $model->getCreatedAt()->format(\DateTime::ATOM);
             } else if ($field === 'updated_at' && !empty($model->get($field))) {
                 $data[$field] = $model->getUpdatedAt()->format(\DateTime::ATOM);
+            } else if ($field === 'deleted_at' && !empty($model->get($field))) {
+                $data[$field] = $model->getDeletedAt()->format(\DateTime::ATOM);
             } else {
                 $data[$field] = $model->get($field);
             }

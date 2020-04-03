@@ -37,4 +37,9 @@ class CacheKeys
     {
         return sprintf('%s.%s', $model, $uuid);
     }
+
+    public static function getQueryCacheKey(string $sql, string $params): string
+    {
+        return sha1(sprintf('%s-%s.cache', $sql, $params));
+    }
 }

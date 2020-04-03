@@ -14,7 +14,12 @@ namespace Discoveryfy\Constants;
 
 class Relationships
 {
-    const SESSION       = 'sessions';
-    const USER          = 'users';
+    const COMMENTS      = 'comments';
     const GROUP         = 'groups';
+    const MEMBERSHIP    = 'memberships';
+    const POLL          = 'polls';
+    const RATE          = 'rates';
+    const SESSION       = 'sessions';
+    const TRACK         = 'tracks';
+    const USER          = 'users';
 }

@@ -13,6 +13,7 @@ namespace Discoveryfy\Controllers\Users;
 use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
+use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Discoveryfy\Models\Users;
@@ -29,13 +30,16 @@ use Phalcon\Http\ResponseInterface;
  * Module       Users
  * Class        PutController
  * OperationId  user.put
+ * Operation    PUT
+ * OperationUrl /users/{user_uuid}
+ * Security     Only the current logged user or app admin
  *
  * @property Cache        $cache
  * @property Config       $config
  * @property Request      $request
  * @property Response     $response
  */
-class PutController extends BaseController
+class PutController extends BaseItemApiController
 {
     /** @var string */
     protected $model       = Users::class;
@@ -44,21 +48,25 @@ class PutController extends BaseController
     protected $resource    = Relationships::USER;
 
     /** @var string */
-    protected $transformer = BaseTransformer::class;
+//    protected $transformer = BaseTransformer::class;
 
     /** @var string */
-    protected $method = 'item';
+//    protected $method = 'item';
 
-    public function callAction(string $user_uuid = ''): ResponseInterface
+    public function checkSecurity(array $parameters): array
     {
         if (!$this->auth->getUser()) {
             throw new UnauthorizedException('Only available for registered users');
         }
-        if ($this->auth->getUser()->get('id') !== $user_uuid && !$this->auth->getUser()->isAdmin()) {
+        if ($this->auth->getUser()->get('id') !== $parameters['id'] && !$this->auth->getUser()->isAdmin()) {
             // Save security_event?
             throw new UnauthorizedException('User unauthorized for this action');
         }
+        return $parameters;
+    }
 
+    public function coreAction(array $parameters): ResponseInterface
+    {
         $attrs = [
             'username'          => Filter::FILTER_STRIPTAGS,
             'email'             => Filter::FILTER_EMAIL,
@@ -106,6 +114,6 @@ class PutController extends BaseController
             return $this->response->sendApiErrors($this->request->getContentType(), $this->auth->getUser()->getMessages());
         }
 
-        return parent::callAction($user_uuid);
+        return $this->sendApiData($this->auth->getUser());
     }
 }
