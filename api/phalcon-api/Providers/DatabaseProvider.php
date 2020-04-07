@@ -21,32 +21,34 @@ use function Phalcon\Api\Core\envValue;
 class DatabaseProvider implements ServiceProviderInterface
 {
     /**
+     * @var string
+     */
+    public const NAME = 'db';
+
+    /**
      * @param DiInterface $container
      */
     public function register(DiInterface $container): void
     {
-        $container->setShared(
-            'db',
-            function () {
-                //MySQL
-                $connection = new Mysql([
-                    'host'       => envValue('MYSQL_HOST', 'localhost'),
-                    'dbname'     => envValue('MYSQL_DATABASE', 'db_local'),
-                    'username'   => envValue('MYSQL_USER', 'db_user'),
-                    'password'   => envValue('MYSQL_PASSWORD', 'db_password'),
-                ]);
-                $connection->execute('SET NAMES utf8mb4', []);
+        $container->setShared(self::NAME, function () {
+            //MySQL
+            $connection = new Mysql([
+                'host'       => envValue('MYSQL_HOST', 'localhost'),
+                'dbname'     => envValue('MYSQL_DATABASE', 'db_local'),
+                'username'   => envValue('MYSQL_USER', 'db_user'),
+                'password'   => envValue('MYSQL_PASSWORD', 'db_password'),
+            ]);
+            $connection->execute('SET NAMES utf8mb4', []);
 
-                //Postgresql
-//                $connection = new Postgresql([
-//                    'host'       => envValue('POSTGRES_HOST', 'localhost'),
-//                    'dbname'     => envValue('POSTGRES_DB', 'db_local'),
-//                    'username'   => envValue('POSTGRES_USER', 'db_user'),
-//                    'password'   => envValue('POSTGRES_PASSWORD', 'db_password'),
-//                ]);
+            //Postgresql
+//            $connection = new Postgresql([
+//                'host'       => envValue('POSTGRES_HOST', 'localhost'),
+//                'dbname'     => envValue('POSTGRES_DB', 'db_local'),
+//                'username'   => envValue('POSTGRES_USER', 'db_user'),
+//                'password'   => envValue('POSTGRES_PASSWORD', 'db_password'),
+//            ]);
 
-                return $connection;
-            }
-        );
+            return $connection;
+        });
     }
 }

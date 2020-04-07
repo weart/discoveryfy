@@ -10,13 +10,18 @@ use Phalcon\Security;
 class SecurityProvider implements ServiceProviderInterface
 {
     /**
+     * @var string
+     */
+    public const NAME = 'security';
+
+    /**
      * {@inheritdoc}
      *
      * @param DiInterface $container
      */
     public function register(DiInterface $container): void
     {
-        $container->setShared('security', function () {
+        $container->setShared(self::NAME, function () {
             $security = new Security();
             // set Work factor (how many times we go through)
             $security->setWorkFactor(12); // can be a number from 1-12

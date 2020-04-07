@@ -19,18 +19,20 @@ use Phalcon\Di\DiInterface;
 class CliDispatcherProvider implements ServiceProviderInterface
 {
     /**
+     * @var string
+     */
+    public const NAME = 'dispatcher';
+
+    /**
      * @param DiInterface $container
      */
     public function register(DiInterface $container): void
     {
-        $container->setShared(
-            'dispatcher',
-            function () {
-                $dispatcher = new Dispatcher();
-                $dispatcher->setDefaultNamespace('Discoveryfy\Tasks');
+        $container->setShared(self::NAME, function () {
+            $dispatcher = new Dispatcher();
+            $dispatcher->setDefaultNamespace('Discoveryfy\Tasks');
 
-                return $dispatcher;
-            }
-        );
+            return $dispatcher;
+        });
     }
 }

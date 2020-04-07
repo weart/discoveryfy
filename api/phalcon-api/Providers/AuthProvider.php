@@ -21,7 +21,7 @@ class AuthProvider implements ServiceProviderInterface
     /**
      * @var string
      */
-    protected $providerName = 'auth';
+    public const NAME = 'auth';
 
     /**
      * @param DiInterface $di
@@ -30,6 +30,6 @@ class AuthProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $di): void
     {
-        $di->setShared($this->providerName, AuthPlugin::class);
+        $di->setShared(self::NAME, AuthPlugin::class);
     }
 }

@@ -20,17 +20,18 @@ use function Phalcon\Api\Core\appPath;
 class ConfigProvider implements ServiceProviderInterface
 {
     /**
+     * @var string
+     */
+    public const NAME = 'config';
+
+    /**
      * @param DiInterface $container
      */
     public function register(DiInterface $container): void
     {
-        $container->setShared(
-            'config',
-            function () {
-                $data = require appPath('config/config.php');
-
-                return new Config($data);
-            }
-        );
+        $container->setShared(self::NAME, function () {
+            $data = require appPath('config/config.php');
+            return new Config($data);
+        });
     }
 }

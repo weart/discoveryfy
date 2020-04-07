@@ -24,7 +24,7 @@ class ModelsCacheProvider implements ServiceProviderInterface
     /**
      * @var string
      */
-    public static $providerName = 'modelsCache';
+    public const NAME = 'modelsCache';
 
     /**
      * Registers a service provider.
@@ -34,7 +34,7 @@ class ModelsCacheProvider implements ServiceProviderInterface
     public function register(DiInterface $di): void
     {
         /*
-        $di->setShared(self::$providerName, function () {
+        $di->setShared(self::NAME, function () {
             $instanceName = 'stream';
             $options = [
                 'defaultSerializer' => 'Json',
@@ -49,6 +49,6 @@ class ModelsCacheProvider implements ServiceProviderInterface
             return new Cache($adapter);
         });
         */
-        $di->setShared(self::$providerName, $di->getShared(CacheDataProvider::$providerName));
+        $di->setShared(self::NAME, $di->getShared(CacheDataProvider::NAME));
     }
 }

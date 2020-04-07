@@ -21,33 +21,39 @@ use Phalcon\Di\DiInterface;
 class RequestProvider implements ServiceProviderInterface
 {
     /**
+     * @var string
+     */
+    public const NAME = 'request';
+
+    /**
      * @param DiInterface $container
      */
     public function register(DiInterface $container): void
     {
-        $req = new Request();
-        //Check if Content-Type has the charset appended like "application/json;charset=utf-8"?
-        $valid_content_type = [
-            'application/json',
-            'application/vnd.api+json',
-            'application/ld+json'
-        ];
-//        if (in_array($req->getContentType(), $valid_content_type, true)) {
-        if (in_array($req->getHeader('Content-Type'), $valid_content_type, true)) {
-            if (($req->isPost() || $req->isPut() || $req->isPatch()) && !empty($req->getRawBody())) {
-                //Input not sanitized! Must be done in each param
-                $_POST = json_decode(file_get_contents('php://input'), true);
+        $container->setShared(self::NAME, function () {
+            $req = new Request();
+            //Check if Content-Type has the charset appended like "application/json;charset=utf-8"?
+            $valid_content_type = [
+                'application/json',
+                'application/vnd.api+json',
+                'application/ld+json'
+            ];
+    //        if (in_array($req->getContentType(), $valid_content_type, true)) {
+            if (in_array($req->getHeader('Content-Type'), $valid_content_type, true)) {
+                if (($req->isPost() || $req->isPut() || $req->isPatch()) && !empty($req->getRawBody())) {
+                    //Input not sanitized! Must be done in each param
+                    $_POST = json_decode(file_get_contents('php://input'), true);
 
-                if (JSON_ERROR_NONE !== json_last_error()) {
-                    throw new BadRequestException(json_last_error_msg());
+                    if (JSON_ERROR_NONE !== json_last_error()) {
+                        throw new BadRequestException(json_last_error_msg());
+                    }
                 }
             }
-        }
 
-        //Define default filters?
-//        $req->setParameterFilters('id', UUIDFilter::FILTER_NAME);
-//        $req->getFilteredQuery('id') $req->getFilteredPost('id')
-
-        $container->setShared('request', $req);
+            //Define default filters?
+//            $req->setParameterFilters('id', UUIDFilter::FILTER_NAME);
+//            $req->getFilteredQuery('id') $req->getFilteredPost('id')
+            return $req;
+        });
     }
 }

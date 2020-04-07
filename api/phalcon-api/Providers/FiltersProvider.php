@@ -12,16 +12,21 @@ use Phalcon\Filter;
 class FiltersProvider implements ServiceProviderInterface
 {
     /**
+     * @var string
+     */
+    public const NAME = 'filter';
+
+    /**
      * {@inheritdoc}
      *
      * @param DiInterface $container
      */
     public function register(DiInterface $container): void
     {
-        $filters = $container->get('filter');
+        $filters = $container->get(self::NAME);
         /** @var Filter $filters */
         $filters->set(UUIDFilter::FILTER_NAME, UUIDFilter::class);
 //        $filters->set(EnumFilter::FILTER_NAME, EnumFilter::class);
-        $container->setShared('filter', $filters);
+        $container->setShared(self::NAME, $filters);
     }
 }

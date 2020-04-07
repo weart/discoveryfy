@@ -19,11 +19,16 @@ use Phalcon\Di\DiInterface;
 class ResponseProvider implements ServiceProviderInterface
 {
     /**
+     * @var string
+     */
+    public const NAME = 'response';
+
+    /**
      * @param DiInterface $container
      */
     public function register(DiInterface $container): void
     {
-        $container->setShared('response', function () {
+        $container->setShared(self::NAME, function () {
             $res = new ApiResponse();
             //Define default status code
             if (is_null($res->getStatusCode())) {
