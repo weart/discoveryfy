@@ -1,5 +1,4 @@
-image:
-  image: leninux/gitpod-phalcon:latest
+image: leninux/gitpod-phalcon:discoveryfy
 ports:
 - port: 8000
   onOpen: open-browser
@@ -7,8 +6,10 @@ ports:
   onOpen: open-browser
 - port: 8002
   onOpen: open-browser
+- port: 8080
+  onOpen: open-browser
 tasks:
 #  - init: echo "Replace me with a build script for the project."
 #    command: echo "Replace me with omething that should run on every start, or just
 #      remove me entirely."
-  - command: $(which php) -S localhost:8000 -t public .htrouter.php
+  - command: $(which php) -S 0.0.0.0:8000 -t ./api/public .htrouter.php
