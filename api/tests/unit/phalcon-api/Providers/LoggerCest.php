@@ -25,6 +25,7 @@ class LoggerCest
         /** @var Logger $logger */
         $logger = $diContainer->getShared('logger');
         $I->assertTrue($logger instanceof Logger);
-        $I->assertEquals('api-logger', $logger->getName());
+//        $I->assertEquals('api', $logger->getName());
+        $I->assertEquals(LoggerProvider::DEFAULT_LOG_CHANNEL, $logger->getName());
     }
 }

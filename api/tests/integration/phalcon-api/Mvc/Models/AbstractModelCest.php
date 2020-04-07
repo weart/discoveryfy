@@ -76,6 +76,9 @@ class AbstractModelCest
         $user->set('username', 'UPDATED_NAME')->save();
 
         $I->assertEquals($user->get('username'), 'UPDATED_NAME');
+
+        $user->set('username', 'testuser')->save();
+        $I->assertEquals($user->get('username'), 'testuser');
 //        $I->assertEquals($user->get('password'), 'testpass');
 //        $I->assertEquals($user->get('public_email'), true);
 //        $I->assertEquals($user->get('rol'), 'ROLE_USER');
@@ -154,7 +157,7 @@ class AbstractModelCest
         $user->getMessage($logger);
 
         $I->openFile($fileName);
-        $I->seeInThisFile("error 1".PHP_EOL);
-        $I->seeInThisFile("error 2".PHP_EOL);
+        $I->seeInThisFile('error 1'.PHP_EOL);
+        $I->seeInThisFile('error 2'.PHP_EOL);
     }
 }

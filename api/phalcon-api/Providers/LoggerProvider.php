@@ -27,6 +27,13 @@ class LoggerProvider implements ServiceProviderInterface
      */
     public const NAME = 'logger';
 
+    public const DEFAULT_LOG_FILENAME='api.log';
+    public const DEFAULT_LOG_PATH='storage/logs/';
+    public const DEFAULT_LOG_FORMAT = '[%datetime%] %channel%.%level_name%: %message%'; # %context% %extra%
+//    public const DEFAULT_LOG_FORMAT = '[%datetime%][%level_name%] %message%';
+    public const DEFAULT_LOG_FORMAT_DATE = 'Y-m-d\TH:i:sP';
+    public const DEFAULT_LOG_CHANNEL = 'api';
+
     /**
      * Registers the logger component
      *
@@ -35,14 +42,21 @@ class LoggerProvider implements ServiceProviderInterface
     public function register(DiInterface $container): void
     {
         $container->setShared(self::NAME, function () {
-            /** @var string $logName */
-            $logName   = envValue('LOGGER_DEFAULT_FILENAME', 'api.log');
-            /** @var string $logPath */
-            $logPath   = envValue('LOGGER_DEFAULT_PATH', 'storage/logs');
-            $logFile   = appPath($logPath) . '/' . $logName . '.log';
-            $formatter = new LineFormatter("[%datetime%][%level_name%] %message%\n");
-            $logger    = new Logger('api-logger');
+            $logPath = envValue('LOG_PATH', self::DEFAULT_LOG_PATH);
+            if (substr($logPath, -1) !== '/') {
+                $logPath .= '/';
+            }
+            $logFile = $logPath.envValue('LOG_FILENAME', self::DEFAULT_LOG_FILENAME);
+            $logFormat = envValue('LOG_FORMAT', self::DEFAULT_LOG_FORMAT);
+            if (substr($logFormat, -1) !== PHP_EOL) {
+                $logFormat .= PHP_EOL;
+            }
+            $logFormatDate = envValue('LOG_FORMAT_DATE', self::DEFAULT_LOG_FORMAT_DATE);
+            $logChannel = envValue('LOG_CHANNEL', self::DEFAULT_LOG_CHANNEL);
+
+            $logger    = new Logger($logChannel);
             $handler   = new StreamHandler($logFile, Logger::DEBUG);
+            $formatter = new LineFormatter($logFormat, $logFormatDate);
             $handler->setFormatter($formatter);
             $logger->pushHandler($handler);
 

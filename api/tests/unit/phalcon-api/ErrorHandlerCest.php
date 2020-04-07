@@ -30,7 +30,7 @@ class ErrorHandlerCest
         $handler->handle(1, 'test error', 'file.php', 4);
         $fileName = appPath('storage/logs/api.log');
         $I->openFile($fileName);
-        $expected = '[ERROR] [#:1]-[L: 4] : test error (file.php)';
+        $expected = 'api.ERROR: [#:1]-[L: 4] : test error (file.php)';
         $I->seeInThisFile($expected);
     }
 
@@ -51,7 +51,7 @@ class ErrorHandlerCest
         $handler->shutdown();
         $fileName = appPath('storage/logs/api.log');
         $I->openFile($fileName);
-        $expected = '[INFO] Shutdown completed';
+        $expected = 'api.INFO: Shutdown completed';
         $I->seeInThisFile($expected);
     }
 }
