@@ -2,24 +2,20 @@
 
 namespace Discoveryfy\Tests\api\Groups;
 
-use ApiTester;
-use Codeception\Exception\TestRuntimeException;
-use Codeception\Util\HttpCode;
 use Page\Data;
 use Phalcon\Api\Http\Response;
-use function json_decode;
+use Step\Api\Login;
 
 class GroupsPostCest
 {
-    public function createGroupJson(ApiTester $I)
+    public function createGroupJson(Login $I)
     {
-        list($jwt, $session_id, $user_id) = $this->getAuthTokenJson($I);
-//        $I->comment(var_dump($session_id, $user_id, $jwt));
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
+        list($jwt, $session_id, $user_id) = $I->loginAsTest();
+        $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $group_data = Data::groupJson();
         $I->sendPOST(Data::$groupsUrl, $group_data);
+
         $I->dontSeeResponseContainsJson([
             'status'                => 'error'
         ]);
@@ -45,17 +41,18 @@ class GroupsPostCest
             'attributes.public_membership'      => $group_data['public_membership'],
             'attributes.who_can_create_polls'   => $group_data['who_can_create_polls']
         ]);
+        $group_uuid = $I->grabDataFromResponseByJsonPath('$.id')[0];
+        return [$jwt, $session_id, $user_id, $group_uuid];
     }
 
-    public function createGroupJsonApi(ApiTester $I)
+    public function createGroupJsonApi(Login $I)
     {
-        list($jwt, $session_id, $user_id) = $this->getAuthTokenJson($I);
-//        $I->comment(var_dump($session_id, $user_id, $jwt));
-        $I->haveHttpHeader('Content-Type', 'application/vnd.api+json');
-        $I->haveHttpHeader('accept', 'application/vnd.api+json');
+        list($jwt, $session_id, $user_id) = $I->loginAsTest();
+        $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $group_data = Data::groupJson();
         $I->sendPOST(Data::$groupsUrl, $group_data);
+
         $I->dontSeeResponseContainsJson([
             'status'                => 'error'
         ]);
@@ -81,54 +78,7 @@ class GroupsPostCest
                 'updated_at'                => '',
             ]
         ]);
-    }
-
-
-    /**
-     * Private functions, move to a shared place in all tests, but helper seems to fail
-     */
-
-
-    /**
-     * The headers 'Content-Type' and 'accept' are removed in this function
-     * @return string
-     */
-    public function getCSRFTokenJson(ApiTester $I): string
-    {
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
-        $I->sendGET(Data::$loginUrl);
-        $I->deleteHeader('Content-Type');
-        $I->deleteHeader('accept');
-        $I->dontSeeResponseContainsJson([
-            'status' => 'error'
-        ]);
-        $I->seeResponseCodeIs(Response::OK);
-        return trim($I->grabResponse(), '"');
-    }
-
-    public function getAuthTokenJson(ApiTester $I): array
-    {
-        $I->haveRecordWithFields($I->getDefaultModel(), $I->getDefaultModelAttributes());
-        $I->haveHttpHeader('X-CSRF-TOKEN', $this->getCSRFTokenJson($I));
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
-        $I->sendPOST(Data::$loginUrl, Data::loginJson());
-        $I->seeResponseCodeIs(Response::OK);
-        $obj = json_decode($I->grabResponse(), true);
-        $jwt = $session_id = $user_id = null;
-        foreach ($obj as $data) {
-            if ($data['type'] === 'jwt') {
-                $jwt = $data['id'];
-            } else if ($data['type'] === 'users') {
-                $user_id = $data['id'];
-            } else if ($data['type'] === 'sessions') {
-                $session_id = $data['id'];
-            }
-        }
-        if (empty($jwt) || empty($session_id) || empty($user_id)) {
-            throw new TestRuntimeException('Invalid login');
-        }
-        return [$jwt, $session_id, $user_id];
+        $group_uuid = $I->grabDataFromResponseByJsonPath('$.data.id')[0];
+        return [$jwt, $session_id, $user_id, $group_uuid];
     }
 }

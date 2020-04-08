@@ -2,37 +2,17 @@
 
 namespace Discoveryfy\Tests\api\Login;
 
-use ApiTester;
-use Page\Data;
-use Phalcon\Api\Http\Response;
-//use function json_decode;
+use Step\Api\Login;
 
 class LoginGetCest
 {
-    public function getCSRFTokenJson(ApiTester $I)
+    public function getCSRFTokenJson(Login $I)
     {
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
-        $I->sendGET(Data::$loginUrl);
-        $I->dontSeeResponseContainsJson([
-            'status' => 'error'
-        ]);
-        $I->seeResponseCodeIs(Response::OK);
+        $I->testCSRFToken($I->getLoginCSRFTokenJson());
     }
 
-    public function getCSRFTokenJsonApi(ApiTester $I)
+    public function getCSRFTokenJsonApi(Login $I)
     {
-        $I->haveHttpHeader('Content-Type', 'application/vnd.api+json');
-        $I->haveHttpHeader('accept', 'application/vnd.api+json');
-        $I->sendGET(Data::$loginUrl);
-        $I->dontSeeResponseContainsJson([
-            'status' => 'error'
-        ]);
-        $I->seeResponseIsJsonApiSuccessful();
-        $I->seeResponseMatchesJsonType([
-            'type' => 'string',
-            'id' => 'string'
-        ], '$.data');
-        $I->seeResponseContainsJson(['type' => 'CSRF']);
+        $I->testCSRFToken($I->getLoginCSRFTokenJson());
     }
 }

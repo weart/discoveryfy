@@ -2,16 +2,15 @@
 
 namespace Discoveryfy\Tests\api;
 
-use ApiTester;
 use Page\Data;
 use Codeception\Util\HttpCode;
+use Step\Api\Login;
 
 class NotFoundCest
 {
-    public function checkNotFoundRouteJson(ApiTester $I)
+    public function checkNotFoundRouteJson(Login $I)
     {
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
+        $I->setContentType('application/json');
         $I->sendGET(Data::$wrongUrl);
 
         $I->seeResponseIsJsonSuccessful(HttpCode::NOT_FOUND);
@@ -26,10 +25,9 @@ class NotFoundCest
         ]);
     }
 
-    public function checkNotFoundRouteJsonApi(ApiTester $I)
+    public function checkNotFoundRouteJsonApi(Login $I)
     {
-        $I->haveHttpHeader('Content-Type', 'application/vnd.api+json');
-        $I->haveHttpHeader('accept', 'application/vnd.api+json');
+        $I->setContentType('application/vnd.api+json');
         $I->sendGET(Data::$wrongUrl);
 
         $I->seeResponseIsJsonSuccessful(HttpCode::NOT_FOUND);

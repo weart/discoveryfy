@@ -2,20 +2,16 @@
 
 namespace Discoveryfy\Tests\api\Register;
 
-use ApiTester;
-//use Discoveryfy\Models\Users;
-use Codeception\Util\HttpCode;
 use Page\Data;
 use Phalcon\Api\Http\Response;
-use function json_decode;
+use Step\Api\Login;
 
 class RegisterPostCest
 {
-    public function registerUserJson(ApiTester $I)
+    public function registerUserJson(Login $I, RegisterGetCest $registerGet)
     {
-        $I->haveHttpHeader('X-CSRF-TOKEN', $this->getCSRFTokenJson($I));
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
+        $I->haveHttpHeader('X-CSRF-TOKEN', $registerGet->getRegisterCSRFTokenJson($I));
+        $I->setContentType('application/json');
         $user_data = Data::registerJson();
         $I->sendPOST(Data::$registerUrl, $user_data);
 
@@ -42,11 +38,10 @@ class RegisterPostCest
         ]);
     }
 
-    public function registerUserJsonApi(ApiTester $I)
+    public function registerUserJsonApi(Login $I, RegisterGetCest $registerGet)
     {
-        $I->haveHttpHeader('X-CSRF-TOKEN', $this->getCSRFTokenJson($I));
-        $I->haveHttpHeader('Content-Type', 'application/vnd.api+json');
-        $I->haveHttpHeader('accept', 'application/vnd.api+json');
+        $I->haveHttpHeader('X-CSRF-TOKEN', $registerGet->getRegisterCSRFTokenJsonApi($I));
+        $I->setContentType('application/vnd.api+json');
         $user_data = Data::registerJson();
         $I->sendPOST(Data::$registerUrl, $user_data);
 
@@ -76,29 +71,5 @@ class RegisterPostCest
             ]
 
         ], '$.data');
-    }
-
-
-    /**
-     * Private functions
-     */
-
-    /**
-     * The headers 'Content-Type' and 'accept' are removed in this function
-     * @param ApiTester $I
-     * @return string
-     */
-    private function getCSRFTokenJson(ApiTester $I): string
-    {
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
-        $I->sendGET(Data::$registerUrl);
-        $I->deleteHeader('Content-Type');
-        $I->deleteHeader('accept');
-        $I->dontSeeResponseContainsJson([
-            'status' => 'error'
-        ]);
-        $I->seeResponseCodeIs(Response::OK);
-        return trim($I->grabResponse(), '"');
     }
 }

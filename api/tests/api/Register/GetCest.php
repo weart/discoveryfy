@@ -2,28 +2,28 @@
 
 namespace Discoveryfy\Tests\api\Register;
 
-use ApiTester;
 use Page\Data;
 use Phalcon\Api\Http\Response;
-//use function json_decode;
+use Step\Api\Login;
 
 class RegisterGetCest
 {
-    public function getCSRFTokenJson(ApiTester $I)
+    public function getRegisterCSRFTokenJson(Login $I)
     {
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
+        $I->setContentType('application/json');
         $I->sendGET(Data::$registerUrl);
         $I->dontSeeResponseContainsJson([
             'status' => 'error'
         ]);
         $I->seeResponseCodeIs(Response::OK);
+        $csrf = trim($I->grabResponse(), '"');
+        $I->testCSRFToken($csrf);
+        return $csrf;
     }
 
-    public function getCSRFTokenJsonApi(ApiTester $I)
+    public function getRegisterCSRFTokenJsonApi(Login $I)
     {
-        $I->haveHttpHeader('Content-Type', 'application/vnd.api+json');
-        $I->haveHttpHeader('accept', 'application/vnd.api+json');
+        $I->setContentType('application/vnd.api+json');
         $I->sendGET(Data::$registerUrl);
         $I->dontSeeResponseContainsJson([
             'status' => 'error'
@@ -34,5 +34,8 @@ class RegisterGetCest
             'id' => 'string'
         ], '$.data');
         $I->seeResponseContainsJson(['type' => 'CSRF']);
+        $csrf = $I->grabDataFromResponseByJsonPath('$.data.id')[0];
+        $I->testCSRFToken($csrf);
+        return $csrf;
     }
 }

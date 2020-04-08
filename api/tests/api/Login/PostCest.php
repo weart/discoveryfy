@@ -2,11 +2,9 @@
 
 namespace Discoveryfy\Tests\api\Login;
 
-use ApiTester;
-//use Discoveryfy\Models\Users;
 use Codeception\Util\HttpCode;
 use Page\Data;
-use Phalcon\Api\Http\Response;
+use Step\Api\Login;
 
 class LoginPostCest
 {
@@ -14,11 +12,10 @@ class LoginPostCest
      * INVALID LOGIN USER: Json / JsonApi
      */
 
-    public function loginUnknownUserJson(ApiTester $I)
+    public function loginUnknownUserJson(Login $I)
     {
-        $I->haveHttpHeader('X-CSRF-TOKEN', $this->getCSRFTokenJson($I)); //Used first, headers are unsetted after
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
+        $I->haveHttpHeader('X-CSRF-TOKEN', $I->getLoginCSRFTokenJson());
+        $I->setContentType('application/json');
         $I->sendPOST(Data::$loginUrl, [
             'username' => 'user',
             'password' => 'pass',
@@ -33,11 +30,10 @@ class LoginPostCest
         ]);
     }
 
-    public function loginUnknownUserJsonApi(ApiTester $I)
+    public function loginUnknownUserJsonApi(Login $I)
     {
-        $I->haveHttpHeader('X-CSRF-TOKEN', $this->getCSRFTokenJson($I));
-        $I->haveHttpHeader('Content-Type', 'application/vnd.api+json');
-        $I->haveHttpHeader('accept', 'application/vnd.api+json');
+        $I->haveHttpHeader('X-CSRF-TOKEN', $I->getLoginCSRFTokenJsonApi());
+        $I->setContentType('application/vnd.api+json');
         $I->sendPOST(Data::$loginUrl, [
             'username' => 'user',
             'password' => 'pass',
@@ -49,102 +45,59 @@ class LoginPostCest
     /**
      * LOGIN ANON: Json / JsonApi
      */
-    public function loginAnonUserJson(ApiTester $I)
+    public function loginAnonUserJson(Login $I)
     {
-        $I->haveHttpHeader('X-CSRF-TOKEN', $this->getCSRFTokenJson($I));
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
-        $I->sendPOST(Data::$loginUrl);
-        $I->seeResponseCodeIs(Response::OK);
-        $I->seeResponseContainsJson(['type' => 'jwt']);
-        $I->seeResponseContainsJson(['type' => 'sessions']);
+        list($jwt, $session_id, $user_id) = $I->loginAsAnon();
+        $this->isValidAnonUser($I, $jwt, $session_id, $user_id);
     }
 
-    public function loginAnonUserJsonApi(ApiTester $I)
+    public function loginAnonUserJsonApi(Login $I)
     {
-        $I->haveHttpHeader('X-CSRF-TOKEN', $this->getCSRFTokenJson($I));
-        $I->haveHttpHeader('Content-Type', 'application/vnd.api+json');
-        $I->haveHttpHeader('accept', 'application/vnd.api+json');
-        $I->sendPOST(Data::$loginUrl);
-        $I->seeResponseCodeIs(Response::OK);
-        $I->cantSeeResponseMatchesJsonType([
-            'errors' => 'array'
-        ]);
-        $I->seeResponseContainsJson(['type' => 'jwt']);
-        $I->seeResponseContainsJson(['type' => 'sessions']);
+        list($jwt, $session_id, $user_id) = $I->getAuthTokenJsonApi();
+        $this->isValidAnonUser($I, $jwt, $session_id, $user_id);
+    }
+
+    private function isValidAnonUser(Login $I, $jwt, $session_id, $user_id)
+    {
+        $I->assertNotEmpty($jwt, 'JWT token must be setted');
+        $I->testJWTToken($jwt);
+        $I->assertNotEmpty($session_id, 'session_id must be setted');
+        $I->testUUID($session_id);
+        $I->assertEmpty($user_id, 'Anon user must not have user_id');
     }
 
     /**
      * LOGIN USER: Json / JsonApi
      */
 
-    public function loginKnownUserJson(ApiTester $I)
+    public function loginKnownUserJson(Login $I)
     {
-        $I->haveRecordWithFields($I->getDefaultModel(), $I->getDefaultModelAttributes());
-        $I->haveHttpHeader('X-CSRF-TOKEN', $this->getCSRFTokenJson($I));
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
-        $I->sendPOST(Data::$loginUrl, Data::loginJson());
-        $I->seeResponseCodeIs(Response::OK);
-        $I->cantSeeResponseMatchesJsonType([
-            'errors' => 'array'
-        ]);
-        //@TODO: Improve testing, the format will be [ [jwt],[sessions]{,[users]} ]
-//        $I->seeResponseContainsJson([
-//            'jwt' => 'string',
-//            'sessions' => 'array',
-//        ]);
-//        $I->seeResponseMatchesJsonType([
-//            'type' => 'string',
-//            'id' => 'string'
-//        ], '$..');
-//        Step  See response matches json type {"type":"sessions"},"$[*].type"
-//         Fail  Key `type` doesn't exist in ["jwt","sessions","users"]
-//        $I->seeResponseMatchesJsonType([
-//            'type' => 'jwt',
-//            'type' => 'sessions',
-//            'type' => 'users'
-//        ], '$[*]');
-//        $I->seeResponseContainsJson([
-//            ['type' => 'jwt'],
-//            ['type' => 'sessions'],
-//            ['type' => 'users'],
-//        ]);
-//        $I->seeResponseContainsJson(['type' => 'sessions']);
-//        $I->seeResponseContainsJson(['type' => 'users']);
-
-        // response: {name: john, email: john@gmail.com}
-//        $I->seeResponseContainsJson(array('name' => 'john'));
-        $I->seeResponseContainsJson(['type' => 'jwt']);
-        $I->seeResponseContainsJson(['type' => 'sessions']);
-        $I->seeResponseContainsJson(['type' => 'users']);
+        list($jwt, $session_id, $user_id) = $I->loginAsTest();
+        $this->isValidUser($I, $jwt, $session_id, $user_id);
     }
 
-    public function loginKnownUserJsonApi(ApiTester $I)
+    public function loginKnownUserJsonApi(Login $I)
     {
         $I->haveRecordWithFields($I->getDefaultModel(), $I->getDefaultModelAttributes());
-        $I->haveHttpHeader('X-CSRF-TOKEN', $this->getCSRFTokenJson($I));
-        $I->haveHttpHeader('Content-Type', 'application/vnd.api+json');
-        $I->haveHttpHeader('accept', 'application/vnd.api+json');
-        $I->sendPOST(Data::$loginUrl, Data::loginJson());
-        $I->seeResponseCodeIs(Response::OK);
-        //@TODO: Improve testing, the format will be 'data' => [ [jwt],[sessions]{,[users]} ]
-        $I->seeResponseIsJsonApiSuccessful();
-        $I->seeSuccessJsonResponse('data', [
-            'type' => 'jwt',
-            'type' => 'sessions',
-            'type' => 'users'
-        ]);
-        $I->seeResponseContainsJson(['type' => 'jwt']);
-        $I->seeResponseContainsJson(['type' => 'sessions']);
-        $I->seeResponseContainsJson(['type' => 'users']);
+        list($jwt, $session_id, $user_id) = $I->getAuthTokenJson(Data::loginJson());
+        $this->isValidUser($I, $jwt, $session_id, $user_id);
+    }
+
+    private function isValidUser(Login $I, $jwt, $session_id, $user_id)
+    {
+        $I->assertNotEmpty($jwt, 'JWT token must be setted');
+        $I->testJWTToken($jwt);
+        $I->assertNotEmpty($session_id, 'session_id must be setted');
+        $I->testUUID($session_id);
+        $I->assertNotEmpty($user_id, 'user_id must be setted');
+        $I->testUUID($user_id);
     }
 
     /**
      * LOGIN USER: Json / JsonApi - Test throttling
      *
 
-    public function loginThrottlingJson(ApiTester $I)
+    public function loginThrottlingJson(Login $I)
     {
         // First two attempts -> no delay
         $normal_time = time();
@@ -176,27 +129,4 @@ class LoginPostCest
         $I->assertGreaterThan(($normal_time+3), $slower_time, 'Slower time should be at least 3 seconds slower');
     }
 */
-
-    /**
-     * Private functions
-     */
-
-    /**
-     * The headers 'Content-Type' and 'accept' are removed in this function
-     * @param ApiTester $I
-     * @return string
-     */
-    private function getCSRFTokenJson(ApiTester $I): string
-    {
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('accept', 'application/json');
-        $I->sendGET(Data::$loginUrl);
-        $I->deleteHeader('Content-Type');
-        $I->deleteHeader('accept');
-        $I->dontSeeResponseContainsJson([
-            'status' => 'error'
-        ]);
-        $I->seeResponseCodeIs(Response::OK);
-        return trim($I->grabResponse(), '"');
-    }
 }
