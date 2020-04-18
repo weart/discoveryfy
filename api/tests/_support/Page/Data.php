@@ -46,8 +46,8 @@ class Data
             'username'          => 'test_'.(new Random())->hex(5),
             'password'          => 'test_'.(new Random())->hex(5),
             'email'             => 'test_'.(new Random())->hex(5).'@test.com',
-            'public-visibility' => true,
-            'public-email'      => true,
+            'public_visibility' => true,
+            'public_email'      => true,
             'language'          => 'en',
             'theme'             => 'default',
             'rol'               => 'ROLE_USER',
@@ -62,6 +62,34 @@ class Data
             'public_visibility'     => false,
             'public_membership'     => false,
             'who_can_create_polls'  => 'OWNERS',
+        ];
+    }
+
+    public static function pollJson()
+    {
+        $now = new \DateTime();
+        $date_format = 'Y-m-d H:i:s';
+
+        return [
+            'name'                              => 'test_'.(new Random())->hex(5),
+            'description'                       => 'test_'.(new Random())->hex(5),
+//            'spotify_playlist_images'           => Filter::FILTER_STRING, //array, saved in json
+//            'spotify_playlist_public'           => Filter::FILTER_BOOL,
+//            'spotify_playlist_collaborative'    => Filter::FILTER_BOOL,
+//            'spotify_playlist_uri'              => Filter::FILTER_STRING,
+//            'spotify_playlist_winner_uri'       => Filter::FILTER_STRING,
+//            'spotify_playlist_historic_uri'     => Filter::FILTER_STRING,
+            'start_date'                        => $now->add(new \DateInterval('P2D'))->format($date_format),
+            'end_date'                          => $now->add(new \DateInterval('P2M'))->format($date_format),
+//            'restart_date'                      => '',
+            'public_visibility'                 => false,
+            'public_votes'                      => false,
+            'anon_can_vote'                     => false,
+            'who_can_add_track'                 => 'OWNERS',
+            'anon_votes_max_rating'             => 0,
+            'user_votes_max_rating'             => 1,
+            'multiple_user_tracks'              => true,
+            'multiple_anon_tracks'              => false,
         ];
     }
 

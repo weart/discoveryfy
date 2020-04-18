@@ -1,9 +1,17 @@
 <?php
+declare(strict_types=1);
+
+/**
+ * This file is part of the Discoveryfy.
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
 
 namespace Discoveryfy\Tests\api\Users;
 
+use Codeception\Util\HttpCode;
 use Page\Data;
-use Phalcon\Api\Http\Response;
 use Phalcon\Security\Random;
 use Step\Api\Login;
 
@@ -29,7 +37,7 @@ class UsersPutCest
         $I->dontSeeResponseContainsJson([
             'status'                => 'error'
         ]);
-        $I->seeResponseCodeIs(Response::OK);
+        $I->seeResponseCodeIs(HttpCode::OK);
         $I->seeResponseMatchesJsonType([
             'type'                  => 'string',
             'id'                    => 'string',

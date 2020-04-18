@@ -1,14 +1,22 @@
 <?php
+declare(strict_types=1);
+
+/**
+ * This file is part of the Discoveryfy.
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
 
 namespace Discoveryfy\Tests\api\Groups;
 
+use Codeception\Util\HttpCode;
 use Page\Data;
-use Phalcon\Api\Http\Response;
 use Step\Api\Login;
 
 class GroupsPostCest
 {
-    public function createGroupJson(Login $I)
+    public function createGroupAsTestJson(Login $I)
     {
         list($jwt, $session_id, $user_id) = $I->loginAsTest();
         $I->setContentType('application/json');
@@ -19,13 +27,13 @@ class GroupsPostCest
         $I->dontSeeResponseContainsJson([
             'status'                => 'error'
         ]);
-        $I->seeResponseCodeIs(Response::CREATED);
+        $I->seeResponseCodeIs(HttpCode::CREATED);
         $I->seeResponseMatchesJsonType([
-            'type'                              => 'string',
-            'id'                                => 'string',
+            'type'                              => 'string:!empty',
+            'id'                                => 'string:!empty',
             'attributes.created_at'             => 'string:date',
             'attributes.updated_at'             => 'string:date|string', //When is empty is not null... is an empty string
-            'attributes.name'                   => 'string',
+            'attributes.name'                   => 'string:!empty',
             'attributes.description'            => 'string',
             'attributes.public_visibility'      => 'boolean',
             'attributes.public_membership'      => 'boolean',
@@ -45,7 +53,7 @@ class GroupsPostCest
         return [$jwt, $session_id, $user_id, $group_uuid];
     }
 
-    public function createGroupJsonApi(Login $I)
+    public function createGroupAsTestJsonApi(Login $I)
     {
         list($jwt, $session_id, $user_id) = $I->loginAsTest();
         $I->setContentType('application/vnd.api+json');
@@ -56,9 +64,9 @@ class GroupsPostCest
         $I->dontSeeResponseContainsJson([
             'status'                => 'error'
         ]);
-        $I->seeResponseCodeIs(Response::CREATED);
+        $I->seeResponseCodeIs(HttpCode::CREATED);
         $I->seeResponseMatchesJsonType([
-            'id'                            => 'string', //'016aeb55-7ecf-4862-a229-dd7478b17537'
+            'id'                            => 'string:!empty', //'016aeb55-7ecf-4862-a229-dd7478b17537'
             'attributes' => [
                 'created_at'                => 'string:date', //'2020-03-23 11:57:46'
 //                'updated_at'                => 'string:date|null', //''

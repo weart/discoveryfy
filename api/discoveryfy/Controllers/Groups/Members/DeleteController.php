@@ -59,6 +59,7 @@ class DeleteController extends BaseItemApiController
         // Delete the membership
         $this->deleteMembership($org, $user_uuid);
 
+        $this->logger->addInfo(sprintf('Membership removed: User %s is no longer part of %s', $user_uuid, $group_uuid));
         return $this->response->sendNoContent();
     }
 

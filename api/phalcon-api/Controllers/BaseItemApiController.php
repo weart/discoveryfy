@@ -87,6 +87,9 @@ abstract class BaseItemApiController extends BaseController
 
         $data = ($this->method === 'item') ? $this->findRecord($parameters) : $this->findRecords($parameters);
 
+        if ($data instanceof Response) {
+            return $data;
+        }
         return $this->sendApiData($data);
     }
 

@@ -46,7 +46,7 @@ class LoggerProvider implements ServiceProviderInterface
             if (substr($logPath, -1) !== '/') {
                 $logPath .= '/';
             }
-            $logFile = $logPath.envValue('LOG_FILENAME', self::DEFAULT_LOG_FILENAME);
+            $logFile = appPath($logPath.envValue('LOG_FILENAME', self::DEFAULT_LOG_FILENAME));
             $logFormat = envValue('LOG_FORMAT', self::DEFAULT_LOG_FORMAT);
             if (substr($logFormat, -1) !== PHP_EOL) {
                 $logFormat .= PHP_EOL;

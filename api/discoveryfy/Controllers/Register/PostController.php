@@ -92,8 +92,8 @@ class PostController extends BaseItemApiController
             ->setPasswordHash($this->security->hash($this->request->getPost('password', Filter::FILTER_STRING)))
             ->set('email', $this->request->getPost('email', Filter::FILTER_EMAIL))
             ->set('enabled', $this->request->getPost('enabled', Filter::FILTER_BOOL, true))
-            ->set('public_visibility', $this->request->getPost('public-visibility', Filter::FILTER_BOOL, false))
-            ->set('public_email', $this->request->getPost('public-email', Filter::FILTER_BOOL, false))
+            ->set('public_visibility', $this->request->getPost('public_visibility', Filter::FILTER_BOOL, false))
+            ->set('public_email', $this->request->getPost('public_email', Filter::FILTER_BOOL, false))
             ->set('language', $this->request->getPost('language', Filter::FILTER_STRIPTAGS, 'en'))
             ->set('theme', $this->request->getPost('theme', Filter::FILTER_STRIPTAGS, 'default'))
 //            ->set('rol', $this->request->getPost('rol', Filter::FILTER_STRIPTAGS));

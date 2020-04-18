@@ -1,9 +1,17 @@
 <?php
+declare(strict_types=1);
+
+/**
+ * This file is part of the Discoveryfy.
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
 
 namespace Discoveryfy\Tests\api\Register;
 
+use Codeception\Util\HttpCode;
 use Page\Data;
-use Phalcon\Api\Http\Response;
 use Step\Api\Login;
 
 class RegisterGetCest
@@ -15,7 +23,7 @@ class RegisterGetCest
         $I->dontSeeResponseContainsJson([
             'status' => 'error'
         ]);
-        $I->seeResponseCodeIs(Response::OK);
+        $I->seeResponseCodeIs(HttpCode::OK);
         $csrf = trim($I->grabResponse(), '"');
         $I->testCSRFToken($csrf);
         return $csrf;
@@ -30,8 +38,8 @@ class RegisterGetCest
         ]);
         $I->seeResponseIsJsonApiSuccessful();
         $I->seeResponseMatchesJsonType([
-            'type' => 'string',
-            'id' => 'string'
+            'type' => 'string:!empty',
+            'id' => 'string:!empty'
         ], '$.data');
         $I->seeResponseContainsJson(['type' => 'CSRF']);
         $csrf = $I->grabDataFromResponseByJsonPath('$.data.id')[0];

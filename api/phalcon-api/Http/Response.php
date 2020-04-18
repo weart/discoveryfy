@@ -312,7 +312,10 @@ class Response extends PhResponse
     {
         foreach ($errors as $error) {
             if ($error instanceof Message) {
-                $this->setPayloadError($error->getCode() ?? self::INTERNAL_SERVER_ERROR, $error->getMessage());
+                $this->setPayloadError(
+                    ($error->getCode() && $error->getCode() != 0) ? $error->getCode() : self::BAD_REQUEST,
+                    $error->getMessage()
+                );
 
             } else if (is_string($error)) {
                 $this->setPayloadError(self::INTERNAL_SERVER_ERROR, $error);

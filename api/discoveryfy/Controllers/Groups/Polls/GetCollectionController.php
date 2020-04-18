@@ -8,7 +8,7 @@ declare(strict_types=1);
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Discoveryfy\Controllers\Groups;
+namespace Discoveryfy\Controllers\Groups\Polls;
 
 use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\UnauthorizedException;

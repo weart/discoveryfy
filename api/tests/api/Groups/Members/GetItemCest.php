@@ -8,9 +8,9 @@ declare(strict_types=1);
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Discoveryfy\Tests\api\Groups;
+namespace Discoveryfy\Tests\api\Groups\Members;
 
-class GroupsGetCollectionCest
+class GroupsMembersGetItemCest
 {
 
 }

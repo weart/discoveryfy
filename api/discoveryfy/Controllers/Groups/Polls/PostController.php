@@ -8,7 +8,7 @@ declare(strict_types=1);
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Discoveryfy\Controllers\Groups;
+namespace Discoveryfy\Controllers\Groups\Polls;
 
 use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\BadRequestException;
@@ -96,10 +96,10 @@ class PostController extends BaseItemApiController
             ->set('end_date', $this->request->getPost('end_date', Filter::FILTER_STRING, ''))
             ->set('restart_date', $this->request->getPost('restart_date', Filter::FILTER_STRING, ''))
             ->set('restart_date', $this->request->getPost('restart_date', Filter::FILTER_STRING, ''))
-            ->set('public_visibility', $this->request->getPost('public-visibility', Filter::FILTER_BOOL, false))
-            ->set('public_votes', $this->request->getPost('public-votes', Filter::FILTER_BOOL, false))
-            ->set('anon_can_vote', $this->request->getPost('anon-can-vote', Filter::FILTER_BOOL, false))
-            ->set('who_can_add_track', $this->request->getPost('who-can-add-track', Filter::FILTER_STRING, ''))
+            ->set('public_visibility', $this->request->getPost('public_visibility', Filter::FILTER_BOOL, false))
+            ->set('public_votes', $this->request->getPost('public_votes', Filter::FILTER_BOOL, false))
+            ->set('anon_can_vote', $this->request->getPost('anon_can_vote', Filter::FILTER_BOOL, false))
+            ->set('who_can_add_track', $this->request->getPost('who_can_add_track', Filter::FILTER_STRING, ''))
             ->set('anon_votes_max_rating', $this->request->getPost('anon_votes_max_rating', Filter::FILTER_ABSINT, 0))
             ->set('user_votes_max_rating', $this->request->getPost('user_votes_max_rating', Filter::FILTER_ABSINT, 10))
             ->set('multiple_user_tracks', $this->request->getPost('multiple_user_tracks', Filter::FILTER_BOOL, false))

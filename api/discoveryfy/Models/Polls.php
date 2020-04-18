@@ -102,9 +102,12 @@ class Polls extends TimestampableModel
             ->add('organization_id', new UuidValidator())
             ->add('name', new PresenceOf())
             ->add('start_date', new Date(['format' => $date_format])) //message not provided
-            ->add('end_date', new Date(['format' => $date_format])) //message not provided
+            ->add('end_date', new Date([ //message not provided
+                'allowEmpty' => true,
+                'format' => $date_format
+            ]))
             ->add('restart_date', new Regex([ //message not provided
-                'allowEmpty' => false,
+                'allowEmpty' => true,
                 'pattern' => $crontab_regex
             ]))
             ->add('who_can_add_track', new InclusionIn([ 'domain' => [ //message not provided

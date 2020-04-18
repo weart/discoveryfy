@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Controllers\Groups\Members;
 
-//use Discoveryfy\Constants\Relationships;
+use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\BadRequestException;
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
@@ -24,6 +24,7 @@ use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 //use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Filter;
 use Phalcon\Http\ResponseInterface;
+use Phalcon\Security\Random;
 
 /**
  * Modify the rol of an User in a Group
@@ -45,7 +46,7 @@ class PutController extends BaseItemApiController
 //    protected $model       = Memberships::class;
 
     /** @var string */
-//    protected $resource    = Relationships::MEMBERSHIP;
+    protected $resource    = Relationships::MEMBERSHIP;
 
     /** @var string */
 //    protected $transformer = BaseTransformer::class;
@@ -87,6 +88,7 @@ class PutController extends BaseItemApiController
             if ($rol !== 'ROLE_MEMBER') {
                 throw new UnauthorizedException('The unique valid rol is ROLE_MEMBER');
             }
+            $target = $requester;
             // One user become part of one public group
             if ($requester === false && $org->get('public_membership')) {
                 $security_pass = true;
@@ -137,12 +139,13 @@ class PutController extends BaseItemApiController
         ));
         $membership = $this->updateMembership($group_uuid, $user_uuid, $rol);
 
-        // Return the membership object?
-//        return $this->response->sendNoContent();
+        if ($membership instanceof Response) {
+            return $membership;
+        }
         return $this->sendApiData($membership);
     }
 
-    private function updateMembership(string $org_uuid, string $user_uuid, string $rol): Memberships
+    private function updateMembership(string $org_uuid, string $user_uuid, string $rol)
     {
         // Check if the membership exist
         $membership = $this->getMembership($org_uuid, $user_uuid);
@@ -152,6 +155,7 @@ class PutController extends BaseItemApiController
             }
         } else {
             $membership = (new Memberships())
+                ->set('id', (new Random())->uuid())
                 ->set('user_id', $user_uuid)
                 ->set('organization_id', $org_uuid)
                 ->set('rol', $rol)

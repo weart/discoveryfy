@@ -2,9 +2,9 @@
 namespace Step\Api;
 
 use Codeception\Exception\TestRuntimeException;
+use Codeception\Util\HttpCode;
 use Codeception\Util\JsonArray;
 use Page\Data;
-use Phalcon\Api\Http\Response;
 use function json_decode;
 
 class Login extends \ApiTester
@@ -46,7 +46,7 @@ class Login extends \ApiTester
         $I->dontSeeResponseContainsJson([
             'status' => 'error'
         ]);
-        $I->seeResponseCodeIs(Response::OK);
+        $I->seeResponseCodeIs(HttpCode::OK);
         return trim($I->grabResponse(), '"');
     }
 
@@ -77,7 +77,7 @@ class Login extends \ApiTester
         $I->sendPOST(Data::$loginUrl, $credentials);
         $I->removeContentType();
 
-        $I->seeResponseCodeIs(Response::OK);
+        $I->seeResponseCodeIs(HttpCode::OK);
         $I->cantSeeResponseMatchesJsonType([
             'errors' => 'array'
         ]);

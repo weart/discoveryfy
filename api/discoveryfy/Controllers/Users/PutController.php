@@ -89,11 +89,11 @@ class PutController extends BaseItemApiController
         // Different behaviour than standard: request param and column name are not the equals
         if ($this->request->hasPut('public_visibility')) {
             $this->auth->getUser()
-                ->set('public_visibility', $this->request->getPut('public-visibility', Filter::FILTER_BOOL, false));
+                ->set('public_visibility', $this->request->getPut('public_visibility', Filter::FILTER_BOOL, false));
         }
         if ($this->request->hasPut('public_email')) {
             $this->auth->getUser()
-                ->set('public_email', $this->request->getPut('public-email', Filter::FILTER_BOOL, false));
+                ->set('public_email', $this->request->getPut('public_email', Filter::FILTER_BOOL, false));
         }
         // Different behaviour than standard: only admins can modify this columns
         if ($this->auth->getUser()->isAdmin()) {

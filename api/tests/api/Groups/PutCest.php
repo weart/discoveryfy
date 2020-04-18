@@ -1,9 +1,17 @@
 <?php
+declare(strict_types=1);
+
+/**
+ * This file is part of the Discoveryfy.
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
 
 namespace Discoveryfy\Tests\api\Groups;
 
+use Codeception\Util\HttpCode;
 use Page\Data;
-use Phalcon\Api\Http\Response;
 use Phalcon\Security\Random;
 use Step\Api\Login;
 
@@ -26,13 +34,13 @@ class GroupsPutCest
         $I->dontSeeResponseContainsJson([
             'status'                => 'error'
         ]);
-        $I->seeResponseCodeIs(Response::OK);
+        $I->seeResponseCodeIs(HttpCode::OK);
         $I->seeResponseMatchesJsonType([
-            'type'                              => 'string',
-            'id'                                => 'string',
+            'type'                              => 'string:!empty',
+            'id'                                => 'string:!empty',
             'attributes.created_at'             => 'string:date',
             'attributes.updated_at'             => 'string:date|string', //When is empty is not null... is an empty string
-            'attributes.name'                   => 'string',
+            'attributes.name'                   => 'string:!empty',
             'attributes.description'            => 'string',
             'attributes.public_visibility'      => 'boolean',
             'attributes.public_membership'      => 'boolean',
@@ -53,13 +61,13 @@ class GroupsPutCest
         $I->dontSeeResponseContainsJson([
             'status'                => 'error'
         ]);
-        $I->seeResponseCodeIs(Response::OK);
+        $I->seeResponseCodeIs(HttpCode::OK);
         $I->seeResponseMatchesJsonType([
-            'type'                              => 'string',
-            'id'                                => 'string',
+            'type'                              => 'string:!empty',
+            'id'                                => 'string:!empty',
             'attributes.created_at'             => 'string:date',
             'attributes.updated_at'             => 'string:date|string', //When is empty is not null... is an empty string
-            'attributes.name'                   => 'string',
+            'attributes.name'                   => 'string:!empty',
             'attributes.description'            => 'string',
             'attributes.public_visibility'      => 'boolean',
             'attributes.public_membership'      => 'boolean',
@@ -93,9 +101,9 @@ class GroupsPutCest
         $I->dontSeeResponseContainsJson([
             'status'                => 'error'
         ]);
-        $I->seeResponseCodeIs(Response::OK);
+        $I->seeResponseCodeIs(HttpCode::OK);
         $I->seeResponseMatchesJsonType([
-            'id'                            => 'string', //'016aeb55-7ecf-4862-a229-dd7478b17537'
+            'id'                            => 'string:!empty', //'016aeb55-7ecf-4862-a229-dd7478b17537'
             'attributes' => [
                 'created_at'                => 'string:date', //'2020-03-23 11:57:46'
                 'updated_at'                => 'string:date|null', //''
@@ -121,9 +129,9 @@ class GroupsPutCest
         $I->dontSeeResponseContainsJson([
             'status'                => 'error'
         ]);
-        $I->seeResponseCodeIs(Response::OK);
+        $I->seeResponseCodeIs(HttpCode::OK);
         $I->seeResponseMatchesJsonType([
-            'id'                            => 'string', //'016aeb55-7ecf-4862-a229-dd7478b17537'
+            'id'                            => 'string:!empty', //'016aeb55-7ecf-4862-a229-dd7478b17537'
             'attributes' => [
                 'created_at'                => 'string:date', //'2020-03-23 11:57:46'
                 'updated_at'                => 'string:date|null', //''

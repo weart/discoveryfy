@@ -75,7 +75,8 @@ class GetItemController extends BaseItemApiController
         }
 
         $parameters = [
-            'id' => $user_uuid
+            'organization_id'   => $group_uuid,
+            'user_id'           => $user_uuid
         ];
         return $parameters;
     }

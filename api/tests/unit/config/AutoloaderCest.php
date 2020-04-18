@@ -23,7 +23,11 @@ class AutoloaderCest
         $I->assertNotEquals(false, getenv('CACHE_PREFIX'));
         $I->assertNotEquals(false, getenv('CACHE_LIFETIME'));
         $I->assertNotEquals(false, getenv('MYSQL_DATABASE'));
-        $I->assertNotEquals(false, getenv('LOGGER_DEFAULT_FILENAME'));
+//        $I->assertNotEquals(false, getenv('LOG_PATH'));
+//        $I->assertNotEquals(false, getenv('LOG_FILENAME'));
+//        $I->assertNotEquals(false, getenv('LOG_FORMAT'));
+//        $I->assertNotEquals(false, getenv('LOG_FORMAT_DATE'));
+//        $I->assertNotEquals(false, getenv('LOG_CHANNEL'));
         $I->assertNotEquals(false, getenv('VERSION'));
 
         $I->assertEquals('true', getenv('APP_DEBUG'));
@@ -34,7 +38,11 @@ class AutoloaderCest
         $I->assertEquals('UTC', getenv('APP_TIMEZONE'));
         $I->assertEquals('api_cache_', getenv('CACHE_PREFIX'));
         $I->assertEquals(86400, getenv('CACHE_LIFETIME'));
-        $I->assertEquals('api', getenv('LOGGER_DEFAULT_FILENAME'));
+//        $I->assertEquals('api.log', getenv('LOG_FILENAME'));
+//        $I->assertEquals('storage/logs/', getenv('LOG_PATH'));
+//        $I->assertEquals('[%datetime%] %channel%.%level_name%: %message%', getenv('LOG_FORMAT'));
+//        $I->assertEquals('Y-m-d\TH:i:sP', getenv('LOG_FORMAT_DATE'));
+//        $I->assertEquals('api', getenv('LOG_CHANNEL'));
         $I->assertEquals('20200315', getenv('APP_VERSION'));
     }
 
