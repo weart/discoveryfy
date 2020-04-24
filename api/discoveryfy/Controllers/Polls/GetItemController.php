@@ -8,13 +8,14 @@ declare(strict_types=1);
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Discoveryfy\Controllers\Groups;
+namespace Discoveryfy\Controllers\Polls;
 
 use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
 use Discoveryfy\Models\Memberships;
 use Discoveryfy\Models\Organizations;
+use Discoveryfy\Models\Polls;
 use Discoveryfy\Models\Users;
 use Phalcon\Api\Controllers\BaseItemApiController;
 //use Phalcon\Api\Http\Request;
@@ -24,14 +25,14 @@ use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Http\ResponseInterface;
 
 /**
- * Retrieves a Group
+ * Retrieves a Poll
  *
- * Module       Groups
+ * Module       Polls
  * Class        GetItemController
- * OperationId  group.get
+ * OperationId  poll.get
  * Operation    GET
- * OperationUrl /groups/{group_uuid}
- * Security     Logged user is part of the group, or the group has public visibility
+ * OperationUrl /polls/{poll_uuid}
+ * Security     Logged user is part of the group of the poll, or the poll has public visibility
  *
  * @property Auth         $auth
  * #property Request      $request
@@ -40,10 +41,10 @@ use Phalcon\Http\ResponseInterface;
 class GetItemController extends BaseItemApiController
 {
     /** @var string */
-    protected $model       = Organizations::class;
+    protected $model       = Polls::class;
 
     /** @var string */
-    protected $resource    = Relationships::GROUP;
+    protected $resource    = Relationships::POLL;
 
     /** @var string */
 //    protected $transformer = BaseTransformer::class;
@@ -52,11 +53,11 @@ class GetItemController extends BaseItemApiController
 //    protected $method = 'item';
 
     /** @var array */
-    protected $includes = [
-        Relationships::MEMBERSHIP,
-        Relationships::POLL,
-        Relationships::COMMENTS,
-    ];
+//    protected $includes = [
+//        Relationships::MEMBERSHIP,
+//        Relationships::POLL,
+//        Relationships::COMMENTS,
+//    ];
 
     public function checkSecurity($parameters): array
     {
@@ -68,11 +69,11 @@ class GetItemController extends BaseItemApiController
 
     protected function findRecord(array $parameters)
     {
-        $user_id = $this->auth->getUser() ? $this->auth->getUser()->get('id') : null;
-        $rtn = Organizations::isPublicVisibilityOrMember($parameters['id'], $user_id);
+        $user_uuid = $this->auth->getUser() ? $this->auth->getUser()->get('id') : null;
+        $rtn = Polls::isPublicVisibilityOrMember($parameters['id'], $user_uuid);
         if ($rtn->count() !== 1) {
             throw new UnauthorizedException('Only available when the group has public_visibility or you belong to the group');
         }
-        return $rtn->org;
+        return $rtn->poll;
     }
 }

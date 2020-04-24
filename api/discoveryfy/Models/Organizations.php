@@ -163,7 +163,7 @@ class Organizations extends TimestampableModel
             ->columns('org.*, member.*, user.id as user_id')
             ->from([ 'org' => self::class]) //Organizations::class
             ->innerJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-            ->innerJoin(Users::class, 'member.user_id = user.id', 'user')
+            ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
             ->where('org.id = :org_uuid: AND user.id = :user_uuid:')
             ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'user_uuid' => \PDO::PARAM_STR ])
             ->setBindParams([ 'org_uuid' => $group_uuid, 'user_uuid' => $user_uuid ])
@@ -196,7 +196,7 @@ class Organizations extends TimestampableModel
         if ($user_uuid) {
             $q
                 ->leftJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-                ->innerJoin(Users::class, 'member.user_id = user.id', 'user')
+                ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
                 ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
                 ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
                 ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);
@@ -211,7 +211,7 @@ class Organizations extends TimestampableModel
             ->columns('org.*, member.*, user.id as user_id')
             ->from([ 'org' => Organizations::class])
             ->innerJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-            ->innerJoin(Users::class, 'member.user_id = user.id', 'user')
+            ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
             ->where('org.id = :org_uuid:')
             ->andWhere('(org.public_membership = :public_membership: OR (user.id = :user_uuid: AND member.rol != :member_rol:))')
             ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'public_membership' => \PDO::PARAM_BOOL, 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
@@ -231,7 +231,7 @@ class Organizations extends TimestampableModel
         if ($user_uuid) {
             $q
                 ->leftJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-                ->innerJoin(Users::class, 'member.user_id = user.id', 'user')
+                ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
                 ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
                 ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
                 ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);

@@ -72,7 +72,7 @@ class PutController extends BaseItemApiController
             throw new BadRequestException('Invalid rol');
         }
         if (false === ($org = Organizations::findById($group_uuid))) {
-            throw new BadRequestException('Invalid uuid');
+            throw new BadRequestException('Invalid group uuid');
         }
 
         $security_pass = false;

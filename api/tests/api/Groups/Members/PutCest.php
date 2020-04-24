@@ -161,4 +161,10 @@ class GroupsMembersPutCest
 //    {
 //        //Group owner
 //    }
+
+//    public function authorizeAnonPublicMembership(Login $I, GroupsPostCest $groupsPost)
+//    public function authorizeUserPublicMembership(Login $I, GroupsPostCest $groupsPost)
+//    public function authorizeInvitationMembership(Login $I, GroupsPostCest $groupsPost)
+//    public function unauthorizePrivateMembership(Login $I, GroupsPostCest $groupsPost)
+//    public function unauthorizeAnonMembership(Login $I, GroupsPostCest $groupsPost)
 }

@@ -16,7 +16,6 @@
 /phinx.php
 
 ###> environment files
-.env
 .env.local
 
 ###> code coverage

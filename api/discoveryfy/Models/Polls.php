@@ -10,10 +10,15 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Models;
 
+use Discoveryfy\Exceptions\InternalServerErrorException;
+use Discoveryfy\Exceptions\UnauthorizedException;
 use Phalcon\Api\Filters\UUIDFilter;
 use Phalcon\Api\Mvc\Model\TimestampableModel;
 use Phalcon\Api\Validators\UuidValidator;
+use Phalcon\Di;
 use Phalcon\Filter;
+use Phalcon\Mvc\Model\Query\Builder;
+use Phalcon\Mvc\Model\Resultset\Complex;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Date;
 use Phalcon\Validation\Validator\InclusionIn;
@@ -115,5 +120,86 @@ class Polls extends TimestampableModel
             ]]))
         ;
         return $this->validate($validator);
+    }
+
+    public static function getUserMembership(string $poll_uuid, string $user_uuid): Complex
+    {
+        $q = self::getBuilder()
+            ->columns('poll.*, member.*')
+            ->from([ 'poll' => Polls::class])
+            ->innerJoin(Memberships::class, 'poll.organization_id = member.organization_id', 'member')
+            ->where('poll.id = :poll_uuid:')
+            ->andWhere('member.user_id = :user_id:')
+            ->setBindTypes([ 'poll_uuid' => \PDO::PARAM_STR, 'user_uuid' => \PDO::PARAM_STR ])
+            ->setBindParams([ 'poll_uuid' => $poll_uuid, 'user_uuid' => $user_uuid ]);
+
+        $res = $q->getQuery()->execute();
+        if ($res->count() === 0) {
+            throw new UnauthorizedException('This user not belong to the group of this poll');
+        }
+//        $res = self::getFirstOrThrow($res);
+        if ($res->count() > 1) {
+            throw new InternalServerErrorException('Only one owner membership should be possible');
+        }
+        $res = $res->getFirst();
+        if ($res->poll->get('id') !== $poll_uuid || $res->member->get('user_id') !== $user_uuid) {
+            throw new InternalServerErrorException('Strange error in the query');
+        }
+        return $res;
+    }
+
+    // Poll::public_visibility == true || $user_uuid->rol !== INVITED
+    public static function isPublicVisibilityOrMember(string $poll_uuid, ?string $user_uuid): Complex
+    {
+        $q = self::getBuilder()
+            ->columns('poll.*, track.*, member.*')
+            ->from([ 'poll' => Polls::class])
+            ->innerJoin(Tracks::class, 'track.poll_id = poll.id', 'track')
+            ->where('poll.id = :poll_uuid:')
+            ->andWhere('poll.public_visibility = :public_visibility:')
+            ->setBindTypes([ 'poll_uuid' => \PDO::PARAM_STR, 'public_visibility' => \PDO::PARAM_BOOL ])
+            ->setBindParams([ 'poll_uuid' => $poll_uuid, 'public_visibility' => true ]);
+
+        if ($user_uuid) {
+            $q
+                ->leftJoin(Memberships::class, 'poll.organization_id = member.organization_id', 'member')
+                ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
+                ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);
+        }
+        return $q->getQuery()->execute();
+    }
+
+    public static function getPublicVisibilityOrMember(?string $user_uuid, string $orderBy = ''): Complex
+    {
+        $q = self::getBuilder()
+            ->columns('poll.*, member.*')
+            ->from([ 'poll' => Polls::class])
+            ->where('poll.public_visibility = :public_visibility:')
+            ->setBindTypes([ 'public_visibility' => \PDO::PARAM_BOOL ])
+            ->setBindParams([ 'public_visibility' => true ]);
+
+        if ($user_uuid) {
+            $q
+                ->leftJoin(Memberships::class, 'poll.organization_id = member.organization_id', 'member')
+                ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
+                ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);
+        }
+        if (true !== empty($orderBy)) {
+            $q->orderBy($orderBy);
+        }
+        return $q->getQuery()->execute();
+    }
+
+    // In non static context this function can be called directly this way: $this->modelsManager->createBuilder()
+    public static function getBuilder(): Builder
+    {
+        $builder = new Builder();
+        $di = DI::getDefault();
+        $builder->setDI($di);
+        return $builder;
     }
 }

@@ -8,42 +8,42 @@ declare(strict_types=1);
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Discoveryfy\Controllers\Groups;
+namespace Discoveryfy\Controllers\Polls\Tracks;
 
 use Discoveryfy\Constants\Relationships;
-use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
-use Discoveryfy\Models\Memberships;
 use Discoveryfy\Models\Organizations;
-use Discoveryfy\Models\Users;
-use Phalcon\Api\Controllers\BaseItemApiController;
+use Discoveryfy\Models\Polls;
+use Discoveryfy\Models\Tracks;
+use Phalcon\Api\Controllers\BaseCollectionApiController;
 //use Phalcon\Api\Http\Request;
 //use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Http\ResponseInterface;
+use Phalcon\Mvc\Model\ResultsetInterface;
 
 /**
- * Retrieves a Group
+ * Retrieves a list of Tracks
  *
- * Module       Groups
- * Class        GetItemController
- * OperationId  group.get
+ * Module       PollsTracks
+ * Class        GetCollectionController
+ * OperationId  tracks.list
  * Operation    GET
- * OperationUrl /groups/{group_uuid}
- * Security     Logged user is part of the group, or the group has public visibility
+ * OperationUrl /polls/{poll_uuid}/tracks
+ * Security     Logged user is part of the group of the poll, or the poll has public visibility
  *
  * @property Auth         $auth
  * #property Request      $request
  * #property Response     $response
  */
-class GetItemController extends BaseItemApiController
+class GetCollectionController extends BaseCollectionApiController
 {
     /** @var string */
-    protected $model       = Organizations::class;
+    protected $model       = Tracks::class;
 
     /** @var string */
-    protected $resource    = Relationships::GROUP;
+    protected $resource    = Relationships::TRACK;
 
     /** @var string */
 //    protected $transformer = BaseTransformer::class;
@@ -52,11 +52,11 @@ class GetItemController extends BaseItemApiController
 //    protected $method = 'item';
 
     /** @var array */
-    protected $includes = [
-        Relationships::MEMBERSHIP,
-        Relationships::POLL,
-        Relationships::COMMENTS,
-    ];
+//    protected $includes = [
+//        Relationships::MEMBERSHIP,
+//        Relationships::POLL,
+//        Relationships::COMMENTS,
+//    ];
 
     public function checkSecurity($parameters): array
     {
@@ -66,13 +66,13 @@ class GetItemController extends BaseItemApiController
         return $parameters;
     }
 
-    protected function findRecord(array $parameters)
+    protected function getRecords(array $parameters = [], string $orderBy = ''): ResultsetInterface
     {
-        $user_id = $this->auth->getUser() ? $this->auth->getUser()->get('id') : null;
-        $rtn = Organizations::isPublicVisibilityOrMember($parameters['id'], $user_id);
+        $user_uuid = $this->auth->getUser() ? $this->auth->getUser()->get('id') : null;
+        $rtn = Polls::isPublicVisibilityOrMember($parameters['id'], $user_uuid);
         if ($rtn->count() !== 1) {
             throw new UnauthorizedException('Only available when the group has public_visibility or you belong to the group');
         }
-        return $rtn->org;
+        return $rtn->track;
     }
 }
