@@ -12,8 +12,8 @@
 ###> tests ###
 /tests/_output/
 
-###> phinx (migrations)
-/phinx.php
+###> phinx (migrations) - Can be safely included, all secrets are keep in env files
+#/phinx.php
 
 ###> environment files
 .env.local
