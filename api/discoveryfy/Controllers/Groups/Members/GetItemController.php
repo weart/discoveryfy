@@ -60,7 +60,7 @@ class GetItemController extends BaseItemApiController
     public function checkSecurity($parameters): array
     {
         if (!$this->auth->getUser()) {
-            throw new UnauthorizedException('Only available for registered users');
+            throw new UnauthorizedException('Only available to registered users');
         }
 
         $group_uuid = $parameters['id'];
@@ -86,7 +86,7 @@ class GetItemController extends BaseItemApiController
     {
         // If Organization::public_membership == true
         if (!$this->auth->getUser()) {
-            throw new UnauthorizedException('Only available for registered users');
+            throw new UnauthorizedException('Only available to registered users');
         }
 
         // Any membership is valid

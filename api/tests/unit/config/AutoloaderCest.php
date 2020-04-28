@@ -13,22 +13,22 @@ class AutoloaderCest
     {
         require appPath('phalcon-api/Core/autoload.php');
 
-        $I->assertNotEquals(false, getenv('APP_DEBUG'));
-        $I->assertNotEquals(false, getenv('APP_ENV'));
-        $I->assertNotEquals(false, getenv('APP_URL'));
-        $I->assertNotEquals(false, getenv('APP_NAME'));
-        $I->assertNotEquals(false, getenv('APP_BASE_URI'));
-        $I->assertNotEquals(false, getenv('APP_SUPPORT_EMAIL'));
-        $I->assertNotEquals(false, getenv('APP_TIMEZONE'));
-        $I->assertNotEquals(false, getenv('CACHE_PREFIX'));
-        $I->assertNotEquals(false, getenv('CACHE_LIFETIME'));
-        $I->assertNotEquals(false, getenv('MYSQL_DATABASE'));
+        $I->assertNotEquals(false, getenv('APP_DEBUG'), 'APP_DEBUG is not false');
+        $I->assertNotEquals(false, getenv('APP_ENV'), 'APP_ENV is not false');
+        $I->assertNotEquals(false, getenv('APP_URL'), 'APP_URL is not false');
+        $I->assertNotEquals(false, getenv('APP_NAME'), 'APP_NAME is not false');
+        $I->assertNotEquals(false, getenv('APP_BASE_URI'), 'APP_BASE_URI is not false');
+        $I->assertNotEquals(false, getenv('APP_SUPPORT_EMAIL'), 'APP_SUPPORT_EMAIL is not false');
+        $I->assertNotEquals(false, getenv('APP_TIMEZONE'), 'APP_TIMEZONE is not false');
+        $I->assertNotEquals(false, getenv('CACHE_PREFIX'), 'CACHE_PREFIX is not false');
+        $I->assertNotEquals(false, getenv('CACHE_LIFETIME'), 'CACHE_LIFETIME is not false');
+        $I->assertNotEquals(false, getenv('MYSQL_DATABASE'), 'MYSQL_DATABASE is not false');
 //        $I->assertNotEquals(false, getenv('LOG_PATH'));
 //        $I->assertNotEquals(false, getenv('LOG_FILENAME'));
 //        $I->assertNotEquals(false, getenv('LOG_FORMAT'));
 //        $I->assertNotEquals(false, getenv('LOG_FORMAT_DATE'));
 //        $I->assertNotEquals(false, getenv('LOG_CHANNEL'));
-        $I->assertNotEquals(false, getenv('VERSION'));
+        $I->assertNotEquals(false, getenv('APP_VERSION'), 'APP_VERSION is not false');
 
         $I->assertEquals('true', getenv('APP_DEBUG'));
         $I->assertEquals('development', getenv('APP_ENV'));

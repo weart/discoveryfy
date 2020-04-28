@@ -51,7 +51,7 @@ class GetController extends BaseItemApiController
     public function checkSecurity(array $parameters): array
     {
 //        if (!$this->auth->getUser()) {
-//            throw new UnauthorizedException('Only available for registered users');
+//            throw new UnauthorizedException('Only available to registered users');
 //        }
         if ($this->auth->getSession()->get('id') !== $parameters['id'] && !$this->auth->getUser()->isAdmin()) {
             // Save security_event?

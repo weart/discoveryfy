@@ -61,7 +61,7 @@ class PostController extends BaseItemApiController
     protected function checkSecurity(array $parameters): array
     {
         if (!$this->auth->getUser()) {
-            throw new UnauthorizedException('Only available for registered users');
+            throw new UnauthorizedException('Only available to registered users');
         }
         return $parameters;
     }

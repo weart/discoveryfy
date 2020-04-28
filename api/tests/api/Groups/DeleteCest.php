@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Tests\api\Groups;
 
-use Page\Data;
 use Codeception\Util\HttpCode;
+use Page\Data;
 use Step\Api\Login;
 
 class GroupsDeleteCest
@@ -41,5 +41,34 @@ class GroupsDeleteCest
 
         $I->seeResponseCodeIs(HttpCode::NO_CONTENT);
         $I->seeResponseEquals('');
+    }
+
+    public function anonCantDeleteGroupJson(Login $I, GroupsPostCest $groupsPost)
+    {
+        list($jwt, $session_id, $user_id, $group_uuid) = $groupsPost->createGroupAsTestJsonApi($I);
+        list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
+        $I->setContentType('application/vnd.api+json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
+        $I->sendDELETE(sprintf(Data::$groupUrl, $group_uuid));
+
+        $I->seeResponseIsJsonSuccessful(HttpCode::UNAUTHORIZED);
+        $I->seeSuccessJsonResponse('errors', [
+            [
+                'code' => HttpCode::UNAUTHORIZED,
+                'status' => HttpCode::UNAUTHORIZED,
+                'title' => 'Only available to registered users'
+            ]
+        ]);
+    }
+
+    public function anonCantDeleteGroupJsonApi(Login $I, GroupsPostCest $groupsPost)
+    {
+        list($jwt, $session_id, $user_id, $group_uuid) = $groupsPost->createGroupAsTestJsonApi($I);
+        list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
+        $I->setContentType('application/vnd.api+json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
+        $I->sendDELETE(sprintf(Data::$groupUrl, $group_uuid));
+
+        $I->seeResponseIsJsonApiError(HttpCode::UNAUTHORIZED, 'Only available to registered users');
     }
 }

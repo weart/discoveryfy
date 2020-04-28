@@ -43,7 +43,7 @@ class DeleteController extends BaseItemApiController
     protected function checkSecurity(array $parameters = []): array
     {
         if (!$this->auth->getUser()) {
-            throw new UnauthorizedException('Only available for registered users');
+            throw new UnauthorizedException('Only available to registered users');
         }
         return $parameters;
     }
@@ -70,7 +70,7 @@ class DeleteController extends BaseItemApiController
         $user_uuid = $this->checkId($user_uuid);
 
         if (!$this->auth->getUser()) {
-            throw new UnauthorizedException('Only available for registered users');
+            throw new UnauthorizedException('Only available to registered users');
         }
 
         // Check if user can delete this membership of the group
