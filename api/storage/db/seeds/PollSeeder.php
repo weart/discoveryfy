@@ -90,7 +90,7 @@ class PollSeeder extends AbstractSeed
                 $poll_properties, $poll_properties_members, $poll_properties_no_editable, $poll_properties_monthly
             ),
         ];
-        $tracks = [
+        $tracks_schema = [
             [
                 'artist' => 'Lágrimas de Sangre',
                 'name' => 'Rojos y separatistas',
@@ -159,7 +159,7 @@ class PollSeeder extends AbstractSeed
                 'spotify_uri' => '7aSRHl639kQIa81lTDG7BD',
             ]
         ];
-        $num_tracks = count($tracks);
+        $num_tracks = count($tracks_schema);
         $num_polls_can_add_track = 0;
 
         // Add ids & Count editable polls
@@ -185,8 +185,8 @@ class PollSeeder extends AbstractSeed
             if ($poll_schema['who_can_add_track'] !== 'OWNERS') {
                 $add_more_tracks = true;
                 $user_can_add_more_tracks = true;
-                while ($add_more_tracks && count($tracks) > 0) {
-                    $track_info = $this->array_pop_rand($tracks);
+                while ($add_more_tracks && count($tracks_schema) > 0) {
+                    $track_info = $this->array_pop_rand($tracks_schema);
 
                     if ($poll_schema['who_can_add_track'] === 'ANYONE') { //Everyone can add tracks
                         if ($user_can_add_more_tracks && rand(0, 1) === 0) { //50% member user, only one if multiple
@@ -288,12 +288,9 @@ class PollSeeder extends AbstractSeed
 
         }
 
-//        $this->table('polls')->insert(array_values($polls_schema))->saveData();
-//        var_dump('polls');
-//        var_dump(array_column($polls_schema, 'id'));
         $this->table('polls')->insert($polls_schema)->saveData();
         $this->table('tracks')->insert($tracks)->saveData();
-        $this->table('polls')->insert($votes)->saveData();
+        $this->table('votes')->insert($votes)->saveData();
     }
 
     private function array_pop_rand(&$array)
@@ -312,8 +309,6 @@ class PollSeeder extends AbstractSeed
         foreach (range(0, $num_users) as $num_user) {
             $sessions[] = $this->createSession('Test Anon Voter '.$num_user);
         }
-//        var_dump('sessions');
-//        var_dump($sessions);
         return $sessions;
     }
 
@@ -330,14 +325,14 @@ class PollSeeder extends AbstractSeed
         return $uuid;
     }
 
+    protected function getRandomService(): Random
+    {
+        return (new Random());
+    }
+
 //    private function getNumTracksByPoll($tracks, $poll_id): int
 //    {
 //        $counter = array_count_values($tracks);
 //        return $counter[$poll_id] ?? 0;
 //    }
-
-    protected function getRandomService(): Random
-    {
-        return (new Random());
-    }
 }
