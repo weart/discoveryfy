@@ -17,8 +17,8 @@ Api / Backend:
   * Phalcon: PHP framework for generate a [JSON:API](https://jsonapi.org/) compliant API, [OpenAPI Specification](/docs): [json definition](/openapi.json) & [yaml definition](/openapi.yaml).
   * [jwilsson/spotify-web-api-php](https://github.com/jwilsson/spotify-web-api-php): PHP wrapper for Spotify's Web API. 
   * JWT: Authentication engine
-  * MySQL: Database engine for persist data.
-  * Redis?
+  * MySQL: Database engine for persist data
+  * Redis: Database engine for cache
   * Other possibilites:
     * Django, Laravel, Flask
     * Instead of JSON:API, use [any other hypermedia spec](https://www.nginx.com/blog/building-your-api-for-longevity-best-practices/), [2](https://sookocheff.com/post/api/on-choosing-a-hypermedia-format/):
@@ -41,6 +41,8 @@ DevOps:
 
 ## Installation
 
+Install [docker](https://docs.docker.com/engine/install/) & [docker-compose](https://docs.docker.com/compose/install/).
+
 Create your own env file.
 ```bash
 cp .env .env.local
@@ -53,6 +55,8 @@ docker-compose up -d
 docker-compose up --force-recreate -d
 docker-compose up --force-recreate --build -d
 ```
+
+Execute migrations and seeding. (Commands below)
 
 <!--
 ### Configure ngrok
@@ -118,5 +122,3 @@ mysql -u leninux -p discoveryfydb
 Discover awesome collectives to support in Open Collective:
 * [Phalcon](https://opencollective.com/phalcon#backer)
 * [Women Who Code](https://opencollective.com/wwcode)
-
-

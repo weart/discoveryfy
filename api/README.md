@@ -14,7 +14,7 @@ More information in the root README.md.
 
 #### Config
 
-All config files are inside `./config` folder, but the values are taken from `.env` and `.env.local`.
+All config files are inside `./config` folder, but the values are located in the files `.env` and `.env.local`.
 
 #### Private key generation
 
@@ -48,11 +48,12 @@ $ mv config/jwt/private2.pem config/jwt/private.pem
 More info: https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/index.md#generate-the-ssh-keys
 
 ### Roadmap
-* Lost password: https://github.com/phalcon/vokuro/blob/4.0.x/src/Models/ResetPasswords.php
-* Organizations
-* Create models
+* Define Spotify endpoints for get information
+* Scheduled agent for autofinish polls & grab information from SpotifyService
+* Finish api test -> api/tests/api/ToDo.md
+* Sysadmin: Define domain, deploy (Ansible?) and define backup strategy.
 * CORS - Uncomment middleware in RouterProvider
-* Autofinish polls with a scheduled agent
+* Lost password: https://github.com/phalcon/vokuro/blob/4.0.x/src/Models/ResetPasswords.php
 * Test against schema: https://github.com/aWuttig/codeception-api-validator / https://github.com/mlambley/swagception
 * JSON-LD Schema. First define the specs in OpenApi file, after that in the code.
     * https://ca.wikipedia.org/wiki/JSON-LD
@@ -77,17 +78,18 @@ Run tests:
 docker-compose exec api ./runTests
 ```
 
-Executes queries in postgres:
+Enter in container shell:
 ```shell
-docker-compose exec db psql --dbname api --username api-platform --password
+docker exec -ti db /bin/bash
 ```
 
-Add fixtures:
+Executes queries in sql (modify N with values in .env files):
 ```shell
-docker-compose exec php bin/console doctrine:fixtures:load -n
+docker-compose exec db mysql -D N -u N -p
+docker-compose exec db psql --dbname N --username N --password
 ```
 
-Login in the API (modify N with the correct values):
+Login in the API (modify N with the values in .env files):
 ```shell
 # Get CSRF Token
 curl -X GET  -H "Content-Type: application/json" http://localhost/login -v
