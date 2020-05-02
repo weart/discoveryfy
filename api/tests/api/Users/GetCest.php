@@ -23,23 +23,25 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$usersUrl, $user_id));
 
-        $I->dontSeeResponseContainsJson([
-            'status'                => 'error'
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $I->seeResponseMatchesJsonType([
-            'type'                  => 'string:!empty',
-            'id'                    => 'string:!empty',
-            'attributes.created_at' => 'string:date',
-            'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
-            'attributes.username'   => 'string:!empty',
-            'attributes.email'      => 'string:email',
-            'attributes.language'   => 'string:!empty',
-            'attributes.theme'      => 'string:!empty',
-            'attributes.rol'        => 'string:!empty',
-            'links.self'            => 'string:url',
-        ]);
-        $I->seeResponseContainsJson(['type' => 'users']);
+        $I->seeResponseContainsNoErrors();
+        $I->seeResponseIsValidJson(
+            HttpCode::OK,
+            [
+                'type'                  => 'string:!empty',
+                'id'                    => 'string:!empty',
+                'attributes.created_at' => 'string:date',
+                'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
+                'attributes.username'   => 'string:!empty',
+                'attributes.email'      => 'string:email',
+                'attributes.language'   => 'string:!empty',
+                'attributes.theme'      => 'string:!empty',
+                'attributes.rol'        => 'string:!empty',
+                'links.self'            => 'string:url',
+            ],
+            [
+                'type' => 'users'
+            ]
+        );
     }
 
     public function getUserJsonApi(Login $I)
@@ -49,31 +51,33 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$usersUrl, $user_id));
 
-        $I->dontSeeResponseContainsJson([
-            'status'        => 'error'
-        ]);
-        $I->seeResponseIsJsonApiSuccessful();
-        $I->seeResponseMatchesJsonType([
-            'type'          => 'string',
-            'id'            => 'string',
-            'attributes'    => 'array',
-            'links'         => 'array',
-        ], '$.data');
-        $I->seeResponseContainsJson(['type' => 'users']);
-        $I->seeResponseMatchesJsonType([
-            'created_at'    => 'string:date',
-            'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
-            'username'      => 'string:!empty',
-            'email'         => 'string:email',
-            'language'      => 'string:!empty',
-            'theme'         => 'string:!empty',
-            'rol'           => 'string:!empty',
-        ], '$.data.attributes');
-        $I->seeResponseContainsJson(['theme' => 'default']);
-        $I->seeResponseContainsJson(['rol' => 'ROLE_USER']);
-        $I->seeResponseMatchesJsonType([
-            'self'          => 'string:url',
-        ], '$.data.links');
+        $I->seeResponseContainsNoErrors();
+        $I->seeResponseIsValidJsonApi(
+            HttpCode::OK,
+            [
+                'type'          => 'string:!empty',
+                'id'            => 'string:!empty',
+                'attributes'    => [
+                    'created_at'    => 'string:date',
+                    'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
+                    'username'      => 'string:!empty',
+                    'email'         => 'string:email',
+                    'language'      => 'string:!empty',
+                    'theme'         => 'string:!empty',
+                    'rol'           => 'string:!empty',
+                ],
+                'links'         => [
+                    'self'          => 'string:url',
+                ],
+            ],
+            [
+                'type'          => 'users',
+                'attributes'    => [
+                    'theme'         => 'default',
+                    'rol'           => 'ROLE_USER',
+                ],
+            ]
+        );
     }
 
     public function getInvalidUserJson(Login $I)
@@ -83,14 +87,7 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$usersUrl, '1234'));
 
-        $I->seeResponseIsJsonSuccessful(HttpCode::BAD_REQUEST);
-        $I->seeSuccessJsonResponse('errors', [
-            [
-                'code' => HttpCode::BAD_REQUEST,
-                'status' => HttpCode::BAD_REQUEST,
-                'title' => 'Invalid uuid'
-            ]
-        ]);
+        $I->seeResponseIsJsonError(HttpCode::BAD_REQUEST, 'Invalid uuid');
     }
 
     public function getInvalidUserJsonApi(Login $I)
@@ -113,14 +110,7 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendGET(sprintf(Data::$usersUrl, $admin_user_id));
 
-        $I->seeResponseIsJsonSuccessful(HttpCode::UNAUTHORIZED);
-        $I->seeSuccessJsonResponse('errors', [
-            [
-                'code' => HttpCode::UNAUTHORIZED,
-                'status' => HttpCode::UNAUTHORIZED,
-                'title' => 'User unauthorized for this action'
-            ]
-        ]);
+        $I->seeResponseIsJsonError(HttpCode::UNAUTHORIZED, 'User unauthorized for this action');
     }
 
     public function getUnauthorizedUserJsonApi(Login $I)

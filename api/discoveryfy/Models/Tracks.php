@@ -85,6 +85,9 @@ class Tracks extends TimestampableModel
             ]))
             ->add('artist', new PresenceOf()) //AlnumValidator?
             ->add('name', new PresenceOf())
+
+            //test spotify  & youtube uri?
+            //remove 'spotify:playlist:' from field?
         ;
         return $this->validate($validator);
     }

@@ -10,7 +10,14 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Tests\api\Groups;
 
+use Codeception\Util\HttpCode;
+use Page\Data;
+use Step\Api\Login;
+
 class GroupsGetCollectionCest
 {
+    public function anonGetPublicGroupsJson(Login $I, GroupsPostCest $groupsPost)
+    {
 
+    }
 }

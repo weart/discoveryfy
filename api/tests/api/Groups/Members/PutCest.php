@@ -57,8 +57,7 @@ class GroupsMembersPutCest
         // Test user remove Admin user of test group
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendDELETE(sprintf(Data::$memberUrl, $group_id, $admin_user_id));
-        $I->seeResponseCodeIs(HttpCode::NO_CONTENT);
-        $I->seeResponseEquals('');
+        $I->seeResponseIsValidDeleteJson();
 
 //        $member_uuid = $this->grabMembershipUuid($I, $contentType);
 //        $I->testUUID($member_uuid);
@@ -82,40 +81,44 @@ class GroupsMembersPutCest
 
     private function checkMembershipResponseJson(Login $I, string $rol)
     {
-        $I->seeResponseIsJsonSuccessful(HttpCode::OK);
-        $I->seeResponseMatchesJsonType([
-            'type'                      => 'string:!empty',
-            'id'                        => 'string:!empty',
-            //organization_id
-            'attributes.created_at'     => 'string:date',
-            'attributes.updated_at'     => 'string:date|string', //When is empty is not null... is an empty string
-            'attributes.rol'            => 'string:!empty',
-        ]);
-        $I->seeResponseContainsJson([
-            'type'                      => 'memberships',
-            'attributes.rol'            => $rol,
-        ]);
+        $I->seeResponseIsValidJson(
+            HttpCode::OK,
+            [
+                'type'                      => 'string:!empty',
+                'id'                        => 'string:!empty',
+                //organization_id
+                'attributes.created_at'     => 'string:date',
+                'attributes.updated_at'     => 'string:date|string', //When is empty is not null... is an empty string
+                'attributes.rol'            => 'string:!empty',
+            ],
+            [
+                'type'                      => 'memberships',
+                'attributes.rol'            => $rol,
+            ]
+        );
     }
 
     private function checkMembershipResponseJsonApi(Login $I, string $rol)
     {
-        $I->seeResponseIsJsonSuccessful(HttpCode::OK);
-        $I->seeResponseMatchesJsonType([
-            'type'                      => 'string:!empty',
-            'id'                        => 'string:!empty',
-            'attributes'                => [
-                'created_at'                => 'string:date',
-                'updated_at'                => 'string:date|string', //When is empty is not null... is an empty string
-                'rol'                       => 'string',
+        $I->seeResponseIsValidJsonApi(
+            HttpCode::OK,
+            [
+                'type'                      => 'string:!empty',
+                'id'                        => 'string:!empty',
+                'attributes'                => [
+                    'created_at'            => 'string:date',
+                    'updated_at'            => 'string:date|string', //When is empty is not null... is an empty string
+                    'rol'                   => 'string',
+                ]
+            ],
+            [
+                'type'                      => 'memberships',
+                'attributes' => [
+                    'rol'                   => $rol,
+//                    'updated_at'            => '',
+                ]
             ]
-        ], '$.data');
-        $I->seeSuccessJsonResponse('data', [
-            'type'                      => 'memberships',
-            'attributes' => [
-                'rol'                   => $rol,
-//                'updated_at'            => '',
-            ]
-        ]);
+        );
     }
 
     private function grabMembershipUuid(Login $I, string $contentType)
@@ -136,14 +139,7 @@ class GroupsMembersPutCest
 //        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt); //Not needed, already setted
         $I->sendPUT(sprintf(Data::$memberUrl, $group_id, $user_id), [ 'rol' => 'ROLE_MEMBER' ]);
 
-        $I->seeResponseIsJsonSuccessful(HttpCode::UNAUTHORIZED);
-        $I->seeSuccessJsonResponse('errors', [
-            [
-                'code' => HttpCode::UNAUTHORIZED,
-                'status' => HttpCode::UNAUTHORIZED,
-                'title' => 'Without enough permissions/Invalid call'
-            ]
-        ]);
+        $I->seeResponseIsJsonError(HttpCode::UNAUTHORIZED, 'Without enough permissions/Invalid call');
     }
 
     public function ownershipCantBeOrphanJsonApi(Login $I, GroupsPostCest $groupsPost)

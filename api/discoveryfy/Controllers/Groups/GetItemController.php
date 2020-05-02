@@ -73,6 +73,11 @@ class GetItemController extends BaseItemApiController
         if ($rtn->count() !== 1) {
             throw new UnauthorizedException('Only available when the group has public_visibility or you belong to the group');
         }
-        return $rtn->org;
+        if ($user_id) {
+//            $this->logger->addInfo(sprintf('GetItemController: User %s, Org %s', $user_id, $rtn->getFirst()->org->get('id')));
+            return $rtn->getFirst()->org;
+        }
+//        $this->logger->addInfo(sprintf('GetItemController: Org %s', $rtn->getFirst()->get('id')));
+        return $rtn->getFirst();
     }
 }

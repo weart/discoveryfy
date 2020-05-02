@@ -23,12 +23,55 @@ use Page\Data as DataPage;
 */
 class ApiTester extends Actor
 {
+    /**
+     * When $I->setContentType('application/json');
+     * If is response return an error:
+$I->seeResponseIsJsonError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg, HttpCode::UNAUTHORIZED);
+
+     * If is response is successful:
+$I->seeResponseContainsNoErrors();
+$I->seeResponseIsValidJson(HttpCode::OK, Data::groupResponseJsonType(), $content);
+
+     * When $I->setContentType('application/vnd.api+json');
+     * If is response return an error:
+$I->seeResponseIsJsonApiError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg, HttpCode::UNAUTHORIZED);
+
+     * If is response is successful:
+$I->seeResponseContainsNoErrors();
+$I->seeResponseIsValidJsonApi(HttpCode::OK, Data::groupResponseJsonType(), $content);
+     */
+
     use _generated\ApiTesterActions;
+
+    public function seeResponseContainsNoErrors()
+    {
+        $this->dontSeeResponseContainsJson([
+            'status'                => 'error'
+        ]);
+        $this->dontSeeResponseMatchesJsonType([
+            'errors' => 'array'
+        ]);
+    }
+
+    public function seeResponseIsValidJson($code = HttpCode::OK, array $jsonType = [], array $content = []): void
+    {
+        $this->seeResponseIsJsonSuccessful($code);
+        $this->seeResponseMatchesJsonType($jsonType);
+        $this->seeResponseContainsJson($content);
+    }
+
+    public function seeResponseIsValidJsonApi(int $code = HttpCode::OK, array $jsonType = [], array $content = []): void
+    {
+        $this->seeResponseIsJsonApiSuccessful($code);
+        $this->seeResponseMatchesJsonType($jsonType, '$.data');
+        $this->seeResponseContainsJsonKey('data', $content);
+    }
 
     /**
      * Checks if the response is JSON was successful
+     * @param int $code
      */
-    public function seeResponseIsJsonSuccessful($code = HttpCode::OK)
+    public function seeResponseIsJsonSuccessful($code = HttpCode::OK): void
     {
         $this->seeResponseIsJson();
         $this->seeResponseCodeIs($code);
@@ -38,7 +81,7 @@ class ApiTester extends Actor
      * Checks if the response is JSONAPI was successful
      * @param int $code
      */
-    public function seeResponseIsJsonApiSuccessful($code = HttpCode::OK)
+    public function seeResponseIsJsonApiSuccessful($code = HttpCode::OK): void
     {
         $this->seeResponseIsJsonSuccessful($code);
         $this->seeResponseMatchesJsonType(
@@ -57,13 +100,35 @@ class ApiTester extends Actor
         $this->checkHash();
     }
 
+    public function seeResponseIsJsonErrors(array $errors, int $httpCode = HttpCode::BAD_REQUEST): void
+    {
+        $this->seeResponseIsJsonSuccessful($httpCode);
+        $response  = $this->grabResponse();
+        $response  = json_decode($response, true);
+        $this->checkErrors($response['errors'], $errors);
+    }
+
+    public function seeResponseIsJsonError(int $httpCode = HttpCode::BAD_REQUEST, ?string $title = null, ?int $appCode = null): void
+    {
+        $this->seeResponseIsJsonErrors(
+            [
+                [
+                    'status' => $httpCode,
+                    'code' => $appCode,
+                    'title' => $title,
+                ]
+            ],
+            $httpCode
+        );
+    }
+
     /**
      * Checks if the JSONAPI error response is formatted correctly
      *
      * @param array $errors array with status (mandatory), and code & title (optional)
      * @param int $httpCode
      */
-    public function seeResponseIsJsonApiErrors(array $errors, int $httpCode = HttpCode::BAD_REQUEST)
+    public function seeResponseIsJsonApiErrors(array $errors, int $httpCode = HttpCode::BAD_REQUEST): void
     {
         $this->seeResponseIsJsonSuccessful($httpCode);
         $this->seeResponseMatchesJsonType(
@@ -82,22 +147,7 @@ class ApiTester extends Actor
 
         $response  = $this->grabResponse();
         $response  = json_decode($response, true);
-        $num_errors = count($response['errors']);
-        $this->assertCount($num_errors, $errors, 'Different number of errors');
-        for ($i = 0; $i < $num_errors; $i++) {
-            $test_error = $errors[$i];
-            $resp_error = $response['errors'][$i];
-
-            if (!isset($test_error['status'])) {
-                throw new \Phalcon\Exception('Invalid error');
-            }
-            $httpCode = $test_error['status'];
-            $appCode = $test_error['code'] ?? $httpCode;
-            $title = $test_error['title'] ?? HttpCode::getDescription($httpCode);
-            $this->assertEquals($httpCode, $resp_error['status'], 'This value should express HTTP status code applicable to this problem, expressed as a string value');
-            $this->assertEquals($appCode, $resp_error['code'], 'This value should express an application-specific error code, expressed as a string value');
-            $this->assertEquals($title, $resp_error['title'], 'This value should express a short, human-readable summary of the problem');
-        }
+        $this->checkErrors($response['errors'], $errors);
     }
 
     /**
@@ -107,7 +157,7 @@ class ApiTester extends Actor
      * @param string|null   $title
      * @param int|null      $appCode
      */
-    public function seeResponseIsJsonApiError(int $httpCode = HttpCode::BAD_REQUEST, ?string $title = null, ?int $appCode = null)
+    public function seeResponseIsJsonApiError(int $httpCode = HttpCode::BAD_REQUEST, ?string $title = null, ?int $appCode = null): void
     {
         $this->seeResponseIsJsonApiErrors(
             [
@@ -121,20 +171,24 @@ class ApiTester extends Actor
         );
     }
 
-    /**
-     * Checks if the response was successful
-     */
-//    public function seeResponseIs400()
-//    {
-//        $this->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, '400 (Bad Request)');
-//    }
-
-    /**
-     * Checks if the response was successful
-     */
-    public function seeResponseIs404()
+    private function checkErrors($resp_errors, $test_errors): void
     {
-        $this->seeResponseIsJsonApiError(HttpCode::NOT_FOUND, '404 (Not Found)');
+        $num_errors = count($resp_errors);
+        $this->assertCount($num_errors, $test_errors, 'Different number of errors');
+        for ($i = 0; $i < $num_errors; $i++) {
+            $test_error = $test_errors[$i];
+            $resp_error = $resp_errors[$i];
+
+            if (!isset($test_error['status'])) {
+                throw new \Phalcon\Exception('Invalid error');
+            }
+            $httpCode = $test_error['status'];
+            $appCode = $test_error['code'] ?? $httpCode;
+            $title = $test_error['title'] ?? HttpCode::getDescription($httpCode);
+            $this->assertEquals($httpCode, $resp_error['status'], 'This value should express HTTP status code applicable to this problem, expressed as a string value');
+            $this->assertEquals($appCode, $resp_error['code'], 'This value should express an application-specific error code, expressed as a string value');
+            $this->assertEquals($title, $resp_error['title'], 'This value should express a short, human-readable summary of the problem');
+        }
     }
 
     private function checkHash()
@@ -147,9 +201,20 @@ class ApiTester extends Actor
         $this->assertEquals($hash, sha1($timestamp . json_encode($response)));
     }
 
-    public function seeSuccessJsonResponse(string $key = 'data', array $data = [])
+    public function seeResponseContainsJsonKey(string $key = 'data', array $data = []): void
     {
         $this->seeResponseContainsJson([$key => $data]);
+    }
+
+    public function seeResponseIsValidDeleteJson(): void
+    {
+        $this->seeResponseCodeIs(HttpCode::NO_CONTENT);
+        $this->seeResponseEquals('');
+    }
+
+    public function seeResponseIsValidDeleteJsonApi(): void
+    {
+        $this->seeResponseIsValidDeleteJson();
     }
 
 //    public function apiLogin()

@@ -25,8 +25,7 @@ class GroupsDeleteCest
 //        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt); //Not needed, already setted
         $I->sendDELETE(sprintf(Data::$groupUrl, $group_uuid));
 
-        $I->seeResponseCodeIs(HttpCode::NO_CONTENT);
-        $I->seeResponseEquals('');
+        $I->seeResponseIsValidDeleteJson();
     }
 
 
@@ -39,8 +38,7 @@ class GroupsDeleteCest
 //        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt); //Not needed, already setted
         $I->sendDELETE(sprintf(Data::$groupUrl, $group_uuid));
 
-        $I->seeResponseCodeIs(HttpCode::NO_CONTENT);
-        $I->seeResponseEquals('');
+        $I->seeResponseIsValidDeleteJsonApi();
     }
 
     public function anonCantDeleteGroupJson(Login $I, GroupsPostCest $groupsPost)
@@ -52,7 +50,7 @@ class GroupsDeleteCest
         $I->sendDELETE(sprintf(Data::$groupUrl, $group_uuid));
 
         $I->seeResponseIsJsonSuccessful(HttpCode::UNAUTHORIZED);
-        $I->seeSuccessJsonResponse('errors', [
+        $I->seeResponseContainsJsonKey('errors', [
             [
                 'code' => HttpCode::UNAUTHORIZED,
                 'status' => HttpCode::UNAUTHORIZED,

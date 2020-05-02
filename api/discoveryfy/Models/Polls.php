@@ -165,8 +165,8 @@ class Polls extends TimestampableModel
                 ->leftJoin(Memberships::class, 'poll.organization_id = member.organization_id', 'member')
                 ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
                 ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
-                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
-                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ], true)
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ], true);
         }
         return $q->getQuery()->execute();
     }
@@ -185,8 +185,8 @@ class Polls extends TimestampableModel
                 ->leftJoin(Memberships::class, 'poll.organization_id = member.organization_id', 'member')
                 ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
                 ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
-                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
-                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ], true)
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ], true);
         }
         if (true !== empty($orderBy)) {
             $q->orderBy($orderBy);

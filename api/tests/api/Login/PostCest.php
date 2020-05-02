@@ -16,6 +16,8 @@ use Step\Api\Login;
 
 class LoginPostCest
 {
+    private $invalid_user_msg = 'Wrong email/password combination'; //'Incorrect credentials'
+
     /**
      * INVALID LOGIN USER: Json / JsonApi
      */
@@ -28,14 +30,7 @@ class LoginPostCest
             'username' => 'user',
             'password' => 'pass',
         ]);
-        $I->seeResponseIsJsonSuccessful(HttpCode::BAD_REQUEST);
-        $I->seeSuccessJsonResponse('errors', [
-            [
-                'code' => HttpCode::BAD_REQUEST,
-                'status' => HttpCode::BAD_REQUEST,
-                'title' => 'Wrong email/password combination' //'Incorrect credentials'
-            ]
-        ]);
+        $I->seeResponseIsJsonError(HttpCode::BAD_REQUEST, $this->invalid_user_msg);
     }
 
     public function loginUnknownUserJsonApi(Login $I)
@@ -46,8 +41,7 @@ class LoginPostCest
             'username' => 'user',
             'password' => 'pass',
         ]);
-        $title = 'Wrong email/password combination'; //$msg = 'Incorrect credentials';
-        $I->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, $title);
+        $I->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, $this->invalid_user_msg);
     }
 
     /**

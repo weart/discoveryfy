@@ -17,39 +17,33 @@ use Step\Api\Login;
 
 class SessionsPutCest
 {
-    public function ModifySessionNoNameJson(Login $I)
+    public function modifySessionNoNameJson(Login $I)
     {
         list($jwt, $session_id, $user_id) = $I->loginAsTest();
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
 
         $I->sendPUT(sprintf(Data::$sessionsUrl, $session_id));
-        $I->seeResponseIsJsonSuccessful(HttpCode::BAD_REQUEST);
-        $I->seeSuccessJsonResponse('errors', [
-            [
-                'code' => HttpCode::BAD_REQUEST,
-                'status' => HttpCode::BAD_REQUEST,
-                'title' => 'Undefined name'
-            ]
-        ]);
+        $I->seeResponseIsJsonError(HttpCode::BAD_REQUEST, 'Undefined name');
+
+        $I->sendPUT(sprintf(Data::$sessionsUrl, $session_id), []);
+        $I->seeResponseIsJsonError(HttpCode::BAD_REQUEST, 'Undefined name');
     }
 
-    public function ModifySessionNoNameJsonApi(Login $I)
+    public function modifySessionNoNameJsonApi(Login $I)
     {
         list($jwt, $session_id, $user_id) = $I->loginAsTest();
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
 
         $I->sendPUT(sprintf(Data::$sessionsUrl, $session_id));
-        $title = 'Undefined name';
-        $I->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, $title);
+        $I->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, 'Undefined name');
 
         $I->sendPUT(sprintf(Data::$sessionsUrl, $session_id), []);
-        $title = 'Undefined name';
-        $I->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, $title);
+        $I->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, 'Undefined name');
     }
 
-    public function ModifySessionEmptyNameJson(Login $I)
+    public function modifySessionEmptyNameJson(Login $I)
     {
         list($jwt, $session_id, $user_id) = $I->loginAsTest();
         $I->setContentType('application/json');
@@ -60,20 +54,22 @@ class SessionsPutCest
             'name' => $empty_name
         ]);
 
-        $I->dontSeeResponseContainsJson([
-            'status'                => 'error'
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $I->seeResponseMatchesJsonType([
-            'type'                  => 'string:!empty',
-            'id'                    => 'string:!empty',
-            'attributes.created_at' => 'string:date',
-            'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
-            'attributes.name'       => 'string',
-            'links.self'            => 'string:url',
-        ]);
-        $I->seeResponseContainsJson(['type' => 'sessions']);
-        $I->seeResponseContainsJson(['attributes.name' => $empty_name]);
+        $I->seeResponseContainsNoErrors();
+        $I->seeResponseIsValidJson(
+            HttpCode::OK,
+            [
+                'type'                  => 'string:!empty',
+                'id'                    => 'string:!empty',
+                'attributes.created_at' => 'string:date',
+                'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
+                'attributes.name'       => 'string',
+                'links.self'            => 'string:url',
+            ],
+            [
+                'type' => 'sessions',
+                'attributes.name' => $empty_name
+            ]
+        );
     }
 
     public function modifySessionJson(Login $I)
@@ -90,20 +86,22 @@ class SessionsPutCest
             'name' => $new_name
         ]);
 
-        $I->dontSeeResponseContainsJson([
-            'status'                => 'error'
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $I->seeResponseMatchesJsonType([
-            'type'                  => 'string:!empty',
-            'id'                    => 'string:!empty',
-            'attributes.created_at' => 'string:date',
-            'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
-            'attributes.name'       => 'string',
-            'links.self'            => 'string:url',
-        ]);
-        $I->seeResponseContainsJson(['type' => 'sessions']);
-        $I->seeResponseContainsJson(['attributes.name' => $new_name]);
+        $I->seeResponseContainsNoErrors();
+        $I->seeResponseIsValidJson(
+            HttpCode::OK,
+            [
+                'type'                  => 'string:!empty',
+                'id'                    => 'string:!empty',
+                'attributes.created_at' => 'string:date',
+                'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
+                'attributes.name'       => 'string',
+                'links.self'            => 'string:url',
+            ],
+            [
+                'type' => 'sessions',
+                'attributes.name' => $new_name
+            ]
+        );
     }
 
     public function modifySessionJsonApi(Login $I)
@@ -120,25 +118,27 @@ class SessionsPutCest
             'name' => $new_name
         ]);
 
-        $I->dontSeeResponseContainsJson([
-            'status'        => 'error'
-        ]);
-        $I->seeResponseIsJsonApiSuccessful();
-        $I->seeResponseMatchesJsonType([
-            'type'          => 'string:!empty',
-            'id'            => 'string:!empty',
-            'attributes'    => 'array',
-            'links'         => 'array',
-        ], '$.data');
-        $I->seeResponseContainsJson(['type' => 'sessions']);
-        $I->seeResponseMatchesJsonType([
-            'created_at'    => 'string:date',
-            'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
-            'name'          => 'string',
-        ], '$.data.attributes');
-        $I->seeResponseContainsJson(['name' => $new_name]);
-        $I->seeResponseMatchesJsonType([
-            'self'          => 'string:url',
-        ], '$.data.links');
+        $I->seeResponseContainsNoErrors();
+        $I->seeResponseIsValidJsonApi(
+            HttpCode::OK,
+            [
+                'type'          => 'string:!empty',
+                'id'            => 'string:!empty',
+                'attributes'    => [
+                    'created_at'    => 'string:date',
+                    'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
+                    'name'          => 'string',
+                ],
+                'links'         => [
+                    'self'      => 'string:url',
+                ],
+            ],
+            [
+                'type'          => 'sessions',
+                'attributes'    => [
+                    'name'      => $new_name
+                ]
+            ]
+        );
     }
 }

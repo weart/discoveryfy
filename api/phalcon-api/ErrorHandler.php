@@ -51,17 +51,13 @@ class ErrorHandler
      */
     public function handle(int $number, string $message, string $file = '', int $line = 0)
     {
-        $this
-            ->logger
-            ->error(
-                sprintf(
-                    '[#:%s]-[L: %s] : %s (%s)',
-                    $number,
-                    $line,
-                    $message,
-                    $file
-                )
-            );
+        $this->logger->error(sprintf(
+            '[#:%s]-[L: %s] : %s (%s)',
+            $number,
+            $line,
+            $message,
+            $file
+        ));
     }
 
     /**
@@ -69,22 +65,18 @@ class ErrorHandler
      */
     public function shutdown()
     {
-        if (true === $this->config->path('app.devMode')) {
-            $memory    = number_format(memory_get_usage() / 1000000, 2);
-            $execution = number_format(
-                microtime(true) -  $this->config->path('app.time'),
-                4
-            );
-
-            $this
-                ->logger
-                ->info(
-                    sprintf(
-                        'Shutdown completed [%s]s - [%s]MB',
-                        $execution,
-                        $memory
-                    )
-                );
-        }
+//        if (true === $this->config->path('app.devMode')) {
+//            $memory    = number_format(memory_get_usage() / 1000000, 2);
+//            $execution = number_format(
+//                microtime(true) -  $this->config->path('app.time'),
+//                4
+//            );
+//
+//            $this->logger->info(sprintf(
+//                'Shutdown completed [%s]s - [%s]MB',
+//                $execution,
+//                $memory
+//            ));
+//        }
     }
 }

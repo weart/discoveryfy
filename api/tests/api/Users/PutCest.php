@@ -34,24 +34,26 @@ class UsersPutCest
             'username' => $new_name
         ]);
 
-        $I->dontSeeResponseContainsJson([
-            'status'                => 'error'
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $I->seeResponseMatchesJsonType([
-            'type'                  => 'string',
-            'id'                    => 'string',
-            'attributes.created_at' => 'string:date',
-            'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
-            'attributes.username'   => 'string',
-            'attributes.email'      => 'string:email',
-            'attributes.language'   => 'string',
-            'attributes.theme'      => 'string',
-            'attributes.rol'        => 'string',
-            'links.self'            => 'string:url',
-        ]);
-        $I->seeResponseContainsJson(['type' => 'users']);
-        $I->seeResponseContainsJson(['attributes.username' => $new_name]);
+        $I->seeResponseContainsNoErrors();
+        $I->seeResponseIsValidJson(
+            HttpCode::OK,
+            [
+                'type'                  => 'string',
+                'id'                    => 'string',
+                'attributes.created_at' => 'string:date',
+                'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
+                'attributes.username'   => 'string',
+                'attributes.email'      => 'string:email',
+                'attributes.language'   => 'string',
+                'attributes.theme'      => 'string',
+                'attributes.rol'        => 'string',
+                'links.self'            => 'string:url',
+            ],
+            [
+                'type' => 'users',
+                'attributes.username' => $new_name
+            ]
+        );
     }
 
     public function modifyUserJsonApi(Login $I)
@@ -71,32 +73,33 @@ class UsersPutCest
             'username' => $new_name
         ]);
 
-        $I->dontSeeResponseContainsJson([
-            'status'        => 'error'
-        ]);
-        $I->seeResponseIsJsonApiSuccessful();
-        $I->seeResponseMatchesJsonType([
-            'type'          => 'string',
-            'id'            => 'string',
-            'attributes'    => 'array',
-            'links'         => 'array',
-        ], '$.data');
-        $I->seeResponseContainsJson(['type' => 'users']);
-        $I->seeResponseMatchesJsonType([
-            'created_at'    => 'string:date',
-            'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
-            'username'      => 'string',
-            'email'         => 'string:email',
-            'language'      => 'string',
-            'theme'         => 'string',
-            'rol'           => 'string',
-        ], '$.data.attributes');
-        $I->seeResponseContainsJson(['theme' => 'default']);
-        $I->seeResponseContainsJson(['rol' => 'ROLE_USER']);
-        $I->seeResponseMatchesJsonType([
-            'self'          => 'string:url',
-        ], '$.data.links');
-
-        $I->seeResponseContainsJson(['username' => $new_name]);
+        $I->seeResponseContainsNoErrors();
+        $I->seeResponseIsValidJsonApi(
+            HttpCode::OK,
+            [
+                'type'              => 'string',
+                'id'                => 'string',
+                'attributes'    => [
+                    'created_at'    => 'string:date',
+                    'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
+                    'username'      => 'string',
+                    'email'         => 'string:email',
+                    'language'      => 'string',
+                    'theme'         => 'string',
+                    'rol'           => 'string',
+                ],
+                'links'         => [
+                    'self'          => 'string:url',
+                ],
+            ],
+            [
+                'type' => 'users',
+                'attributes'    => [
+                    'username'      => $new_name,
+                    'theme'         => 'default',
+                    'rol'           => 'ROLE_USER',
+                ]
+            ]
+        );
     }
 }

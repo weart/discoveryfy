@@ -305,4 +305,40 @@ class Data
             ],
         ];
     }
+
+    public static function groupResponseJsonType(): array
+    {
+        return [
+            'type'                              => 'string:!empty',
+            'id'                                => 'string:!empty',
+            'attributes.created_at'             => 'string:date',
+            'attributes.updated_at'             => 'string:date|string', //When is empty is not null... is an empty string
+            'attributes.name'                   => 'string:!empty',
+            'attributes.description'            => 'string',
+            'attributes.public_visibility'      => 'boolean',
+            'attributes.public_membership'      => 'boolean',
+            'attributes.who_can_create_polls'   => 'string',
+            'links.self'                        => 'string:url',
+        ];
+    }
+
+    public static function groupResponseJsonApiType(): array
+    {
+        return [
+            'id'                            => 'string:!empty',     //'016aeb55-7ecf-4862-a229-dd7478b17537'
+            'attributes' => [
+                'created_at'                => 'string:date',       //'2020-03-23 11:57:46'
+                'updated_at'                => 'string:date|string', //When is empty is not null... is an empty string
+                'name'                      => 'string:!empty',
+                'description'               => 'string',
+                'public_visibility'         => 'boolean',
+                'public_membership'         => 'boolean',
+                'who_can_create_polls'      => 'string',
+            ],
+            'links' => [
+                'self'                      => 'string:url', //'https://api.discoveryfy.fabri...b17537'
+            ]
+        ];
+    }
 }
+

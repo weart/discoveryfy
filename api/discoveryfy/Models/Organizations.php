@@ -20,6 +20,7 @@ use Phalcon\DI;
 use Phalcon\Filter;
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 use Phalcon\Mvc\Model\Query\Builder;
+use Phalcon\Mvc\Model\Resultset;
 use Phalcon\Mvc\Model\Resultset\Complex;
 use Phalcon\Mvc\Model\Row;
 use Phalcon\Validation;
@@ -163,8 +164,8 @@ class Organizations extends TimestampableModel
             ->columns('org.*, member.*, user.id as user_id')
             ->from([ 'org' => self::class]) //Organizations::class
             ->innerJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-            ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
-            ->where('org.id = :org_uuid: AND user.id = :user_uuid:')
+            ->innerJoin(Users::class, 'member.user_id = user.id', 'user') // Necessary for check deleted_at
+            ->where('org.id = :org_uuid: AND user.id = :user_uuid: AND org.deleted_at IS NULL AND user.deleted_at IS NULL')
             ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'user_uuid' => \PDO::PARAM_STR ])
             ->setBindParams([ 'org_uuid' => $group_uuid, 'user_uuid' => $user_uuid ])
             ->getQuery()->execute();
@@ -182,59 +183,76 @@ class Organizations extends TimestampableModel
         return $res;
     }
 
-    // Organization::public_visibility == true || $user_uuid->rol !== INVITED
-    public static function isPublicVisibilityOrMember(string $group_uuid, ?string $user_uuid): Complex
+    /**
+     * Organization::public_visibility == true || $user_uuid->rol !== INVITED
+     *
+     * @param string $group_uuid
+     * @param string|null $user_uuid
+     * @return Resultset Simple when user_id is null, Complex otherwise
+     */
+    public static function isPublicVisibilityOrMember(string $group_uuid, ?string $user_uuid): Resultset
     {
         $q = self::getBuilder()
-            ->columns('org.*, member.*, user.id as user_id')
+            ->columns('org.*')
             ->from([ 'org' => Organizations::class])
-            ->where('org.id = :org_uuid:')
-            ->andWhere('org.public_visibility = :public_visibility:')
+            ->where('org.id = :org_uuid: AND org.public_visibility = :public_visibility: AND org.deleted_at IS NULL')
             ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'public_visibility' => \PDO::PARAM_BOOL ])
             ->setBindParams([ 'org_uuid' => $group_uuid, 'public_visibility' => true ]);
 
         if ($user_uuid) {
             $q
+                ->columns('org.*, member.*, user.id as user_id')
                 ->leftJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-                ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
+                ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL', 'user') // Necessary for check deleted_at
                 ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
-                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
-                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ], true)
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ], true);
         }
         return $q->getQuery()->execute();
     }
 
-    // Organization::public_membership == true || $user_uuid->rol !== INVITED
+    /**
+     * Organization::public_membership == true || $user_uuid->rol !== INVITED
+     * @param string $group_uuid
+     * @param string $user_uuid
+     * @return Complex
+     */
     public static function isPublicMembershipOrMember(string $group_uuid, string $user_uuid): Complex
     {
         return self::getBuilder()
             ->columns('org.*, member.*, user.id as user_id')
             ->from([ 'org' => Organizations::class])
             ->innerJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-            ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
-            ->where('org.id = :org_uuid:')
+            ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL', 'user') // Necessary for check deleted_at
+            ->where('org.id = :org_uuid: AND org.deleted_at IS NULL')
             ->andWhere('(org.public_membership = :public_membership: OR (user.id = :user_uuid: AND member.rol != :member_rol:))')
             ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'public_membership' => \PDO::PARAM_BOOL, 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
             ->setBindParams([ 'org_uuid' => $group_uuid, 'public_membership' => true, 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ])
             ->getQuery()->execute();
     }
 
-    public static function getPublicVisibilityOrMemberGroups(?string $user_uuid, string $orderBy = ''): Complex
+    /**
+     * @param string|null $user_uuid
+     * @param string $orderBy
+     * @return Resultset Simple when user_id is null, Complex otherwise
+     */
+    public static function getPublicVisibilityOrMemberGroups(?string $user_uuid, string $orderBy = ''): Resultset
     {
         $q = self::getBuilder()
-            ->columns('org.*, member.*, user.id as user_id')
+            ->columns('org.*')
             ->from([ 'org' => Organizations::class])
-            ->where('org.public_visibility = :public_visibility:')
+            ->where('org.public_visibility = :public_visibility: AND org.deleted_at IS NULL')
             ->setBindTypes([ 'public_visibility' => \PDO::PARAM_BOOL ])
             ->setBindParams([ 'public_visibility' => true ]);
 
         if ($user_uuid) {
             $q
+                ->columns('org.*, member.*, user.id as user_id')
                 ->leftJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-                ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
+                ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL', 'user') // Necessary for check deleted_at
                 ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
-                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
-                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ]);
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ], true)
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ], true);
         }
         if (true !== empty($orderBy)) {
             $q->orderBy($orderBy);
