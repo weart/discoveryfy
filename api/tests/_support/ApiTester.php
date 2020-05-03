@@ -29,7 +29,6 @@ class ApiTester extends Actor
 $I->seeResponseIsJsonError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg, HttpCode::UNAUTHORIZED);
 
      * If is response is successful:
-$I->seeResponseContainsNoErrors();
 $I->seeResponseIsValidJson(HttpCode::OK, Data::groupResponseJsonType(), $content);
 
      * When $I->setContentType('application/vnd.api+json');
@@ -37,11 +36,34 @@ $I->seeResponseIsValidJson(HttpCode::OK, Data::groupResponseJsonType(), $content
 $I->seeResponseIsJsonApiError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg, HttpCode::UNAUTHORIZED);
 
      * If is response is successful:
-$I->seeResponseContainsNoErrors();
 $I->seeResponseIsValidJsonApi(HttpCode::OK, Data::groupResponseJsonType(), $content);
      */
 
     use _generated\ApiTesterActions;
+
+    public function seeResponseIsValidJson($code = HttpCode::OK, array $jsonType = [], array $content = []): void
+    {
+        $this->seeResponseContainsNoErrors();
+        $this->seeResponseIsJsonSuccessful($code);
+        if (!empty($jsonType)) {
+            $this->seeResponseMatchesJsonType($jsonType);
+        }
+        if (!empty($content)) {
+            $this->seeResponseContainsJson($content);
+        }
+    }
+
+    public function seeResponseIsValidJsonApi(int $code = HttpCode::OK, array $jsonType = [], array $content = []): void
+    {
+        $this->seeResponseContainsNoErrors();
+        $this->seeResponseIsJsonApiSuccessful($code);
+        if (!empty($jsonType)) {
+            $this->seeResponseMatchesJsonType($jsonType, '$.data');
+        }
+        if (!empty($content)) {
+            $this->seeResponseContainsJsonKey('data', $content);
+        }
+    }
 
     public function seeResponseContainsNoErrors()
     {
@@ -51,20 +73,6 @@ $I->seeResponseIsValidJsonApi(HttpCode::OK, Data::groupResponseJsonType(), $cont
         $this->dontSeeResponseMatchesJsonType([
             'errors' => 'array'
         ]);
-    }
-
-    public function seeResponseIsValidJson($code = HttpCode::OK, array $jsonType = [], array $content = []): void
-    {
-        $this->seeResponseIsJsonSuccessful($code);
-        $this->seeResponseMatchesJsonType($jsonType);
-        $this->seeResponseContainsJson($content);
-    }
-
-    public function seeResponseIsValidJsonApi(int $code = HttpCode::OK, array $jsonType = [], array $content = []): void
-    {
-        $this->seeResponseIsJsonApiSuccessful($code);
-        $this->seeResponseMatchesJsonType($jsonType, '$.data');
-        $this->seeResponseContainsJsonKey('data', $content);
     }
 
     /**

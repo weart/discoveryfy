@@ -23,7 +23,6 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$usersUrl, $user_id));
 
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJson(
             HttpCode::OK,
             [
@@ -51,7 +50,6 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$usersUrl, $user_id));
 
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJsonApi(
             HttpCode::OK,
             [

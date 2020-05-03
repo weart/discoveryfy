@@ -33,7 +33,6 @@ class GroupsGetItemCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendPUT(sprintf(Data::$groupUrl, $group_uuid), [ 'public_visibility' => true ]);
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJson(
             HttpCode::OK,
             Data::groupResponseJsonType(),
@@ -47,7 +46,6 @@ class GroupsGetItemCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(sprintf(Data::$groupUrl, $group_uuid));
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJson(
             HttpCode::OK,
             Data::groupResponseJsonType(),
@@ -91,7 +89,6 @@ class GroupsGetItemCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendPUT(sprintf(Data::$groupUrl, $group_uuid), [ 'public_visibility' => true ]);
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJsonApi(
             HttpCode::OK,
             Data::groupResponseJsonApiType(),
@@ -107,7 +104,6 @@ class GroupsGetItemCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(sprintf(Data::$groupUrl, $group_uuid));
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJsonApi(
             HttpCode::OK,
             Data::groupResponseJsonApiType(),

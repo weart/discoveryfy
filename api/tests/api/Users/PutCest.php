@@ -33,8 +33,6 @@ class UsersPutCest
         $I->sendPUT(sprintf(Data::$usersUrl, $user_id), [
             'username' => $new_name
         ]);
-
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJson(
             HttpCode::OK,
             [
@@ -72,8 +70,6 @@ class UsersPutCest
         $I->sendPUT(sprintf(Data::$usersUrl, $user_id), [
             'username' => $new_name
         ]);
-
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJsonApi(
             HttpCode::OK,
             [

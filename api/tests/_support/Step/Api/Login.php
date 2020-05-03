@@ -43,8 +43,7 @@ class Login extends \ApiTester
         $I->sendGET(Data::$loginUrl);
         $I->removeContentType();
 
-        $I->seeResponseContainsNoErrors();
-        $I->seeResponseCodeIs(HttpCode::OK);
+        $I->seeResponseIsValidJson();
         return trim($I->grabResponse(), '"');
     }
 
@@ -55,13 +54,16 @@ class Login extends \ApiTester
         $I->sendGET(Data::$loginUrl);
         $I->removeContentType();
 
-        $I->seeResponseContainsNoErrors();
-        $I->seeResponseIsJsonApiSuccessful();
-        $I->seeResponseMatchesJsonType([
-            'type' => 'string',
-            'id' => 'string'
-        ], '$.data');
-        $I->seeResponseContainsJson(['type' => 'CSRF']);
+        $I->seeResponseIsValidJsonApi(
+            HttpCode::OK,
+            [
+                'type' => 'string',
+                'id' => 'string'
+            ],
+            [
+                'type' => 'CSRF'
+            ]
+        );
         return $I->grabDataFromResponseByJsonPath('$.data.id')[0];
     }
 
@@ -73,8 +75,7 @@ class Login extends \ApiTester
         $I->sendPOST(Data::$loginUrl, $credentials);
         $I->removeContentType();
 
-        $I->seeResponseContainsNoErrors();
-        $I->seeResponseIsJsonSuccessful(HttpCode::OK);
+        $I->seeResponseIsValidJson(HttpCode::OK);
         $I->seeResponseContainsJson(['type' => 'jwt']);
         $I->seeResponseContainsJson(['type' => 'sessions']);
         $resp = (new JsonArray($I->grabResponse()))->toArray();
@@ -89,16 +90,10 @@ class Login extends \ApiTester
         $I->sendPOST(Data::$loginUrl, $credentials);
         $I->removeContentType();
 
-        $I->seeResponseContainsNoErrors();
-        $I->seeResponseIsJsonApiSuccessful();
-        $I->seeResponseContainsJsonKey('data', [
-            'type' => 'jwt',
-            'type' => 'sessions',
-//            'type' => 'users'
-        ]);
-        $I->seeResponseContainsJson(['type' => 'jwt']);
-        $I->seeResponseContainsJson(['type' => 'sessions']);
-//        $I->seeResponseContainsJson(['type' => 'users']);
+        $I->seeResponseIsValidJsonApi(HttpCode::OK);
+        $I->seeResponseContainsJsonKey('data', ['type' => 'jwt']);
+        $I->seeResponseContainsJsonKey('data', ['type' => 'sessions']);
+//        $I->seeResponseContainsJsonKey('data', ['type' => 'users']);
         return $I->getLoginData($I->grabDataFromResponseByJsonPath('$.data')[0]);
     }
 

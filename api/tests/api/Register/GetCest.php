@@ -20,8 +20,7 @@ class RegisterGetCest
     {
         $I->setContentType('application/json');
         $I->sendGET(Data::$registerUrl);
-        $I->seeResponseContainsNoErrors();
-        $I->seeResponseCodeIs(HttpCode::OK);
+        $I->seeResponseIsValidJson();
         $csrf = trim($I->grabResponse(), '"');
         $I->testCSRFToken($csrf);
         return $csrf;
@@ -31,13 +30,16 @@ class RegisterGetCest
     {
         $I->setContentType('application/vnd.api+json');
         $I->sendGET(Data::$registerUrl);
-        $I->seeResponseContainsNoErrors();
-        $I->seeResponseIsJsonApiSuccessful();
-        $I->seeResponseMatchesJsonType([
-            'type' => 'string:!empty',
-            'id' => 'string:!empty'
-        ], '$.data');
-        $I->seeResponseContainsJson(['type' => 'CSRF']);
+        $I->seeResponseIsValidJsonApi(
+            HttpCode::OK,
+            [
+                'type' => 'string:!empty',
+                'id' => 'string:!empty'
+            ],
+            [
+                'type' => 'CSRF'
+            ]
+        );
         $csrf = $I->grabDataFromResponseByJsonPath('$.data.id')[0];
         $I->testCSRFToken($csrf);
         return $csrf;

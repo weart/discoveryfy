@@ -22,16 +22,15 @@ class GroupsPutCest
         list($jwt, $session_id, $user_id) = $I->loginAsTest();
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
-
         $previous_attrs = $modified_attrs = $I->getKnownGroupAttributes();
         $modified_attrs['name'] = 'test_'.(new Random())->hex(5);
         $modified_attrs['description'] = 'test_'.(new Random())->hex(5);
+
+        // Change group name and description
         $I->sendPUT(sprintf(Data::$groupUrl, $previous_attrs['id']), [
             'name' => $modified_attrs['name'],
             'description' => $modified_attrs['description']
         ]);
-
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJson(
             HttpCode::OK,
             Data::groupResponseJsonType(),
@@ -47,9 +46,6 @@ class GroupsPutCest
 
         //Leave group as before
         $I->sendPUT(sprintf(Data::$groupUrl, $previous_attrs['id']), $previous_attrs);
-        $I->seeResponseContainsNoErrors();
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $I->seeResponseMatchesJsonType(Data::groupResponseJsonType());
         $I->seeResponseIsValidJson(
             HttpCode::OK,
             Data::groupResponseJsonType(),
@@ -69,16 +65,15 @@ class GroupsPutCest
         list($jwt, $session_id, $user_id) = $I->loginAsTest();
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
-
         $previous_attrs = $modified_attrs = $I->getKnownGroupAttributes();
         $modified_attrs['name'] = 'test_'.(new Random())->hex(5);
         $modified_attrs['description'] = 'test_'.(new Random())->hex(5);
+
+        // Change group name and description
         $I->sendPUT(sprintf(Data::$groupUrl, $previous_attrs['id']), [
             'name' => $modified_attrs['name'],
             'description' => $modified_attrs['description']
         ]);
-
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJsonApi(
             HttpCode::OK,
             Data::groupResponseJsonApiType(),
@@ -96,8 +91,6 @@ class GroupsPutCest
 
         //Leave group as before
         $I->sendPUT(sprintf(Data::$groupUrl, $previous_attrs['id']), $previous_attrs);
-
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJsonApi(
             HttpCode::OK,
             Data::groupResponseJsonApiType(),

@@ -23,7 +23,6 @@ class RegisterPostCest
         $user_data = Data::registerJson();
         $I->sendPOST(Data::$registerUrl, $user_data);
 
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJson(
             HttpCode::CREATED,
             [

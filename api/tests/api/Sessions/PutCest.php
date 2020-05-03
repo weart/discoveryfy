@@ -54,7 +54,6 @@ class SessionsPutCest
             'name' => $empty_name
         ]);
 
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJson(
             HttpCode::OK,
             [
@@ -86,7 +85,6 @@ class SessionsPutCest
             'name' => $new_name
         ]);
 
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJson(
             HttpCode::OK,
             [
@@ -118,7 +116,6 @@ class SessionsPutCest
             'name' => $new_name
         ]);
 
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJsonApi(
             HttpCode::OK,
             [

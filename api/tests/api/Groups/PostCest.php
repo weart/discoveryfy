@@ -24,7 +24,6 @@ class GroupsPostCest
         $group_data = Data::groupJson();
         $I->sendPOST(Data::$groupsUrl, $group_data);
 
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJson(
             HttpCode::CREATED,
             Data::groupResponseJsonType(),
@@ -50,7 +49,6 @@ class GroupsPostCest
         $group_data = Data::groupJson();
         $I->sendPOST(Data::$groupsUrl, $group_data);
 
-        $I->seeResponseContainsNoErrors();
         $I->seeResponseIsValidJsonApi(
             HttpCode::CREATED,
             Data::groupResponseJsonApiType(),
