@@ -54,7 +54,7 @@ class SessionsPutCest
             'name' => $empty_name
         ]);
 
-        $I->seeResponseIsValidJson(
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::OK,
             [
                 'type'                  => 'string:!empty',
@@ -85,7 +85,7 @@ class SessionsPutCest
             'name' => $new_name
         ]);
 
-        $I->seeResponseIsValidJson(
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::OK,
             [
                 'type'                  => 'string:!empty',
@@ -116,7 +116,7 @@ class SessionsPutCest
             'name' => $new_name
         ]);
 
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::OK,
             [
                 'type'          => 'string:!empty',

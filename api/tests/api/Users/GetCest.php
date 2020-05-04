@@ -23,7 +23,7 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$usersUrl, $user_id));
 
-        $I->seeResponseIsValidJson(
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::OK,
             [
                 'type'                  => 'string:!empty',
@@ -50,7 +50,7 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$usersUrl, $user_id));
 
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::OK,
             [
                 'type'          => 'string:!empty',

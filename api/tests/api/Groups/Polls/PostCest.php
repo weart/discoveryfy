@@ -26,7 +26,7 @@ class GroupsPollsPostCest
         $poll_data = Data::pollJson();
         $I->sendPOST(sprintf(Data::$groupPollsUrl, $group_uuid), $poll_data);
 
-        $I->seeResponseIsValidJson(
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::CREATED,
             [
                 'type'                                      => 'string:!empty',
@@ -83,7 +83,7 @@ class GroupsPollsPostCest
         $poll_data = Data::pollJson();
         $I->sendPOST(sprintf(Data::$groupPollsUrl, $group_uuid), $poll_data);
 
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::CREATED,
             [
                 'id'                                 => 'string:!empty', //'016aeb55-7ecf-4862-a229-dd7478b17537'

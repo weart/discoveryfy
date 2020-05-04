@@ -20,7 +20,7 @@ class RegisterGetCest
     {
         $I->setContentType('application/json');
         $I->sendGET(Data::$registerUrl);
-        $I->seeResponseIsValidJson();
+        $I->seeItemResponseIsJsonSuccessful();
         $csrf = trim($I->grabResponse(), '"');
         $I->testCSRFToken($csrf);
         return $csrf;
@@ -30,7 +30,7 @@ class RegisterGetCest
     {
         $I->setContentType('application/vnd.api+json');
         $I->sendGET(Data::$registerUrl);
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::OK,
             [
                 'type' => 'string:!empty',

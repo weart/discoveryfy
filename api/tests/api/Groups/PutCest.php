@@ -31,7 +31,7 @@ class GroupsPutCest
             'name' => $modified_attrs['name'],
             'description' => $modified_attrs['description']
         ]);
-        $I->seeResponseIsValidJson(
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::OK,
             Data::groupResponseJsonType(),
             [
@@ -46,7 +46,7 @@ class GroupsPutCest
 
         //Leave group as before
         $I->sendPUT(sprintf(Data::$groupUrl, $previous_attrs['id']), $previous_attrs);
-        $I->seeResponseIsValidJson(
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::OK,
             Data::groupResponseJsonType(),
             [
@@ -74,7 +74,7 @@ class GroupsPutCest
             'name' => $modified_attrs['name'],
             'description' => $modified_attrs['description']
         ]);
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::OK,
             Data::groupResponseJsonApiType(),
             [
@@ -91,7 +91,7 @@ class GroupsPutCest
 
         //Leave group as before
         $I->sendPUT(sprintf(Data::$groupUrl, $previous_attrs['id']), $previous_attrs);
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::OK,
             Data::groupResponseJsonApiType(),
             [

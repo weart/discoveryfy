@@ -33,7 +33,7 @@ class UsersPutCest
         $I->sendPUT(sprintf(Data::$usersUrl, $user_id), [
             'username' => $new_name
         ]);
-        $I->seeResponseIsValidJson(
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::OK,
             [
                 'type'                  => 'string',
@@ -70,7 +70,7 @@ class UsersPutCest
         $I->sendPUT(sprintf(Data::$usersUrl, $user_id), [
             'username' => $new_name
         ]);
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::OK,
             [
                 'type'              => 'string',

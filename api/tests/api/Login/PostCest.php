@@ -44,6 +44,38 @@ class LoginPostCest
         $I->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, $this->invalid_user_msg);
     }
 
+    public function loginWithoutCSRFJson(Login $I)
+    {
+//        $I->deleteHeader('X-CSRF-TOKEN');
+        $I->setContentType('application/json');
+        $I->sendPOST(Data::$loginUrl, Data::loginJson());
+        $I->seeResponseIsJsonError(HttpCode::BAD_REQUEST, 'CSRF not provided');
+    }
+
+    public function loginWithoutCSRFJsonApi(Login $I)
+    {
+//        $I->deleteHeader('X-CSRF-TOKEN');
+        $I->setContentType('application/vnd.api+json');
+        $I->sendPOST(Data::$loginUrl, Data::loginJson());
+        $I->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, 'CSRF not provided');
+    }
+
+    public function loginWithInvalidCSRFJson(Login $I)
+    {
+        $I->haveHttpHeader('X-CSRF-TOKEN', '1234');
+        $I->setContentType('application/json');
+        $I->sendPOST(Data::$loginUrl, Data::loginJson());
+        $I->seeResponseIsJsonError(HttpCode::BAD_REQUEST, 'Invalid CSRF token');
+    }
+
+    public function loginWithInvalidCSRFJsonApi(Login $I)
+    {
+        $I->haveHttpHeader('X-CSRF-TOKEN', '1234');
+        $I->setContentType('application/vnd.api+json');
+        $I->sendPOST(Data::$loginUrl, Data::loginJson());
+        $I->seeResponseIsJsonApiError(HttpCode::BAD_REQUEST, 'Invalid CSRF token');
+    }
+
     /**
      * LOGIN ANON: Json / JsonApi
      */

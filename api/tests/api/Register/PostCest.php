@@ -23,7 +23,7 @@ class RegisterPostCest
         $user_data = Data::registerJson();
         $I->sendPOST(Data::$registerUrl, $user_data);
 
-        $I->seeResponseIsValidJson(
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::CREATED,
             [
                 'id'                            => 'string:!empty', //'016aeb55-7ecf-4862-a229-dd7478b17537'
@@ -52,7 +52,7 @@ class RegisterPostCest
         $user_data = Data::registerJson();
         $I->sendPOST(Data::$registerUrl, $user_data);
 
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::CREATED,
             [
                 'id'                            => 'string:!empty', //'016aeb55-7ecf-4862-a229-dd7478b17537'

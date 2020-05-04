@@ -340,5 +340,32 @@ class Data
             ]
         ];
     }
+
+    public static function memberResponseJsonType(): array
+    {
+        return [
+            'type'                              => 'string:!empty',
+            'id'                                => 'string:!empty',
+            'attributes.created_at'             => 'string:date',
+            'attributes.updated_at'             => 'string:date|string', //When is empty is not null... is an empty string
+            'attributes.rol'                   => 'string:!empty',
+            'links.self'                        => 'string:url',
+        ];
+    }
+
+    public static function memberResponseJsonApiType(): array
+    {
+        return [
+            'id'                            => 'string:!empty',
+            'attributes' => [
+                'created_at'                => 'string:date',
+                'updated_at'                => 'string:date|string', //When is empty is not null... is an empty string
+                'rol'                      => 'string:!empty',
+            ],
+            'links' => [
+                'self'                      => 'string:url', //'https://api.discoveryfy.fabri...b17537'
+            ]
+        ];
+    }
 }
 

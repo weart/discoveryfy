@@ -93,12 +93,18 @@ class AuthPlugin extends Injectable
 
     public function checkCSRFLogin(): bool
     {
+        if (!$this->request->hasHeader('X-CSRF-TOKEN')) {
+            throw new BadRequestException('CSRF not provided');
+        }
         $this->checkCSRFHeader(CacheKeys::getLoginCSRFCacheKey($this->request->getHeader('X-CSRF-TOKEN')));
         return true;
     }
 
     public function checkCSRFRegister(): bool
     {
+        if (!$this->request->hasHeader('X-CSRF-TOKEN')) {
+            throw new BadRequestException('CSRF not provided');
+        }
         $this->checkCSRFHeader(CacheKeys::getRegisterCSRFCacheKey($this->request->getHeader('X-CSRF-TOKEN')));
         return true;
     }
@@ -112,9 +118,6 @@ class AuthPlugin extends Injectable
 
     private function checkCSRFHeader(string $cache_key): void
     {
-        if (!$this->request->hasHeader('X-CSRF-TOKEN')) {
-            throw new UnauthorizedException('CSRF not provided');
-        }
         if (!$this->cache->has($cache_key)) {
             throw new BadRequestException('Invalid CSRF token');
         }

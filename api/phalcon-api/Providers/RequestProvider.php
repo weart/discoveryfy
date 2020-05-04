@@ -38,7 +38,7 @@ class RequestProvider implements ServiceProviderInterface
                 'application/vnd.api+json',
                 'application/ld+json'
             ];
-    //        if (in_array($req->getContentType(), $valid_content_type, true)) {
+//            if (in_array($req->getContentType(), $valid_content_type, true)) {
             if (in_array($req->getHeader('Content-Type'), $valid_content_type, true)) {
                 if (($req->isPost() || $req->isPut() || $req->isPatch()) && !empty($req->getRawBody())) {
                     //Input not sanitized! Must be done in each param

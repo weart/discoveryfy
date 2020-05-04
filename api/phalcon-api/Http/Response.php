@@ -187,15 +187,14 @@ class Response extends PhResponse
         }
         if ($ContentType === 'application/vnd.api+json') {
             return $this->sendJsonApi();
-
-        } elseif ($ContentType === 'application/json') {
-            return $this->send();
+//        } elseif ($ContentType === 'application/json') {
+//            return $this->setContentType('application/json', 'UTF-8')->send();
 //            return parent::send();
-
-        } elseif ($ContentType === 'application/ld+json') {
-            throw new NotImplementedException();
+//        } elseif ($ContentType === 'application/ld+json') {
+//            throw new NotImplementedException();
         }
-        throw new BadRequestException();
+//        throw new BadRequestException();
+        return $this->setContentType('application/json', 'UTF-8')->send();
     }
 
 
@@ -278,9 +277,9 @@ class Response extends PhResponse
         // Join the array again
         $data = $jsonapi + $content + $meta;
         $this
+            ->setJsonContent($data) // Internally modifies ContentType to 'application/json'
             ->setHeader('E-Tag', $eTag)
-            ->setContentType('application/vnd.api+json', 'UTF-8')
-            ->setJsonContent($data);
+            ->setContentType('application/vnd.api+json', 'UTF-8');
 
         return parent::send();
     }

@@ -54,14 +54,14 @@ class AuthenticationMiddleware implements MiddlewareInterface
         if ($request->isEmptyBearerToken()) {
             return $this->halt(
                 $api,
-                $response::OK,
+                $response::BAD_REQUEST,
                 'Invalid Token'
             );
         }
         if (true !== $auth->verifyToken($request->getBearerTokenFromHeader())) {
             return $this->halt(
                 $api,
-                $response::OK,
+                $response::UNAUTHORIZED,
                 'Invalid Token'
             );
         }

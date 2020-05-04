@@ -43,7 +43,7 @@ class Login extends \ApiTester
         $I->sendGET(Data::$loginUrl);
         $I->removeContentType();
 
-        $I->seeResponseIsValidJson();
+        $I->seeItemResponseIsJsonSuccessful();
         return trim($I->grabResponse(), '"');
     }
 
@@ -54,7 +54,7 @@ class Login extends \ApiTester
         $I->sendGET(Data::$loginUrl);
         $I->removeContentType();
 
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::OK,
             [
                 'type' => 'string',
@@ -75,7 +75,7 @@ class Login extends \ApiTester
         $I->sendPOST(Data::$loginUrl, $credentials);
         $I->removeContentType();
 
-        $I->seeResponseIsValidJson(HttpCode::OK);
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK);
         $I->seeResponseContainsJson(['type' => 'jwt']);
         $I->seeResponseContainsJson(['type' => 'sessions']);
         $resp = (new JsonArray($I->grabResponse()))->toArray();
@@ -90,7 +90,7 @@ class Login extends \ApiTester
         $I->sendPOST(Data::$loginUrl, $credentials);
         $I->removeContentType();
 
-        $I->seeResponseIsValidJsonApi(HttpCode::OK);
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK);
         $I->seeResponseContainsJsonKey('data', ['type' => 'jwt']);
         $I->seeResponseContainsJsonKey('data', ['type' => 'sessions']);
 //        $I->seeResponseContainsJsonKey('data', ['type' => 'users']);

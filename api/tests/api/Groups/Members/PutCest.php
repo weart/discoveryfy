@@ -81,7 +81,7 @@ class GroupsMembersPutCest
 
     private function checkMembershipResponseJson(Login $I, string $rol)
     {
-        $I->seeResponseIsValidJson(
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::OK,
             [
                 'type'                      => 'string:!empty',
@@ -100,7 +100,7 @@ class GroupsMembersPutCest
 
     private function checkMembershipResponseJsonApi(Login $I, string $rol)
     {
-        $I->seeResponseIsValidJsonApi(
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::OK,
             [
                 'type'                      => 'string:!empty',

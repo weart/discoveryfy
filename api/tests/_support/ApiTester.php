@@ -2,9 +2,12 @@
 
 use Codeception\Actor;
 use Codeception\Lib\Friend;
+use Codeception\PHPUnit\Constraint\JsonContains;
+use Codeception\PHPUnit\Constraint\JsonType;
 use Codeception\Util\HttpCode;
-use Discoveryfy\Models\Users;
-use Page\Data as DataPage;
+//use Discoveryfy\Models\Users;
+//use Page\Data as DataPage;
+use PHPUnit\Framework\Assert;
 
 /**
  * Inherited Methods
@@ -29,19 +32,19 @@ class ApiTester extends Actor
 $I->seeResponseIsJsonError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg, HttpCode::UNAUTHORIZED);
 
      * If is response is successful:
-$I->seeResponseIsValidJson(HttpCode::OK, Data::groupResponseJsonType(), $content);
+$I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::groupResponseJsonType(), $content);
 
      * When $I->setContentType('application/vnd.api+json');
      * If is response return an error:
 $I->seeResponseIsJsonApiError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg, HttpCode::UNAUTHORIZED);
 
      * If is response is successful:
-$I->seeResponseIsValidJsonApi(HttpCode::OK, Data::groupResponseJsonType(), $content);
+$I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::groupResponseJsonType(), $content);
      */
 
     use _generated\ApiTesterActions;
 
-    public function seeResponseIsValidJson($code = HttpCode::OK, array $jsonType = [], array $content = []): void
+    public function seeItemResponseIsJsonSuccessful($code = HttpCode::OK, array $jsonType = [], array $content = []): void
     {
         $this->seeResponseContainsNoErrors();
         $this->seeResponseIsJsonSuccessful($code);
@@ -53,7 +56,7 @@ $I->seeResponseIsValidJsonApi(HttpCode::OK, Data::groupResponseJsonType(), $cont
         }
     }
 
-    public function seeResponseIsValidJsonApi(int $code = HttpCode::OK, array $jsonType = [], array $content = []): void
+    public function seeItemResponseIsJsonApiSuccessful(int $code = HttpCode::OK, array $jsonType = [], array $content = []): void
     {
         $this->seeResponseContainsNoErrors();
         $this->seeResponseIsJsonApiSuccessful($code);
@@ -62,6 +65,44 @@ $I->seeResponseIsValidJsonApi(HttpCode::OK, Data::groupResponseJsonType(), $cont
         }
         if (!empty($content)) {
             $this->seeResponseContainsJsonKey('data', $content);
+        }
+    }
+
+    public function seeCollectionResponseIsJsonSuccessful($code = HttpCode::OK, array $jsonType = [], array $content = []): void
+    {
+        $this->seeResponseContainsNoErrors();
+        $this->seeResponseIsJsonSuccessful($code);
+        if (!empty($jsonType) || !empty($content)) {
+            $items = $this->grabDataFromResponseByJsonPath('$');
+            foreach ($items as $item) {
+                if (!empty($jsonType)) {
+                    Assert::assertThat($item, new JsonType($jsonType));
+//                    $this->assertThat($item, new JsonType($jsonType));
+                }
+                if (!empty($content)) {
+                    Assert::assertThat(json_encode($item), new JsonContains($content)); //
+//                    $this->assertThat($item, new JsonContains($content));
+                }
+            }
+        }
+    }
+
+    public function seeCollectionResponseIsJsonApiSuccessful($code = HttpCode::OK, array $jsonType = [], array $content = []): void
+    {
+        $this->seeResponseContainsNoErrors();
+        $this->seeResponseIsJsonSuccessful($code);
+        if (!empty($jsonType) || !empty($content)) {
+            $items = $this->grabDataFromResponseByJsonPath('$.data');
+            foreach ($items as $item) {
+                if (!empty($jsonType)) {
+                    Assert::assertThat($item, new JsonType($jsonType));
+//                    $this->assertThat($item, new JsonType($jsonType));
+                }
+                if (!empty($content)) {
+                    Assert::assertThat(json_encode($item), new JsonContains($content));
+//                    $this->assertThat($item, new JsonContains($content));
+                }
+            }
         }
     }
 
