@@ -42,8 +42,8 @@ use Phalcon\Http\ResponseInterface;
  */
 class DeleteController extends BaseItemApiController
 {
-    /** @var Tracks */
-    protected $track;
+    /** @var Votes */
+    protected $vote;
 
     protected function checkSecurity(array $parameters): array
     {
@@ -51,42 +51,46 @@ class DeleteController extends BaseItemApiController
         $track_uuid = $parameters['sub.id'];
 
         if ($this->auth->getUser()) {
-            if ($this->auth->getUser()->isAdmin()) {
-                return $parameters;
-            }
-            $this->track = Votes::findFirst([
-                'conditions' => 'id = :track_id: AND user_id = :user_id:',
+//            if ($this->auth->getUser()->isAdmin()) {
+//                return $parameters;
+//            }
+            $this->vote = Votes::findFirst([
+                'conditions' => 'poll_id = :poll_id: AND track_id = :track_id: AND user_id = :user_id:',
                 'bind'       => [
+                    'poll_id' => $poll_uuid,
                     'track_id' => $track_uuid,
                     'user_id' => $this->auth->getUser()->get('id')
                 ],
                 'bindTypes'  => [
+                    'poll_id' => Column::BIND_PARAM_STR,
                     'track_id' => Column::BIND_PARAM_STR,
                     'user_id' => Column::BIND_PARAM_STR
                 ],
             ]);
         } else {
-            $this->track = Votes::findFirst([
-                'conditions' => 'id = :track_id: AND session_id = :session_id:',
+            $this->vote = Votes::findFirst([
+                'conditions' => 'poll_id = :poll_id: AND track_id = :track_id: AND session_id = :session_id:',
                 'bind'       => [
+                    'poll_id' => $poll_uuid,
                     'track_id' => $track_uuid,
                     'session_id' => $this->auth->getSession()->get('id')
                 ],
                 'bindTypes'  => [
+                    'poll_id' => Column::BIND_PARAM_STR,
                     'track_id' => Column::BIND_PARAM_STR,
                     'session_id' => Column::BIND_PARAM_STR
                 ],
             ]);
         }
-        if (!$this->track) {
-            throw new UnauthorizedException('Only admins and owners can modify a track');
+        if (!$this->vote) {
+            throw new UnauthorizedException('Only the owner of a vote can deleted it');
         }
     }
 
     public function coreAction(array $parameters): ResponseInterface
     {
         // SoftDelete the organization
-        $rtn = $this->track->vote->delete(); //@ToDo
+        $rtn = $this->vote->delete();
         if (true !== $rtn) {
             throw new InternalServerErrorException('Error deleting the group');
         }

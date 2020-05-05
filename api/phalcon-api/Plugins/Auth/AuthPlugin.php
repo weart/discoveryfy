@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Plugins\Auth;
 
-//use Vokuro\Models\RememberTokens;
 use Discoveryfy\Constants\CacheKeys;
 use Discoveryfy\Exceptions\BadRequestException;
 use Discoveryfy\Exceptions\InternalServerErrorException;
@@ -33,9 +32,11 @@ use Phalcon\Api\Constants\JWTClaims;
 use Phalcon\Api\Http\Request;
 use Phalcon\Cache;
 use Phalcon\Config;
+use Phalcon\Db\Column;
 use Phalcon\Di\Injectable;
 use Phalcon\Security;
 use Phalcon\Security\Random;
+//use Vokuro\Models\RememberTokens;
 use function Phalcon\Api\Core\envValue;
 
 /**
@@ -144,7 +145,7 @@ class AuthPlugin extends Injectable
                     'username' => $credentials['username'],
                 ],
                 'bindTypes'  => [
-                    'username' => \Phalcon\Db\Column::BIND_PARAM_STR,
+                    'username' => Column::BIND_PARAM_STR,
                 ],
 //                'cache'      => [
 //                    'key'      => CacheKeys::getModelCacheKey('user', $credentials['username']),
@@ -164,8 +165,11 @@ class AuthPlugin extends Injectable
             throw new BadRequestException('Wrong email/password combination');
         }
 
-        // Check if the user was flagged
-        $this->checkUserFlags();
+        // Check if the user was flagged or deleted
+        if (!$this->user->isActive()) {
+            $this->registerUserThrottling($this->user);
+            throw new BadRequestException('This user is not active');
+        }
 
         // Register the successful login
         (new SecurityEvents())->createLoginSuccessEvent($this->request, $this->user);
@@ -209,27 +213,6 @@ class AuthPlugin extends Injectable
                     break;
             }
         }
-    }
-
-    /**
-     * Checks if the user is banned/inactive/suspended
-     *
-     * @throws ModelException
-     */
-    private function checkUserFlags()
-    {
-        if (true !== $this->user->get('enabled')) {
-            throw new ModelException('The user is inactive');
-        }
-//        if ($user->active != 'Y') {
-//            throw new ModelException('The user is inactive');
-//        }
-//        if ($user->banned != 'N') {
-//            throw new ModelException('The user is banned');
-//        }
-//        if ($user->suspended != 'N') {
-//            throw new ModelException('The user is suspended');
-//        }
     }
 
     /**
@@ -318,11 +301,11 @@ class AuthPlugin extends Injectable
         $this->session = Sessions::findFirst([
             'id = :session_id:',
             'bind'          => ['session_id' => $session_id],
-            'bindTypes'     => ['session_id' => \Phalcon\Db\Column::BIND_PARAM_STR],
-            'cache'         => [
-                'key'       => CacheKeys::getModelCacheKey('session', $session_id),
+            'bindTypes'     => ['session_id' => Column::BIND_PARAM_STR],
+//            'cache'         => [
+//                'key'       => CacheKeys::getModelCacheKey('session', $session_id),
 //              'lifetime'  => 84600,
-            ],
+//            ],
         ]);
 
         if (false === $this->session) {
@@ -349,14 +332,17 @@ class AuthPlugin extends Injectable
             $this->user = Users::findFirst([
                 'id = :user_id:',
                 'bind'          => ['user_id' => $this->session->get('user_id')],
-                'bindTypes'     => ['user_id' => \Phalcon\Db\Column::BIND_PARAM_STR],
-                'cache'         => [
-                    'key'       => CacheKeys::getModelCacheKey('user', $this->session->get('user_id')),
+                'bindTypes'     => ['user_id' => Column::BIND_PARAM_STR],
+//                'cache'         => [
+//                    'key'       => CacheKeys::getModelCacheKey('user', $this->session->get('user_id')),
 //                    'lifetime'  => 84600,
-                ],
+//                ],
             ]);
             if ($this->user->get('id') !== $this->session->get('user_id')) {
                 throw new InternalServerErrorException('Invalid user recovered');
+            }
+            if (!$this->user->isActive()) {
+                throw new BadRequestException('This user is not active');
             }
         }
 //        if (!$this->session->isRelationshipLoaded('users')) { //Phalcon relationship loading

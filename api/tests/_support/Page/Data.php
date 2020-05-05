@@ -260,8 +260,8 @@ class Data
 //    public static function productTypeResponse(AbstractModel $record)
 //    {
 //        return [
-//            'id'         => $record->get('id'),
 //            'type'       => Relationships::PRODUCT_TYPES,
+//            'id'         => $record->get('id'),
 //            'attributes' => [
 //                'name'        => $record->get('name'),
 //                'description' => $record->get('description'),
@@ -286,8 +286,8 @@ class Data
     public static function userResponse(AbstractModel $record)
     {
         return [
-            'id'         => $record->get('id'),
             'type'       => Relationships::USER,
+            'id'         => $record->get('id'),
             'attributes' => [
                 'status'        => $record->get('status'),
                 'username'      => $record->get('username'),
@@ -325,6 +325,7 @@ class Data
     public static function groupResponseJsonApiType(): array
     {
         return [
+            'type'                          => 'string:!empty',
             'id'                            => 'string:!empty',     //'016aeb55-7ecf-4862-a229-dd7478b17537'
             'attributes' => [
                 'created_at'                => 'string:date',       //'2020-03-23 11:57:46'
@@ -348,7 +349,7 @@ class Data
             'id'                                => 'string:!empty',
             'attributes.created_at'             => 'string:date',
             'attributes.updated_at'             => 'string:date|string', //When is empty is not null... is an empty string
-            'attributes.rol'                   => 'string:!empty',
+            'attributes.rol'                    => 'string:!empty',
             'links.self'                        => 'string:url',
         ];
     }
@@ -356,6 +357,7 @@ class Data
     public static function memberResponseJsonApiType(): array
     {
         return [
+            'type'                          => 'string:!empty',
             'id'                            => 'string:!empty',
             'attributes' => [
                 'created_at'                => 'string:date',
@@ -364,6 +366,70 @@ class Data
             ],
             'links' => [
                 'self'                      => 'string:url', //'https://api.discoveryfy.fabri...b17537'
+            ]
+        ];
+    }
+
+    public static function pollResponseJsonType(): array
+    {
+        return [
+            'type'                                      => 'string:!empty',
+            'id'                                        => 'string:!empty',
+            'attributes.created_at'                     => 'string:date',
+            'attributes.updated_at'                     => 'string:date|string', //When is empty is not null... is an empty string
+            'attributes.name'                           => 'string:!empty',
+            'attributes.description'                    => 'string:!empty',
+            'attributes.spotify_playlist_images'        => 'array|null|string', //@ToDo: All Spotify attributes should be !empty
+            'attributes.spotify_playlist_public'        => 'boolean',
+            'attributes.spotify_playlist_collaborative' => 'boolean',
+            'attributes.spotify_playlist_uri'           => 'string',
+            'attributes.spotify_playlist_winner_uri'    => 'string',
+            'attributes.spotify_playlist_historic_uri'  => 'string',
+            'attributes.start_date'                     => 'string:date',
+            'attributes.end_date'                       => 'string:date',
+            'attributes.restart_date'                   => 'string',
+            'attributes.public_visibility'              => 'boolean',
+            'attributes.public_votes'                   => 'boolean',
+            'attributes.anon_can_vote'                  => 'boolean',
+            'attributes.who_can_add_track'              => 'string:!empty',
+            'attributes.anon_votes_max_rating'          => 'integer',
+            'attributes.user_votes_max_rating'          => 'integer',
+            'attributes.multiple_user_tracks'           => 'boolean',
+            'attributes.multiple_anon_tracks'           => 'boolean',
+            'links.self'                                => 'string:url',
+        ];
+    }
+
+    public static function pollResponseJsonApiType(): array
+    {
+        return [
+            'type'                                  => 'string:!empty',
+            'id'                                    => 'string:!empty',
+            'attributes' => [
+                'created_at'                        => 'string:date',
+                'updated_at'                        => 'string:date|string', //When is empty is not null... is an empty string
+                'name'                              => 'string:!empty',
+                'description'                       => 'string:!empty',
+                'spotify_playlist_images'           => 'array|null|string', //@ToDo
+                'spotify_playlist_public'           => 'boolean',
+                'spotify_playlist_collaborative'    => 'boolean',
+                'spotify_playlist_uri'              => 'string',
+                'spotify_playlist_winner_uri'       => 'string',
+                'spotify_playlist_historic_uri'     => 'string',
+                'start_date'                        => 'string:date',
+                'end_date'                          => 'string:date',
+                'restart_date'                      => 'string',
+                'public_visibility'                 => 'boolean',
+                'public_votes'                      => 'boolean',
+                'anon_can_vote'                     => 'boolean',
+                'who_can_add_track'                 => 'string:!empty',
+                'anon_votes_max_rating'             => 'integer',
+                'user_votes_max_rating'             => 'integer',
+                'multiple_user_tracks'              => 'boolean',
+                'multiple_anon_tracks'              => 'boolean'
+            ],
+            'links' => [
+                'self'                              => 'string:url',
             ]
         ];
     }

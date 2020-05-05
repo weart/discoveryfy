@@ -69,6 +69,8 @@ class Votes extends TimestampableModel
      */
     public function validation(): bool
     {
+        //@ToDo: Check poll->has anon_can_vote & membership
+        //@ToDo: Check anon_votes_max_rating & user_votes_max_rating
         $validator = (new Validation())
             ->add('id', new Uniqueness([
                 'message' => 'The id already exists in the database',

@@ -40,7 +40,7 @@ class GroupsRoutes implements RoutesInterface
             new ApiRoute(MembersGetItemController::class, '/groups/{group_uuid}/members/{user_uuid}', 'get'),   // member.get
             new ApiRoute(MembersPutController::class, '/groups/{group_uuid}/members/{user_uuid}', 'put'),       // member.put
 
-            new ApiRoute(GroupsPollsGetCollectionController::class, '/groups/{group_uuid}/polls', 'put'),   // group.polls.list
+            new ApiRoute(GroupsPollsGetCollectionController::class, '/groups/{group_uuid}/polls', 'get'),   // group.polls.list
             new ApiRoute(PollsPostController::class, '/groups/{group_uuid}/polls', 'post'),                 // poll.create
         ];
     }

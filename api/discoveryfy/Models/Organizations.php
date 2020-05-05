@@ -164,10 +164,10 @@ class Organizations extends TimestampableModel
             ->columns('org.*, member.*, user.id as user_id')
             ->from([ 'org' => self::class]) //Organizations::class
             ->innerJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-            ->innerJoin(Users::class, 'member.user_id = user.id', 'user') // Necessary for check deleted_at
-            ->where('org.id = :org_uuid: AND user.id = :user_uuid: AND org.deleted_at IS NULL AND user.deleted_at IS NULL')
-            ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'user_uuid' => \PDO::PARAM_STR ])
-            ->setBindParams([ 'org_uuid' => $group_uuid, 'user_uuid' => $user_uuid ])
+            ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL AND user.enabled = :enabled:', 'user') // Necessary for check if user isActive
+            ->where('org.id = :org_uuid: AND user.id = :user_uuid: AND org.deleted_at IS NULL')
+            ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'user_uuid' => \PDO::PARAM_STR, 'enabled' => \PDO::PARAM_BOOL ])
+            ->setBindParams([ 'org_uuid' => $group_uuid, 'user_uuid' => $user_uuid, 'enabled' => true ])
             ->getQuery()->execute();
 
         if ($res->count() === 0) {
@@ -195,7 +195,7 @@ class Organizations extends TimestampableModel
         $q = self::getBuilder()
             ->columns('org.*')
             ->from([ 'org' => Organizations::class])
-            ->where('org.id = :org_uuid: AND org.public_visibility = :public_visibility: AND org.deleted_at IS NULL')
+            ->where('org.id = :org_uuid: AND org.deleted_at IS NULL')
             ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'public_visibility' => \PDO::PARAM_BOOL ])
             ->setBindParams([ 'org_uuid' => $group_uuid, 'public_visibility' => true ]);
 
@@ -203,10 +203,12 @@ class Organizations extends TimestampableModel
             $q
                 ->columns('org.*, member.*, user.id as user_id')
                 ->leftJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-                ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL', 'user') // Necessary for check deleted_at
-                ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
-                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ], true)
-                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ], true);
+                ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL AND user.enabled = :enabled:', 'user') // Necessary for check if user isActive
+                ->andWhere('((org.public_visibility = :public_visibility:) OR (user.id = :user_uuid: AND member.rol != :member_rol:))')
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR, 'enabled' => \PDO::PARAM_BOOL ], true)
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED', 'enabled' => true ], true);
+        } else {
+            $q->andWhere('org.public_visibility = :public_visibility:');
         }
         return $q->getQuery()->execute();
     }
@@ -223,11 +225,11 @@ class Organizations extends TimestampableModel
             ->columns('org.*, member.*, user.id as user_id')
             ->from([ 'org' => Organizations::class])
             ->innerJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-            ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL', 'user') // Necessary for check deleted_at
+            ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL AND user.enabled = :enabled:', 'user') // Necessary for check if user isActive
             ->where('org.id = :org_uuid: AND org.deleted_at IS NULL')
             ->andWhere('(org.public_membership = :public_membership: OR (user.id = :user_uuid: AND member.rol != :member_rol:))')
-            ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'public_membership' => \PDO::PARAM_BOOL, 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ])
-            ->setBindParams([ 'org_uuid' => $group_uuid, 'public_membership' => true, 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ])
+            ->setBindTypes([ 'org_uuid' => \PDO::PARAM_STR, 'public_membership' => \PDO::PARAM_BOOL, 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR, 'enabled' => \PDO::PARAM_BOOL ])
+            ->setBindParams([ 'org_uuid' => $group_uuid, 'public_membership' => true, 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED', 'enabled' => true ])
             ->getQuery()->execute();
     }
 
@@ -241,7 +243,7 @@ class Organizations extends TimestampableModel
         $q = self::getBuilder()
             ->columns('org.*')
             ->from([ 'org' => Organizations::class])
-            ->where('org.public_visibility = :public_visibility: AND org.deleted_at IS NULL')
+            ->where('org.deleted_at IS NULL')
             ->setBindTypes([ 'public_visibility' => \PDO::PARAM_BOOL ])
             ->setBindParams([ 'public_visibility' => true ]);
 
@@ -249,10 +251,12 @@ class Organizations extends TimestampableModel
             $q
                 ->columns('org.*, member.*, user.id as user_id')
                 ->leftJoin(Memberships::class, 'org.id = member.organization_id', 'member')
-                ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL', 'user') // Necessary for check deleted_at
-                ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
-                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ], true)
-                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ], true);
+                ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL AND user.enabled = :enabled:', 'user') // Necessary for check if user isActive
+                ->andWhere('((org.public_visibility = :public_visibility:) OR (user.id = :user_uuid: AND member.rol != :member_rol:))')
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR, 'enabled' => \PDO::PARAM_BOOL ], true)
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED', 'enabled' => true ], true);
+        } else {
+            $q->andWhere('org.public_visibility = :public_visibility:');
         }
         if (true !== empty($orderBy)) {
             $q->orderBy($orderBy);

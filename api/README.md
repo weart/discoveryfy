@@ -53,9 +53,9 @@ More info: https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Res
 * Finish api test -> api/tests/api/ToDo.md
 * Sysadmin: Define domain, deploy (Ansible?) and define backup strategy.
 * CORS - Uncomment middleware in RouterProvider
-* Lost password: https://github.com/phalcon/vokuro/blob/4.0.x/src/Models/ResetPasswords.php
+* [Lost password](https://github.com/phalcon/vokuro/blob/4.0.x/src/Models/ResetPasswords.php) & Logout
 * Test against schema: https://github.com/aWuttig/codeception-api-validator / https://github.com/mlambley/swagception
-* JSON-LD Schema. First define the specs in OpenApi file, after that in the code.
+* JSON-LD Schema. First define the specs in OpenApi file, after that write the code
     * https://ca.wikipedia.org/wiki/JSON-LD
 * Pull request to the main phalcon/json-api project:
     * https://github.com/PhilippBaschke/acf-pro-installer/pull/35/files

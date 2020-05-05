@@ -24,6 +24,7 @@ use Phalcon\Validation\Validator\Email;
 
 /**
  * Class Users
+ * Maybe new states should be created like banned, inactive or suspended?
  *
  * @see https://github.com/phalcon/vokuro/blob/4.0.x/src/Models/Users.php
  * @package Discoveryfy\Models
@@ -201,6 +202,20 @@ class Users extends TimestampableModel
     public function isAdmin(): bool
     {
         return ($this->get('rol') === 'ROLE_ADMIN');
+    }
+
+    /**
+     * Checks if the user is enabled and not deleted
+     */
+    public function isActive(): bool
+    {
+        if (true !== $this->get('enabled')) {
+            return false;
+        }
+        if (!empty($this->getDeletedAt())) {
+            return false;
+        }
+        return true;
     }
 
     public function getDeletedAt(): ?\DateTime

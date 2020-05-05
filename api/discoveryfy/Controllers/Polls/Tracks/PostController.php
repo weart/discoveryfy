@@ -83,14 +83,12 @@ class PostController extends BaseItemApiController
             ->set('youtube_uri', $this->request->getPost('youtube_uri', Filter::FILTER_STRING))
         ;
 
-        if (true !== $track->validation() || true !== $track->validation()) {
+        if (true !== $track->validation() || true !== $track->save()) {
             if (false === $track->validationHasFailed()) {
                 throw new InternalServerErrorException('Error creating track');
             }
             return $this->response->sendApiErrors($this->request->getContentType(), $track->getMessages());
         }
-
-        $this->db->commit();
 
         return $this->response->sendApiContentCreated(
             $this->request->getContentType(),

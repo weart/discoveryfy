@@ -59,12 +59,19 @@ class BaseTransformer extends TransformerAbstract
         $fields          = array_intersect($modelFields, $requestedFields);
         $data            = [];
         foreach ($fields as $field) {
+            /**
+             * @ToDo: Ugly... alternatives: Move to own transformers?
+             */
             if ($field === 'created_at') {
                 $data[$field] = $model->getCreatedAt()->format(\DateTime::ATOM);
             } else if ($field === 'updated_at' && !empty($model->get($field))) {
                 $data[$field] = $model->getUpdatedAt()->format(\DateTime::ATOM);
             } else if ($field === 'deleted_at' && !empty($model->get($field))) {
                 $data[$field] = $model->getDeletedAt()->format(\DateTime::ATOM);
+            } else if ($field === 'start_date' && !empty($model->get($field))) {
+                $data[$field] = $model->getStartDate()->format(\DateTime::ATOM);
+            } else if ($field === 'end_date' && !empty($model->get($field))) {
+                $data[$field] = $model->getEndDate()->format(\DateTime::ATOM);
             } else {
                 $data[$field] = $model->get($field);
             }

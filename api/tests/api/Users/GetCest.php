@@ -123,4 +123,14 @@ class UsersGetCest
 
         $I->seeResponseIsJsonApiError(HttpCode::UNAUTHORIZED, 'User unauthorized for this action');
     }
+
+    public function getDeletedUserJsonApi(Login $I)
+    {
+        $I->comment('@ToDo');
+    }
+
+    public function getDisabledUserJsonApi(Login $I)
+    {
+        $I->comment('@ToDo');
+    }
 }

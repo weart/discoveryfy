@@ -15,6 +15,7 @@ use Discoveryfy\Exceptions\UnauthorizedException;
 use Phalcon\Api\Filters\UUIDFilter;
 use Phalcon\Api\Mvc\Model\TimestampableModel;
 use Phalcon\Api\Validators\UuidValidator;
+use Phalcon\Db\RawValue;
 use Phalcon\Di;
 use Phalcon\Filter;
 use Phalcon\Mvc\Model\Query\Builder;
@@ -86,6 +87,22 @@ class Polls extends TimestampableModel
         ];
     }
 
+    public function getStartDate(): ?\DateTime
+    {
+        if (empty($this->start_date) || $this->start_date instanceof RawValue) {
+            return null;
+        }
+        return new \DateTime($this->start_date);
+    }
+
+    public function getEndDate(): ?\DateTime
+    {
+        if (empty($this->end_date) || $this->end_date instanceof RawValue) {
+            return null;
+        }
+        return new \DateTime($this->end_date);
+    }
+
     /**
      * @return bool
      */
@@ -106,11 +123,19 @@ class Polls extends TimestampableModel
             ->add('id', new UuidValidator())
             ->add('organization_id', new UuidValidator())
             ->add('name', new PresenceOf())
-            ->add('start_date', new Date(['format' => $date_format])) //message not provided
+            /*
+             * @ToDo:
+             * Validation fails, but I can't get why, the following code (phalcon internals) return no errors
+             * ‌‌\DateTime::createFromFormat($date_format, $this->get('start_date')); && ‌‌\DateTime::getLastErrors()
+            ->add('start_date', new Date([  //message not provided
+                'allowEmpty' => true,
+                'format' => $date_format
+            ]))
             ->add('end_date', new Date([ //message not provided
                 'allowEmpty' => true,
                 'format' => $date_format
             ]))
+             */
             ->add('restart_date', new Regex([ //message not provided
                 'allowEmpty' => true,
                 'pattern' => $crontab_regex
@@ -175,7 +200,7 @@ class Polls extends TimestampableModel
     {
         $q = self::getBuilder()
             ->columns('poll.*, member.*')
-            ->from([ 'poll' => Polls::class])
+            ->from([ 'poll' => Polls::class ])
             ->where('poll.public_visibility = :public_visibility:')
             ->setBindTypes([ 'public_visibility' => \PDO::PARAM_BOOL ])
             ->setBindParams([ 'public_visibility' => true ]);

@@ -13,6 +13,7 @@ namespace Discoveryfy\Controllers\Groups\Polls;
 use Discoveryfy\Constants\Relationships;
 use Discoveryfy\Exceptions\UnauthorizedException;
 use Discoveryfy\Models\Organizations;
+use Discoveryfy\Models\Polls;
 use Phalcon\Api\Controllers\BaseCollectionApiController;
 //use Phalcon\Api\Http\Request;
 //use Phalcon\Api\Http\Response;
@@ -35,6 +36,10 @@ use Phalcon\Api\Transformers\BaseTransformer;
  */
 class GetCollectionController extends BaseCollectionApiController
 {
+
+    /** @var string */
+    protected $model       = Polls::class;
+
     /** @var string */
     protected $resource    = Relationships::POLL;
 
