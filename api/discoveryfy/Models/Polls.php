@@ -19,7 +19,11 @@ use Phalcon\Db\RawValue;
 use Phalcon\Di;
 use Phalcon\Filter;
 use Phalcon\Mvc\Model\Query\Builder;
-use Phalcon\Mvc\Model\Resultset\Complex;
+use Phalcon\Mvc\Model\Resultset;
+use Phalcon\Mvc\Model\ResultsetInterface;
+//use Phalcon\Mvc\Model\Resultset\Simple;
+//use Phalcon\Mvc\Model\Resultset\Complex;
+use Phalcon\Mvc\Model\Row;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Date;
 use Phalcon\Validation\Validator\InclusionIn;
@@ -127,6 +131,7 @@ class Polls extends TimestampableModel
              * @ToDo:
              * Validation fails, but I can't get why, the following code (phalcon internals) return no errors
              * ‌‌\DateTime::createFromFormat($date_format, $this->get('start_date')); && ‌‌\DateTime::getLastErrors()
+             * @see: https://github.com/phalcon/cphalcon/blob/v4.0.0/phalcon/Validation/Validator/Date.zep
             ->add('start_date', new Date([  //message not provided
                 'allowEmpty' => true,
                 'format' => $date_format
@@ -147,16 +152,17 @@ class Polls extends TimestampableModel
         return $this->validate($validator);
     }
 
-    public static function getUserMembership(string $poll_uuid, string $user_uuid): Complex
+    public static function getUserMembership(string $poll_uuid, string $user_uuid): Row
     {
         $q = self::getBuilder()
-            ->columns('poll.*, member.*')
-            ->from([ 'poll' => Polls::class])
-            ->innerJoin(Memberships::class, 'poll.organization_id = member.organization_id', 'member')
+            ->columns('poll.*, org.*, member.*')
+            ->from([ 'poll' => Polls::class ])
+            ->innerJoin(Organizations::class, 'poll.organization_id = org.id AND org.deleted_at IS NULL', 'org')
+            ->innerJoin(Memberships::class, 'org.id = member.organization_id', 'member')
+            ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL AND user.enabled = :enabled: AND user.id = :user_uuid:', 'user') // Necessary for check if user isActive
             ->where('poll.id = :poll_uuid:')
-            ->andWhere('member.user_id = :user_id:')
-            ->setBindTypes([ 'poll_uuid' => \PDO::PARAM_STR, 'user_uuid' => \PDO::PARAM_STR ])
-            ->setBindParams([ 'poll_uuid' => $poll_uuid, 'user_uuid' => $user_uuid ]);
+            ->setBindTypes([ 'poll_uuid' => \PDO::PARAM_STR, 'user_uuid' => \PDO::PARAM_STR, 'enabled' => \PDO::PARAM_BOOL ])
+            ->setBindParams([ 'poll_uuid' => $poll_uuid, 'user_uuid' => $user_uuid, 'enabled' => true ]);
 
         $res = $q->getQuery()->execute();
         if ($res->count() === 0) {
@@ -174,47 +180,59 @@ class Polls extends TimestampableModel
     }
 
     // Poll::public_visibility == true || $user_uuid->rol !== INVITED
-    public static function isPublicVisibilityOrMember(string $poll_uuid, ?string $user_uuid): Complex
+    public static function isPublicVisibilityOrMember(string $poll_uuid, ?string $user_uuid): ResultsetInterface // Simple or Complex
     {
         $q = self::getBuilder()
-            ->columns('poll.*, track.*, member.*')
-            ->from([ 'poll' => Polls::class])
-            ->innerJoin(Tracks::class, 'track.poll_id = poll.id', 'track')
+            ->from([ 'poll' => Polls::class ])
+            ->innerJoin(Organizations::class, 'poll.organization_id = org.id AND org.deleted_at IS NULL', 'org')
+//            ->leftJoin(Tracks::class, 'poll.id = track.poll_id', 'track')
             ->where('poll.id = :poll_uuid:')
-            ->andWhere('poll.public_visibility = :public_visibility:')
             ->setBindTypes([ 'poll_uuid' => \PDO::PARAM_STR, 'public_visibility' => \PDO::PARAM_BOOL ])
             ->setBindParams([ 'poll_uuid' => $poll_uuid, 'public_visibility' => true ]);
 
         if ($user_uuid) {
             $q
+//                ->columns('poll.*, org.*, member.*')
                 ->leftJoin(Memberships::class, 'poll.organization_id = member.organization_id', 'member')
-                ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
-                ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
-                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ], true)
-                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ], true);
+                ->innerJoin(Users::class, 'member.user_id = user.id', 'user') // Necessary for check if user isActive
+                ->andWhere('((poll.public_visibility = :public_visibility:) OR (user.id = :user_uuid: AND user.deleted_at IS NULL AND user.enabled = :enabled: AND member.rol != :member_rol:))')
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR, 'enabled' => \PDO::PARAM_BOOL ], true)
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED', 'enabled' => true ], true);
+        } else {
+            $q
+//                ->columns('poll.*, org.*')
+                ->andWhere('poll.public_visibility = :public_visibility:');
         }
         return $q->getQuery()->execute();
     }
 
-    public static function getPublicVisibilityOrMember(?string $user_uuid, string $orderBy = ''): Complex
+    public static function getPublicVisibilityOrMember(?string $user_uuid, string $orderBy = '', array $pagination = []): ResultsetInterface // Simple or Complex
     {
         $q = self::getBuilder()
-            ->columns('poll.*, member.*')
+//            ->columns('poll.*')
             ->from([ 'poll' => Polls::class ])
-            ->where('poll.public_visibility = :public_visibility:')
+            ->innerJoin(Organizations::class, 'poll.organization_id = org.id AND org.deleted_at IS NULL', 'org')
             ->setBindTypes([ 'public_visibility' => \PDO::PARAM_BOOL ])
             ->setBindParams([ 'public_visibility' => true ]);
 
         if ($user_uuid) {
             $q
+//                ->columns('poll.*, org.*, member.*')
                 ->leftJoin(Memberships::class, 'poll.organization_id = member.organization_id', 'member')
-                ->innerJoin(Users::class, 'member.user_id = user.id', 'user') //Not necessary?
-                ->orWhere('(user.id = :user_uuid: AND member.rol != :member_rol:)')
-                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR ], true)
-                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED' ], true);
+                ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL AND user.enabled = :enabled: AND user.id = :user_uuid:', 'user') // Necessary for check if user isActive
+                ->orWhere('((poll.public_visibility = :public_visibility:) OR (user.id = :user_uuid: AND member.rol != :member_rol:))')
+                ->setBindTypes([ 'user_uuid' => \PDO::PARAM_STR, 'member_rol' => \PDO::PARAM_STR, 'enabled' => \PDO::PARAM_BOOL ], true)
+                ->setBindParams([ 'user_uuid' => $user_uuid, 'member_rol' => 'ROLE_INVITED', 'enabled' => true ], true);
+        } else {
+            $q
+//                ->columns('poll.*, org.*')
+                ->where('poll.public_visibility = :public_visibility:');
         }
         if (true !== empty($orderBy)) {
             $q->orderBy($orderBy);
+        }
+        if (true !== empty($pagination)) {
+            $q->limit($pagination['limit'], $pagination['offset']);
         }
         return $q->getQuery()->execute();
     }

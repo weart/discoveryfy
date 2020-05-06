@@ -10,10 +10,10 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Routes;
 
-use Discoveryfy\Controllers\Polls\DeleteController as PollsGetCollectionController;
-use Discoveryfy\Controllers\Polls\GetCollectionController as PollsGetItemController;
-use Discoveryfy\Controllers\Polls\GetItemController as PollsPutController;
-use Discoveryfy\Controllers\Polls\PutController as PollsDeleteController;
+use Discoveryfy\Controllers\Polls\DeleteController as PollsDeleteController;
+use Discoveryfy\Controllers\Polls\GetCollectionController as PollsGetCollectionController;
+use Discoveryfy\Controllers\Polls\GetItemController as PollsGetItemController;
+use Discoveryfy\Controllers\Polls\PutController as PollsPutController;
 
 use Discoveryfy\Controllers\Polls\Tracks\GetCollectionController as TrackGetCollectionController;
 use Discoveryfy\Controllers\Polls\Tracks\PostController as TrackPostController;

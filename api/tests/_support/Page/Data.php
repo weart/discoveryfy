@@ -385,8 +385,8 @@ class Data
             'attributes.spotify_playlist_uri'           => 'string',
             'attributes.spotify_playlist_winner_uri'    => 'string',
             'attributes.spotify_playlist_historic_uri'  => 'string',
-            'attributes.start_date'                     => 'string:date',
-            'attributes.end_date'                       => 'string:date',
+            'attributes.start_date'                     => 'string:date|string', //When is empty is not null... is an empty string
+            'attributes.end_date'                       => 'string:date|string', //When is empty is not null... is an empty string
             'attributes.restart_date'                   => 'string',
             'attributes.public_visibility'              => 'boolean',
             'attributes.public_votes'                   => 'boolean',
@@ -416,8 +416,8 @@ class Data
                 'spotify_playlist_uri'              => 'string',
                 'spotify_playlist_winner_uri'       => 'string',
                 'spotify_playlist_historic_uri'     => 'string',
-                'start_date'                        => 'string:date',
-                'end_date'                          => 'string:date',
+                'start_date'                        => 'string:date|string', //When is empty is not null... is an empty string
+                'end_date'                          => 'string:date|string', //When is empty is not null... is an empty string
                 'restart_date'                      => 'string',
                 'public_visibility'                 => 'boolean',
                 'public_votes'                      => 'boolean',

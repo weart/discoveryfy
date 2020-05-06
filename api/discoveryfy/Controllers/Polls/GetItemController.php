@@ -74,6 +74,7 @@ class GetItemController extends BaseItemApiController
         if ($rtn->count() !== 1) {
             throw new UnauthorizedException('Only available when the group has public_visibility or you belong to the group');
         }
-        return $rtn->poll;
+//        return $rtn->poll;
+        return $rtn->getFirst();
     }
 }

@@ -62,34 +62,26 @@ class PutController extends BaseItemApiController
         $poll_uuid = $parameters['id'];
         $track_uuid = $parameters['sub.id'];
 
+        $conditions =   [ 'poll_id = :poll_id:',                'id = :track_id:' ];
+        $bind =         [ 'poll_id' => $poll_uuid,              'track_id' => $track_uuid ];
+        $bindTypes =    [ 'poll_id' => Column::BIND_PARAM_STR,  'track_id' => Column::BIND_PARAM_STR ];
+
         if ($this->auth->getUser()) {
-            if ($this->auth->getUser()->isAdmin()) {
-                return $parameters;
+            if (!$this->auth->getUser()->isAdmin()) {
+                $conditions[] = 'user_id = :user_id:';
+                $bind['user_id'] = $this->auth->getUser()->get('id');
+                $bindTypes['user_id'] = Column::BIND_PARAM_STR;
             }
-            $this->track = Tracks::findFirst([
-                'conditions' => 'id = :track_id: AND user_id = :user_id:',
-                'bind'       => [
-                    'track_id' => $track_uuid,
-                    'user_id' => $this->auth->getUser()->get('id')
-                ],
-                'bindTypes'  => [
-                    'poll_id' => Column::BIND_PARAM_STR,
-                    'user_id' => Column::BIND_PARAM_STR
-                ],
-            ]);
         } else {
-            $this->track = Tracks::findFirst([
-                'conditions' => 'id = :track_id: AND session_id = :session_id:',
-                'bind'       => [
-                    'track_id' => $track_uuid,
-                    'session_id' => $this->auth->getSession()->get('id')
-                ],
-                'bindTypes'  => [
-                    'poll_id' => Column::BIND_PARAM_STR,
-                    'session_id' => Column::BIND_PARAM_STR
-                ],
-            ]);
+            $conditions[] = 'session_id = :session_id:';
+            $bind['session_id'] = $this->auth->getSession()->get('id');
+            $bindTypes['session_id'] = Column::BIND_PARAM_STR;
         }
+        $this->track = Tracks::findFirst([
+            'conditions' => implode(' AND ', $conditions),
+            'bind'       => $bind,
+            'bindTypes'  => $bindTypes,
+        ]);
         if (!$this->track) {
             throw new UnauthorizedException('Only admins and owners can modify a track');
         }

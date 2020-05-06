@@ -134,7 +134,7 @@ abstract class BaseItemApiController extends BaseController
      * @param string       $orderBy
      * @return ResultsetInterface
      */
-    protected function getRecords(array $parameters = [], string $orderBy = ''): ResultsetInterface
+    protected function getRecords(array $parameters = [], string $orderBy = '', array $pagination = []): ResultsetInterface
     {
         $builder = new Builder();
         $builder->setDI($this->getDI());
@@ -150,6 +150,10 @@ abstract class BaseItemApiController extends BaseController
 
         if (true !== empty($orderBy)) {
             $builder->orderBy($orderBy);
+        }
+
+        if (true !== empty($pagination)) {
+            $builder->limit($pagination['limit'], $pagination['offset']);
         }
 
         return $this->getResultsCache($builder, $parameters);

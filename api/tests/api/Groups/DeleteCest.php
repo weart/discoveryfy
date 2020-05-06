@@ -43,20 +43,13 @@ class GroupsDeleteCest
 
     public function anonCantDeleteGroupJson(Login $I, GroupsPostCest $groupsPost)
     {
-        list($jwt, $session_id, $user_id, $group_uuid) = $groupsPost->createGroupAsTestJsonApi($I);
+        list($jwt, $session_id, $user_id, $group_uuid) = $groupsPost->createGroupAsTestJson($I);
         list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendDELETE(sprintf(Data::$groupUrl, $group_uuid));
 
-        $I->seeResponseIsJsonSuccessful(HttpCode::UNAUTHORIZED);
-        $I->seeResponseContainsJsonKey('errors', [
-            [
-                'code' => HttpCode::UNAUTHORIZED,
-                'status' => HttpCode::UNAUTHORIZED,
-                'title' => 'Only available to registered users'
-            ]
-        ]);
+        $I->seeResponseIsJsonError(HttpCode::UNAUTHORIZED, 'Only available to registered users');
     }
 
     public function anonCantDeleteGroupJsonApi(Login $I, GroupsPostCest $groupsPost)

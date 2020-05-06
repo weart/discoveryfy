@@ -8,24 +8,26 @@ declare(strict_types=1);
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Discoveryfy\Tests\api\Groups\Polls;
+namespace Discoveryfy\Tests\api\Polls;
 
+use Codeception\Exception\TestRuntimeException;
 use Codeception\Util\HttpCode;
 use Discoveryfy\Tests\api\Groups\GroupsPostCest;
+use Discoveryfy\Tests\api\Groups\Polls\GroupsPollsPostCest;
 use Page\Data;
+use Phalcon\Security\Random;
 use Step\Api\Login;
 
-class GroupsPollsGetCollectionCest
+class PollsGetItemCest
 {
-    private $unauthorized_msg = 'Only available to registered users';
-
-    public function memberGetGroupPollsJson(Login $I, GroupsPostCest $groupsPost, GroupsPollsPostCest $groupsPollsPost)
+    public function getPollJson(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost)
     {
-        list($jwt, $session_id, $user_id, $group_uuid, $poll_uuid) = $groupsPollsPost->createPollJson($I, $groupsPost);
+        list($jwt, $session_id, $user_id, $group_uuid, $poll_uuid) = $pollsPost->createPollJson($I, $groupsPost);
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
-        $I->sendGET(sprintf(Data::$groupPollsUrl, $group_uuid));
-        $I->seeCollectionResponseIsJsonSuccessful(
+        $I->sendGET(sprintf(Data::$pollUrl, $poll_uuid));
+
+        $I->seeItemResponseIsJsonSuccessful(
             HttpCode::OK,
             Data::pollResponseJsonType(),
             [
@@ -41,21 +43,16 @@ class GroupsPollsGetCollectionCest
                 'attributes.multiple_anon_tracks'   => false,
             ]
         );
-
-        list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
-        $I->setContentType('application/json');
-        $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
-        $I->sendGET(sprintf(Data::$groupPollsUrl, $group_uuid));
-        $I->seeResponseIsJsonError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg);
     }
 
-    public function memberGetGroupPollsJsonApi(Login $I, GroupsPostCest $groupsPost, GroupsPollsPostCest $groupsPollsPost)
+    public function getPollJsonApi(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost)
     {
-        list($jwt, $session_id, $user_id, $group_uuid, $poll_uuid) = $groupsPollsPost->createPollJsonApi($I, $groupsPost);
+        list($jwt, $session_id, $user_id, $group_uuid, $poll_uuid) = $pollsPost->createPollJsonApi($I, $groupsPost);
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
-        $I->sendGET(sprintf(Data::$groupPollsUrl, $group_uuid));
-        $I->seeCollectionResponseIsJsonApiSuccessful(
+        $I->sendGET(sprintf(Data::$pollUrl, $poll_uuid));
+
+        $I->seeItemResponseIsJsonApiSuccessful(
             HttpCode::OK,
             Data::pollResponseJsonApiType(),
             [
@@ -73,11 +70,5 @@ class GroupsPollsGetCollectionCest
                 ]
             ]
         );
-
-        list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
-        $I->setContentType('application/vnd.api+json');
-        $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
-        $I->sendGET(sprintf(Data::$groupPollsUrl, $group_uuid));
-        $I->seeResponseIsJsonApiError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg);
     }
 }

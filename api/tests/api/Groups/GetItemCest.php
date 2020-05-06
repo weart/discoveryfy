@@ -64,7 +64,6 @@ class GroupsGetItemCest
         // Nobody can see the group
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
-        $I->comment($test_jwt);
         $I->sendGET(sprintf(Data::$groupUrl, $group_uuid));
         $I->seeResponseIsJsonError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg);
 
@@ -124,7 +123,6 @@ class GroupsGetItemCest
         // Nobody can see the group
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
-        $I->comment($test_jwt);
         $I->sendGET(sprintf(Data::$groupUrl, $group_uuid));
         $I->seeResponseIsJsonApiError(HttpCode::UNAUTHORIZED, $this->unauthorized_msg);
 

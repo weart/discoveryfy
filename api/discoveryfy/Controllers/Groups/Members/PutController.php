@@ -22,6 +22,7 @@ use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 //use Phalcon\Api\Transformers\BaseTransformer;
+use Phalcon\Db\Column;
 use Phalcon\Filter;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Security\Random;
@@ -204,8 +205,8 @@ class PutController extends BaseItemApiController
                 'organization_id' => $org_uuid,
             ],
             'bindTypes'  => [
-                'user_id' => \Phalcon\Db\Column::BIND_PARAM_STR,
-                'organization_id' => \Phalcon\Db\Column::BIND_PARAM_STR,
+                'user_id' => Column::BIND_PARAM_STR,
+                'organization_id' => Column::BIND_PARAM_STR,
             ],
         ]);
     }

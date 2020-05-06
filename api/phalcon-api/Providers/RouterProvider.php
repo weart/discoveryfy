@@ -109,8 +109,8 @@ class RouterProvider implements ServiceProviderInterface
             $req = $application->getService('request'); // Can be null if RequestProvider fails, for example for a POST bad formatted
             if ($req) {
                 $contentType = $req->getHeader('Content-Type'); // Avoid `->getContentType()`; Can throw an exception
-            } else if (isset($_SERVER["CONTENT_TYPE"])) {
-                $contentType = $_SERVER["CONTENT_TYPE"];
+            } else if (isset($_SERVER['CONTENT_TYPE'])) {
+                $contentType = $_SERVER['CONTENT_TYPE'];
             }
 
             $debug = (bool) $application->getService('config')->path('app.debug');

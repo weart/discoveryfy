@@ -14,6 +14,7 @@ namespace Phalcon\Api\Controllers;
 
 //use Discoveryfy\Exceptions\BadRequestException;
 //use Phalcon\Api\Filters\UUIDFilter;
+use Discoveryfy\Exceptions\BadRequestException;
 use Phalcon\Api\Http\Response;
 //use Phalcon\Api\Traits\FractalTrait;
 //use Phalcon\Api\Traits\QueryTrait;
@@ -64,7 +65,7 @@ abstract class BaseCollectionApiController extends BaseItemApiController
             return $this->response->sendApiError($this->request->getContentType(), $this->response::BAD_REQUEST);
         }
 
-        $results = $this->getRecords($parameters, $this->orderBy);
+        $results = $this->getRecords($parameters, $this->orderBy, $this->getPagination());
         if (count($parameters) > 0 && 0 === $results->count()) {
             return $this->response->sendApiError($this->request->getContentType(), $this->response::NOT_FOUND);
         }
@@ -126,5 +127,16 @@ abstract class BaseCollectionApiController extends BaseItemApiController
         }
 
         return [$trueField, $direction];
+    }
+
+    protected function getPagination(): array
+    {
+        $page = (int) $this->request->getQuery('page', Filter::FILTER_ABSINT, 1);
+        $limit = (int) $this->request->getQuery('limit', Filter::FILTER_ABSINT, 10);
+        if ($limit < 1 || $limit > 100) {
+            throw new BadRequestException('Invalid limit');
+        }
+        $offset = ($page-1) * $limit;
+        return [ 'page' => $page, 'limit' => $limit, 'offset' => $offset ];
     }
 }

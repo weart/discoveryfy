@@ -23,6 +23,7 @@ use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 use Phalcon\Filter;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\Model\Resultset\Complex;
+use Phalcon\Mvc\Model\Row;
 
 /**
  * Modify one poll
@@ -75,7 +76,7 @@ class PutController extends BaseItemApiController
         return $this->sendApiData($poll);
     }
 
-    private function checkUserMembership(Complex $rtn): Polls
+    private function checkUserMembership(Row $rtn): Polls
     {
         if (!in_array($rtn->member->get('rol'), ['ROLE_ADMIN', 'ROLE_OWNER'])) {
             throw new UnauthorizedException('Only admins and owners can modify a poll');

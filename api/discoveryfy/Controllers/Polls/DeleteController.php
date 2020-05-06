@@ -18,7 +18,7 @@ use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 use Phalcon\Http\ResponseInterface;
-use Phalcon\Mvc\Model\Resultset\Complex;
+use Phalcon\Mvc\Model\Row;
 
 /**
  * Delete one poll
@@ -60,7 +60,7 @@ class DeleteController extends BaseItemApiController
         return $this->response->sendNoContent();
     }
 
-    private function checkUserMembership(Complex $rtn): Polls
+    private function checkUserMembership(Row $rtn): Polls
     {
         if (!in_array($rtn->member->get('rol'), ['ROLE_OWNER'])) {
             throw new UnauthorizedException('Only owners can delete a poll');
