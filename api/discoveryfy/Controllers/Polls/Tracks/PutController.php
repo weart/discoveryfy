@@ -85,6 +85,7 @@ class PutController extends BaseItemApiController
         if (!$this->track) {
             throw new UnauthorizedException('Only admins and owners can modify a track');
         }
+        return $parameters;
     }
 
     public function coreAction(array $parameters): ResponseInterface
@@ -113,7 +114,7 @@ class PutController extends BaseItemApiController
 
         if (true !== $track->validation() || true !== $track->save()) {
             if (false === $track->validationHasFailed()) {
-                throw new InternalServerErrorException('Error changing poll');
+                throw new InternalServerErrorException('Error changing track');
             }
             return $this->response->sendApiErrors($this->request->getContentType(), $track->getMessages());
         }

@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace Discoveryfy\Tests\api\Polls\Tracks\Rates;
 
 use Codeception\Util\HttpCode;
+use Discoveryfy\Tests\api\Groups\GroupsPostCest;
+use Discoveryfy\Tests\api\Groups\Polls\GroupsPollsPostCest;
 use Page\Data;
 use Step\Api\Login;
 

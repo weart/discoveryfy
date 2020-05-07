@@ -18,13 +18,97 @@ use Step\Api\Login;
 
 class PollsTracksPutCest
 {
-    public function modifyTrackJson(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost, PollsTracksPostCest $tracksPost)
+    public function modifyTrackAsAnonJson(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost, PollsTracksPostCest $tracksPost)
     {
-        //
+        list($jwt, $session_id, $user_id, $group_uuid, $poll_uuid, $track_uuid) = $tracksPost->createTrackAsAnonJson($I, $groupsPost, $pollsPost);
+        $this->modifyTrackJson($I, $jwt, $poll_uuid, $track_uuid);
     }
 
-    public function modifyTrackJsonApi(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost, PollsTracksPostCest $tracksPost)
+    public function modifyTrackAsAnonJsonApi(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost, PollsTracksPostCest $tracksPost)
     {
-        //
+        list($jwt, $session_id, $user_id, $group_uuid, $poll_uuid, $track_uuid) = $tracksPost->createTrackAsAnonJson($I, $groupsPost, $pollsPost);
+        $this->modifyTrackJsonApi($I, $jwt, $poll_uuid, $track_uuid);
+    }
+
+    public function modifyTrackAsTestJson(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost, PollsTracksPostCest $tracksPost)
+    {
+        list($jwt, $session_id, $user_id, $group_uuid, $poll_uuid, $track_uuid) = $tracksPost->createTrackAsTestJson($I, $groupsPost, $pollsPost);
+        $this->modifyTrackJson($I, $jwt, $poll_uuid, $track_uuid);
+    }
+
+    public function modifyTrackAsTestJsonApi(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost, PollsTracksPostCest $tracksPost)
+    {
+        list($jwt, $session_id, $user_id, $group_uuid, $poll_uuid, $track_uuid) = $tracksPost->createTrackAsTestJson($I, $groupsPost, $pollsPost);
+        $this->modifyTrackJsonApi($I, $jwt, $poll_uuid, $track_uuid);
+    }
+
+    private function modifyTrackJson(Login $I, string $jwt, string $poll_uuid, string $track_uuid): void
+    {
+        $I->setContentType('application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
+        $I->sendGET(sprintf(Data::$pollTrackUrl, $poll_uuid, $track_uuid));
+        $I->seeItemResponseIsJsonSuccessful(
+            HttpCode::OK,
+            Data::trackResponseJsonType(),
+            [
+                'type'                      => 'tracks',
+            ]
+        );
+
+        $I->setContentType('application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
+        $I->sendPUT(sprintf(Data::$pollTrackUrl, $poll_uuid, $track_uuid), [
+            'artist' => 'The Skatalites',
+            'name' => 'Requiem for Rico',
+            'spotify_uri' => '7aSRHl639kQIa81lTDG7BD',
+            'youtube_uri' => '',
+        ]);
+        $I->seeItemResponseIsJsonSuccessful(
+            HttpCode::OK,
+            Data::trackResponseJsonType(),
+            [
+                'type'                      => 'tracks',
+                'attributes.artist'         => 'The Skatalites',
+                'attributes.name'           => 'Requiem for Rico',
+                'attributes.spotify_uri'    => '7aSRHl639kQIa81lTDG7BD',
+                'attributes.youtube_uri'    => '',
+            ]
+        );
+    }
+
+    private function modifyTrackJsonApi(Login $I, string $jwt, string $poll_uuid, string $track_uuid): void
+    {
+        $I->setContentType('application/vnd.api+json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
+        $I->sendGET(sprintf(Data::$pollTrackUrl, $poll_uuid, $track_uuid));
+        $I->seeItemResponseIsJsonApiSuccessful(
+            HttpCode::OK,
+            Data::trackResponseJsonApiType(),
+            [
+                'type'                      => 'tracks',
+            ]
+        );
+
+        $I->setContentType('application/vnd.api+json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
+        $I->sendPUT(sprintf(Data::$pollTrackUrl, $poll_uuid, $track_uuid), [
+            'artist' => 'The Skatalites',
+            'name' => 'Requiem for Rico',
+            'spotify_uri' => '7aSRHl639kQIa81lTDG7BD',
+            'youtube_uri' => '',
+        ]);
+        $I->seeItemResponseIsJsonApiSuccessful(
+            HttpCode::OK,
+            Data::trackResponseJsonApiType(),
+            [
+                'type'                      => 'tracks',
+                'attributes' => [
+                    'artist'                => 'The Skatalites',
+                    'name'                  => 'Requiem for Rico',
+                    'spotify_uri'           => '7aSRHl639kQIa81lTDG7BD',
+                    'youtube_uri'           => ''
+                ]
+            ]
+        );
     }
 }

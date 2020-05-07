@@ -93,6 +93,48 @@ class Data
         ];
     }
 
+    public static function trackJson()
+    {
+        $tracks_schema = [
+            [
+                'artist' => 'Toti Soler',
+                'name' => 'Em Dius Que El Nostre Amor',
+                'youtube_uri' => 'rd55dcyjCSY',
+                'spotify_uri' => '5o31tm7aa5PdsThhw36it9',
+            ],[
+                'artist' => 'Queen',
+                'name' => 'I Was Born To Love You - 2011 Remaster',
+                'spotify_uri' => '7DtdhIJlSSOaAFNk4JdXCb',
+            ],[
+                'artist' => 'Queen',
+                'name' => 'Hammer To Fall - 2011 Remaster',
+                'spotify_uri' => '61lj5cHhOifNzSMXuWg54Z',
+            ],[
+                'artist' => 'Giacomo Puccini',
+                'name' => 'Turandot / Act 3: Nessun dorma!',
+                'spotify_uri' => '74WjYdm3Lvbwnds4thYPUU',
+            ],[
+                'artist' => 'Zoufris Maracas',
+                'name' => 'Cocagne',
+                'spotify_uri' => '7FzdSwzenyUeiO6Dld2Y3v',
+            ],[
+                'artist' => 'Rozalén',
+                'name' => 'La Puerta Violeta',
+                'spotify_uri' => '60kCg3tKhxb61QbBOFVzXh',
+            ],[
+                'artist' => 'The Gramophone Allstars',
+                'name' => 'I Wish I Knew How It Would Feel To Be Free',
+                'spotify_uri' => '00POrfLzrW7hEtyAi1IeeM',
+            ],[
+                'artist' => 'Tokyo Ska Paradise Orchestra',
+                'name' => '水琴窟-SUIKINKUTSU-',
+                'spotify_uri' => '6fOGYN4YLmaA5Yr6GjcDYV',
+            ]
+        ];
+        $random_track = rand(0, (count($tracks_schema)-1));
+        return $tracks_schema[$random_track];
+    }
+
     /**
      * @param        $name
      * @param string $address
@@ -427,6 +469,42 @@ class Data
                 'user_votes_max_rating'             => 'integer',
                 'multiple_user_tracks'              => 'boolean',
                 'multiple_anon_tracks'              => 'boolean'
+            ],
+            'links' => [
+                'self'                              => 'string:url',
+            ]
+        ];
+    }
+
+    public static function trackResponseJsonType(): array
+    {
+        return [
+            'type'                                  => 'string:!empty',
+            'id'                                    => 'string:!empty',
+            'attributes.created_at'                 => 'string:date',
+            'attributes.updated_at'                 => 'string:date|string', //When is empty is not null... is an empty string
+            'attributes.artist'                     => 'string:!empty',
+            'attributes.name'                       => 'string:!empty',
+            'attributes.spotify_uri'                => 'string',
+            'attributes.spotify_images'             => 'array|null|string', //@ToDo
+            'attributes.youtube_uri'                => 'string',
+            'links.self'                            => 'string:url',
+        ];
+    }
+
+    public static function trackResponseJsonApiType(): array
+    {
+        return [
+            'type'                                  => 'string:!empty',
+            'id'                                    => 'string:!empty',
+            'attributes' => [
+                'created_at'                        => 'string:date',
+                'updated_at'                        => 'string:date|string', //When is empty is not null... is an empty string
+                'artist'                            => 'string:!empty',
+                'name'                              => 'string:!empty',
+                'spotify_uri'                       => 'string',
+                'spotify_images'                    => 'array|null|string', //@ToDo
+                'youtube_uri'                       => 'string',
             ],
             'links' => [
                 'self'                              => 'string:url',

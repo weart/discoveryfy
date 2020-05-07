@@ -196,6 +196,12 @@ class PutController extends BaseItemApiController
         $this->db->commit();
     }
 
+    /**
+     * @ToDo Test if organization is not deleted
+     * @param string $org_uuid
+     * @param string $user_uuid
+     * @return mixed
+     */
     private function getMembership(string $org_uuid, string $user_uuid)
     {
         return Memberships::findFirst([

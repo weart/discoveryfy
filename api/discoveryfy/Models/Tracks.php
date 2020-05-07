@@ -56,7 +56,6 @@ class Tracks extends TimestampableModel
     public function getPublicAttributes(): array
     {
         return [
-            //created_at & updated_at
             'id'                => UUIDFilter::FILTER_NAME,
             'created_at'        => Filter::FILTER_STRING,
             'updated_at'        => Filter::FILTER_STRING,

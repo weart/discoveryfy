@@ -111,7 +111,7 @@ curl -X POST -H "Content-Type: application/vnd.api+json" -H "Authorization: Bear
 
 Create track:
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer N" -d "{\"spotify_uri\": \"spotify:track:1ECc1EhfkRx08o8uIwYOxW\",\"youtube_uri\": \"t67NhxJhrUU\",\"artist\": \"Lágrimas de Sangre\",\"name\": \"Rojos y separatistas\",\"poll\": \"6a3a946c-c0f5-4a2a-9a1c-ab230c051206\"}" http://localhost/tracks -v 
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer N" -d "{\"spotify_uri\": \"spotify:track:1ECc1EhfkRx08o8uIwYOxW\",\"youtube_uri\": \"t67NhxJhrUU\",\"artist\": \"Lágrimas de Sangre\",\"name\": \"Rojos y separatistas\",\"poll\": \"6a3a946c-c0f5-4a2a-9a1c-ab230c051206\"}" http://localhost/polls/n/tracks -v
 ```
 Track object:
 ```
@@ -126,7 +126,7 @@ Track object:
 
 Create vote:
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer N" -d "{\"name\": \"lenin\",  \"poll\": \"6a3a946c-c0f5-4a2a-9a1c-ab230c051206\",  \"track\": \"29b44e2b-7f55-4ef5-b462-43bcaa8f02f9\"}" http://localhost/votes -v 
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer N" -d "{\"name\": \"lenin\",  \"poll\": \"6a3a946c-c0f5-4a2a-9a1c-ab230c051206\",  \"track\": \"29b44e2b-7f55-4ef5-b462-43bcaa8f02f9\"}" http://localhost/polls/n/tracks/n/votes -v
 ```
 Vote object:
 ```

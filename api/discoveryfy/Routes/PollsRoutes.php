@@ -17,6 +17,7 @@ use Discoveryfy\Controllers\Polls\PutController as PollsPutController;
 
 use Discoveryfy\Controllers\Polls\Tracks\GetCollectionController as TrackGetCollectionController;
 use Discoveryfy\Controllers\Polls\Tracks\PostController as TrackPostController;
+use Discoveryfy\Controllers\Polls\Tracks\GetItemController as TrackGetItemController;
 use Discoveryfy\Controllers\Polls\Tracks\PutController as TrackPutController;
 use Discoveryfy\Controllers\Polls\Tracks\DeleteController as TrackDeleteController;
 
@@ -38,6 +39,7 @@ class PollsRoutes implements RoutesInterface
 
             new ApiRoute(TrackGetCollectionController::class, '/polls/{poll_uuid}/tracks', 'get'),              // track.list
             new ApiRoute(TrackPostController::class, '/polls/{poll_uuid}/tracks', 'post'),                      // track.create
+            new ApiRoute(TrackGetItemController::class, '/polls/{poll_uuid}/tracks/{track_uuid}', 'get'),       // track.get
             new ApiRoute(TrackPutController::class, '/polls/{poll_uuid}/tracks/{track_uuid}', 'put'),           // track.put
             new ApiRoute(TrackDeleteController::class, '/polls/{poll_uuid}/tracks/{track_uuid}', 'delete'),     // track.delete
 
