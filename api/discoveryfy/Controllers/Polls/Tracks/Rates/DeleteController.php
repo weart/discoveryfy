@@ -8,7 +8,7 @@ declare(strict_types=1);
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Discoveryfy\Controllers\Polls\Tracks;
+namespace Discoveryfy\Controllers\Polls\Tracks\Rates;
 
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
@@ -74,6 +74,7 @@ class DeleteController extends BaseItemApiController
         if (!$this->vote) {
             throw new UnauthorizedException('Only the owner of a vote can deleted it');
         }
+        return $parameters;
     }
 
     public function coreAction(array $parameters): ResponseInterface

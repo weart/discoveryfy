@@ -60,19 +60,13 @@ class GetCollectionController extends BaseCollectionApiController
 
     public function checkSecurity($parameters): array
     {
-//        if (!$this->auth->getUser()) {
-//            throw new UnauthorizedException('Only available to registered users');
-//        }
-        return $parameters;
-    }
-
-    protected function getRecords(array $parameters = [], string $orderBy = ''): ResultsetInterface
-    {
         $user_uuid = $this->auth->getUser() ? $this->auth->getUser()->get('id') : null;
         $rtn = Polls::isPublicVisibilityOrMember($parameters['id'], $user_uuid);
         if ($rtn->count() !== 1) {
             throw new UnauthorizedException('Only available when the group has public_visibility or you belong to the group');
         }
-        return $rtn->track;
+        return [
+            'poll_id' => $parameters['id']
+        ];
     }
 }

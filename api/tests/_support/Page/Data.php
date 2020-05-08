@@ -511,5 +511,33 @@ class Data
             ]
         ];
     }
+
+    public static function rateResponseJsonType(): array
+    {
+        return [
+            'type'                                  => 'string:!empty',
+            'id'                                    => 'string:!empty',
+            'attributes.created_at'                 => 'string:date',
+            'attributes.updated_at'                 => 'string:date|string', //When is empty is not null... is an empty string
+            'attributes.rate'                       => 'integer',
+            'links.self'                            => 'string:url',
+        ];
+    }
+
+    public static function rateResponseJsonApiType(): array
+    {
+        return [
+            'type'                                  => 'string:!empty',
+            'id'                                    => 'string:!empty',
+            'attributes' => [
+                'created_at'                        => 'string:date',
+                'updated_at'                        => 'string:date|string', //When is empty is not null... is an empty string
+                'rate'                              => 'integer',
+            ],
+            'links' => [
+                'self'                              => 'string:url',
+            ]
+        ];
+    }
 }
 

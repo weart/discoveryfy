@@ -72,6 +72,7 @@ class DeleteController extends BaseItemApiController
         if (!$this->track) {
             throw new UnauthorizedException('Only admins and owners can delete a track');
         }
+        return $parameters;
     }
 
     public function coreAction(array $parameters): ResponseInterface

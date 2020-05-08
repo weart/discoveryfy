@@ -128,9 +128,9 @@ class PostController extends BaseItemApiController
     private function getMembership(string $org_uuid, string $user_uuid)
     {
         return Memberships::findFirst([
-            'conditions' => 'user_id = :user_id: AND organization_id = :organization_id:',
-            'bind'       => [ 'user_id' => $user_uuid, 'organization_id' => $org_uuid ],
-            'bindTypes'  => [ 'user_id' => Column::BIND_PARAM_STR, 'organization_id' => Column::BIND_PARAM_STR ],
+            'conditions' => 'user_id = :user_id: AND organization_id = :organization_id: AND rol != :rol:',
+            'bind'       => [ 'user_id' => $user_uuid, 'organization_id' => $org_uuid, 'rol' => 'ROLE_INVITED' ],
+            'bindTypes'  => [ 'user_id' => Column::BIND_PARAM_STR, 'organization_id' => Column::BIND_PARAM_STR, 'rol' => Column::BIND_PARAM_STR ],
         ]);
     }
 

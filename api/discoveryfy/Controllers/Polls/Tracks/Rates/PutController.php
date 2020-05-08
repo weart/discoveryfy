@@ -11,8 +11,10 @@ declare(strict_types=1);
 namespace Discoveryfy\Controllers\Polls\Tracks\Rates;
 
 use Discoveryfy\Constants\Relationships;
+use Discoveryfy\Exceptions\BadRequestException;
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
+use Discoveryfy\Models\Memberships;
 use Discoveryfy\Models\Organizations;
 use Discoveryfy\Models\Polls;
 use Discoveryfy\Models\Tracks;
@@ -64,6 +66,20 @@ class PutController extends BaseItemApiController
         $poll_uuid = $parameters['id'];
         $track_uuid = $parameters['sub.id'];
 
+        $poll = $this->getPoll($poll_uuid);
+        if (!$poll) {
+            throw new BadRequestException();
+        }
+        if (true !== $poll->get('public_votes')) {
+            if (!$this->auth->getUser()) {
+                throw new UnauthorizedException('Only available to registered users');
+            }
+            $membership = $this->getMembership($poll->get('organization_id'), $this->auth->getUser()->get('id'));
+            if (!$membership) {
+                throw new UnauthorizedException('Only available to group members');
+            }
+        }
+
         $conditions =   [ 'poll_id = :poll_id:',                'track_id = :track_id:' ];
         $bind =         [ 'poll_id' => $poll_uuid,              'track_id' => $track_uuid ];
         $bindTypes =    [ 'poll_id' => Column::BIND_PARAM_STR,  'track_id' => Column::BIND_PARAM_STR ];
@@ -87,6 +103,7 @@ class PutController extends BaseItemApiController
 //        if (!$this->vote) {
 //            throw new UnauthorizedException('Only the owner of a vote can modify it');
 //        }
+        return $parameters;
     }
 
     public function coreAction(array $parameters): ResponseInterface
@@ -128,5 +145,33 @@ class PutController extends BaseItemApiController
         if ($this->auth->getUser()) {
             $this->vote->set('user_id', $this->auth->getUser()->get('id'));
         }
+    }
+
+    /**
+     * @param string $poll_uuid
+     * @return mixed
+     */
+    private function getPoll(string $poll_uuid)
+    {
+        return Polls::findFirst([
+            'conditions' => 'id = :poll_uuid:',
+            'bind'       => [ 'poll_uuid' => $poll_uuid ],
+            'bindTypes'  => [ 'poll_uuid' => Column::BIND_PARAM_STR ],
+        ]);
+    }
+
+    /**
+     * @ToDo Test if organization is not deleted
+     * @param string $org_uuid
+     * @param string $user_uuid
+     * @return mixed
+     */
+    private function getMembership(string $org_uuid, string $user_uuid)
+    {
+        return Memberships::findFirst([
+            'conditions' => 'user_id = :user_id: AND organization_id = :organization_id: AND rol != :rol:',
+            'bind'       => [ 'user_id' => $user_uuid, 'organization_id' => $org_uuid, 'rol' => 'ROLE_INVITED' ],
+            'bindTypes'  => [ 'user_id' => Column::BIND_PARAM_STR, 'organization_id' => Column::BIND_PARAM_STR, 'rol' => Column::BIND_PARAM_STR ],
+        ]);
     }
 }

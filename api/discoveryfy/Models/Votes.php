@@ -87,7 +87,7 @@ class Votes extends TimestampableModel
 //            ]))
             ->add('rate', new Between([
                 'minimum' => 0,
-//                'maximum' => 100, //Mandatory? Should be taken from poll...
+                'maximum' => 100, //Mandatory? Should be taken from poll...
 //                'message' => 'The price must be between 0 and 100',
             ]))
         ;

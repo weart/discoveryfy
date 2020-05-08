@@ -132,7 +132,7 @@ class PollsTracksPostCest
             ]
         );
         $track_uuid = $I->grabDataFromResponseByJsonPath('$.id')[0];
-        return [$anon_jwt, $anon_session_id, $anon_user_id, $group_uuid, $poll_uuid, $track_uuid];
+        return [$jwt, $anon_jwt, $anon_session_id, $anon_user_id, $group_uuid, $poll_uuid, $track_uuid];
     }
 
     public function createTrackAsAnonJsonApi(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost)
@@ -205,7 +205,7 @@ class PollsTracksPostCest
             ]
         );
         $track_uuid = $I->grabDataFromResponseByJsonPath('$.data.id')[0];
-        return [$anon_jwt, $anon_session_id, $anon_user_id, $group_uuid, $poll_uuid, $track_uuid];
+        return [$jwt, $anon_jwt, $anon_session_id, $anon_user_id, $group_uuid, $poll_uuid, $track_uuid];
     }
 
 //    public function createTrackAsUserJson(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost)
