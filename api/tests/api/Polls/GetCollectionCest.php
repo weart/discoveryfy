@@ -36,13 +36,9 @@ class PollsGetCollectionCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(Data::$pollsUrl);
-        $I->seeCollectionResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::pollResponseJsonType(),
-            [
-                'type' => 'polls',
-            ]
-        );
+        $I->seeCollectionResponseIsJsonSuccessful(HttpCode::OK, Data::pollResponseJsonType(), [
+            'type' => 'polls',
+        ]);
     }
 
     public function anonGetPublicPollsJsonApi(Login $I)
@@ -51,13 +47,9 @@ class PollsGetCollectionCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(Data::$pollsUrl);
-        $I->seeCollectionResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::pollResponseJsonApiType(),
-            [
-                'type' => 'polls',
-            ]
-        );
+        $I->seeCollectionResponseIsJsonApiSuccessful(HttpCode::OK, Data::pollResponseJsonApiType(), [
+            'type' => 'polls',
+        ]);
     }
 
     public function memberGetPublicOrGroupPollsJson(Login $I)
@@ -66,13 +58,9 @@ class PollsGetCollectionCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendGET(Data::$pollsUrl);
-        $I->seeCollectionResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::pollResponseJsonType(),
-            [
-                'type' => 'polls',
-            ]
-        );
+        $I->seeCollectionResponseIsJsonSuccessful(HttpCode::OK, Data::pollResponseJsonType(), [
+            'type' => 'polls',
+        ]);
     }
 
     public function memberGetPublicOrGroupPollsJsonApi(Login $I)
@@ -81,12 +69,8 @@ class PollsGetCollectionCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendGET(Data::$pollsUrl);
-        $I->seeCollectionResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::pollResponseJsonApiType(),
-            [
-                'type' => 'polls',
-            ]
-        );
+        $I->seeCollectionResponseIsJsonApiSuccessful(HttpCode::OK, Data::pollResponseJsonApiType(), [
+            'type' => 'polls',
+        ]);
     }
 }

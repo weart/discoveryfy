@@ -54,21 +54,10 @@ class SessionsPutCest
             'name' => $empty_name
         ]);
 
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            [
-                'type'                  => 'string:!empty',
-                'id'                    => 'string:!empty',
-                'attributes.created_at' => 'string:date',
-                'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
-                'attributes.name'       => 'string',
-                'links.self'            => 'string:url',
-            ],
-            [
-                'type' => 'sessions',
-                'attributes.name' => $empty_name
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::sessionResponseJsonType(), [
+            'type' => 'sessions',
+            'attributes.name' => $empty_name
+        ]);
     }
 
     public function modifySessionJson(Login $I)
@@ -85,21 +74,10 @@ class SessionsPutCest
             'name' => $new_name
         ]);
 
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            [
-                'type'                  => 'string:!empty',
-                'id'                    => 'string:!empty',
-                'attributes.created_at' => 'string:date',
-                'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
-                'attributes.name'       => 'string',
-                'links.self'            => 'string:url',
-            ],
-            [
-                'type' => 'sessions',
-                'attributes.name' => $new_name
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::sessionResponseJsonType(), [
+            'type' => 'sessions',
+            'attributes.name' => $new_name
+        ]);
     }
 
     public function modifySessionJsonApi(Login $I)
@@ -116,26 +94,11 @@ class SessionsPutCest
             'name' => $new_name
         ]);
 
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            [
-                'type'          => 'string:!empty',
-                'id'            => 'string:!empty',
-                'attributes'    => [
-                    'created_at'    => 'string:date',
-                    'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
-                    'name'          => 'string',
-                ],
-                'links'         => [
-                    'self'      => 'string:url',
-                ],
-            ],
-            [
-                'type'          => 'sessions',
-                'attributes'    => [
-                    'name'      => $new_name
-                ]
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::sessionResponseJsonApiType(), [
+            'type'          => 'sessions',
+            'attributes'    => [
+                'name'      => $new_name
             ]
-        );
+        ]);
     }
 }

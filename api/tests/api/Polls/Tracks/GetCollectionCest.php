@@ -39,13 +39,9 @@ class PollsTracksGetCollectionCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(sprintf(Data::$pollTracksUrl, $poll_uuid));
-        $I->seeCollectionResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::trackResponseJsonType(),
-            [
-                'type' => 'tracks',
-            ]
-        );
+        $I->seeCollectionResponseIsJsonSuccessful(HttpCode::OK, Data::trackResponseJsonType(), [
+            'type' => 'tracks',
+        ]);
     }
 
     public function anonGetTracksJsonApi(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost, PollsTracksPostCest $tracksPost)
@@ -54,13 +50,9 @@ class PollsTracksGetCollectionCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(sprintf(Data::$pollTracksUrl, $poll_uuid));
-        $I->seeCollectionResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::trackResponseJsonApiType(),
-            [
-                'type' => 'tracks',
-            ]
-        );
+        $I->seeCollectionResponseIsJsonApiSuccessful(HttpCode::OK, Data::trackResponseJsonApiType(), [
+            'type' => 'tracks',
+        ]);
     }
 
     public function memberGetTracksJson(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost, PollsTracksPostCest $tracksPost)
@@ -69,13 +61,9 @@ class PollsTracksGetCollectionCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$pollTracksUrl, $poll_uuid));
-        $I->seeCollectionResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::trackResponseJsonType(),
-            [
-                'type' => 'tracks',
-            ]
-        );
+        $I->seeCollectionResponseIsJsonSuccessful(HttpCode::OK, Data::trackResponseJsonType(), [
+            'type' => 'tracks',
+        ]);
     }
 
     public function memberGetTracksJsonApi(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost, PollsTracksPostCest $tracksPost)
@@ -84,12 +72,8 @@ class PollsTracksGetCollectionCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$pollTracksUrl, $poll_uuid));
-        $I->seeCollectionResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::trackResponseJsonApiType(),
-            [
-                'type' => 'tracks',
-            ]
-        );
+        $I->seeCollectionResponseIsJsonApiSuccessful(HttpCode::OK, Data::trackResponseJsonApiType(), [
+            'type' => 'tracks',
+        ]);
     }
 }

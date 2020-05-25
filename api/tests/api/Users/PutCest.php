@@ -33,25 +33,10 @@ class UsersPutCest
         $I->sendPUT(sprintf(Data::$usersUrl, $user_id), [
             'username' => $new_name
         ]);
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            [
-                'type'                  => 'string',
-                'id'                    => 'string',
-                'attributes.created_at' => 'string:date',
-                'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
-                'attributes.username'   => 'string',
-                'attributes.email'      => 'string:email',
-                'attributes.language'   => 'string',
-                'attributes.theme'      => 'string',
-                'attributes.rol'        => 'string',
-                'links.self'            => 'string:url',
-            ],
-            [
-                'type' => 'users',
-                'attributes.username' => $new_name
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::userResponseJsonType(), [
+            'type' => 'users',
+            'attributes.username' => $new_name
+        ]);
     }
 
     public function modifyUserJsonApi(Login $I)
@@ -70,32 +55,13 @@ class UsersPutCest
         $I->sendPUT(sprintf(Data::$usersUrl, $user_id), [
             'username' => $new_name
         ]);
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            [
-                'type'              => 'string',
-                'id'                => 'string',
-                'attributes'    => [
-                    'created_at'    => 'string:date',
-                    'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
-                    'username'      => 'string',
-                    'email'         => 'string:email',
-                    'language'      => 'string',
-                    'theme'         => 'string',
-                    'rol'           => 'string',
-                ],
-                'links'         => [
-                    'self'          => 'string:url',
-                ],
-            ],
-            [
-                'type' => 'users',
-                'attributes'    => [
-                    'username'      => $new_name,
-                    'theme'         => 'default',
-                    'rol'           => 'ROLE_USER',
-                ]
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::userResponseJsonApiType(), [
+            'type' => 'users',
+            'attributes'    => [
+                'username'      => $new_name,
+                'theme'         => 'default',
+                'rol'           => 'ROLE_USER',
             ]
-        );
+        ]);
     }
 }

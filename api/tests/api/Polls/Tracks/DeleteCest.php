@@ -47,13 +47,9 @@ class PollsTracksDeleteCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$pollTrackUrl, $poll_uuid, $track_uuid));
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::trackResponseJsonType(),
-            [
-                'type'                      => 'tracks',
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::trackResponseJsonType(), [
+            'type'                      => 'tracks',
+        ]);
 
         list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
         $I->setContentType('application/json');
@@ -72,13 +68,9 @@ class PollsTracksDeleteCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$pollTrackUrl, $poll_uuid, $track_uuid));
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::trackResponseJsonApiType(),
-            [
-                'type'                      => 'tracks',
-            ]
-        );
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::trackResponseJsonApiType(), [
+            'type'                      => 'tracks',
+        ]);
 
         list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
         $I->setContentType('application/vnd.api+json');

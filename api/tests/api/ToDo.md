@@ -2,10 +2,8 @@
 
 ## To Do List
 
-* GetItem / GetCollection
 * Unauthorized
 * GroupsMembersDeleteCest
 * GroupsMembersPutCest
-* Polls / PollsTracks / PollsTracksRates
-* Unify test responses
+* getDeletedUserJsonApi / getDisabledUserJsonApi
 * Think more limit cases

@@ -23,20 +23,9 @@ class SessionsGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$sessionsUrl, $session_id));
 
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            [
-                'type'                  => 'string:!empty',
-                'id'                    => 'string:!empty',
-                'attributes.created_at' => 'string:date',
-                'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
-                'attributes.name'       => 'string',
-                'links.self'            => 'string:url',
-            ],
-            [
-                'type' => 'sessions'
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::sessionResponseJsonType(), [
+            'type' => 'sessions'
+        ]);
     }
 
     public function getSessionJsonApi(Login $I)
@@ -46,23 +35,8 @@ class SessionsGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$sessionsUrl, $session_id));
 
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            [
-                'type'              => 'string:!empty',
-                'id'                => 'string:!empty',
-                'attributes'        => [
-                    'created_at'    => 'string:date',
-                    'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
-                    'name'          => 'string',
-                ],
-                'links'             => [
-                    'self'          => 'string:url'
-                ],
-            ],
-            [
-                'type' => 'sessions'
-            ]
-        );
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::sessionResponseJsonApiType(), [
+            'type' => 'sessions'
+        ]);
     }
 }

@@ -81,44 +81,21 @@ class GroupsMembersPutCest
 
     private function checkMembershipResponseJson(Login $I, string $rol)
     {
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            [
-                'type'                      => 'string:!empty',
-                'id'                        => 'string:!empty',
-                //organization_id
-                'attributes.created_at'     => 'string:date',
-                'attributes.updated_at'     => 'string:date|string', //When is empty is not null... is an empty string
-                'attributes.rol'            => 'string:!empty',
-            ],
-            [
-                'type'                      => 'memberships',
-                'attributes.rol'            => $rol,
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::memberResponseJsonType(), [
+            'type'                      => 'memberships',
+            'attributes.rol'            => $rol,
+        ]);
     }
 
     private function checkMembershipResponseJsonApi(Login $I, string $rol)
     {
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            [
-                'type'                      => 'string:!empty',
-                'id'                        => 'string:!empty',
-                'attributes'                => [
-                    'created_at'            => 'string:date',
-                    'updated_at'            => 'string:date|string', //When is empty is not null... is an empty string
-                    'rol'                   => 'string',
-                ]
-            ],
-            [
-                'type'                      => 'memberships',
-                'attributes' => [
-                    'rol'                   => $rol,
-//                    'updated_at'            => '',
-                ]
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::memberResponseJsonApiType(), [
+            'type'                      => 'memberships',
+            'attributes' => [
+                'rol'                   => $rol,
+//                'updated_at'            => '',
             ]
-        );
+        ]);
     }
 
     private function grabMembershipUuid(Login $I, string $contentType)

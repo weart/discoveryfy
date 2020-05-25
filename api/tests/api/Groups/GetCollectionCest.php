@@ -22,14 +22,10 @@ class GroupsGetCollectionCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(Data::$groupsUrl);
-        $I->seeCollectionResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonType(),
-            [
-                'type'                          => 'groups',
-                'attributes.public_visibility'  => true,
-            ]
-        );
+        $I->seeCollectionResponseIsJsonSuccessful(HttpCode::OK, Data::groupResponseJsonType(), [
+            'type'                          => 'groups',
+            'attributes.public_visibility'  => true,
+        ]);
     }
 
     public function anonGetPublicGroupsJsonApi(Login $I)
@@ -38,17 +34,13 @@ class GroupsGetCollectionCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(Data::$groupsUrl);
-        $I->seeCollectionResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonApiType(),
+        $I->seeCollectionResponseIsJsonApiSuccessful(HttpCode::OK, Data::groupResponseJsonApiType(), [
+            'type'                  => 'groups',
+            'attributes'            =>
             [
-                'type'                  => 'groups',
-                'attributes'            =>
-                [
-                    'public_visibility' => true,
+                'public_visibility' => true,
 
-                ]
             ]
-        );
+        ]);
     }
 }

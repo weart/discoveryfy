@@ -348,6 +348,95 @@ class Data
         ];
     }
 
+    public static function registerResponseJsonType(): array
+    {
+        return [
+            'id'                            => 'string:!empty', //'016aeb55-7ecf-4862-a229-dd7478b17537'
+            'attributes.created_at'         => 'string:date', //'2020-03-23 11:57:46'
+//            'attributes.updated_at'         => 'string:date|null', //''
+            'links.self'                    => 'string:url', //'https://api.discoveryfy.fabri...b17537'
+        ];
+    }
+
+    public static function registerResponseJsonApiType(): array
+    {
+        return [
+            'id'                            => 'string:!empty', //'016aeb55-7ecf-4862-a229-dd7478b17537'
+            'attributes' => [
+                'email'                     => 'string:email',
+                'created_at'                => 'string:date', //'2020-03-23 11:57:46'
+//                'updated_at'                => 'string:date|null', //''
+            ],
+            'links' => [
+                'self'                      => 'string:url', //'https://api.discoveryfy.fabri...b17537'
+            ]
+        ];
+    }
+
+    public static function sessionResponseJsonType(): array
+    {
+        return [
+            'type'                  => 'string:!empty',
+            'id'                    => 'string:!empty',
+            'attributes.created_at' => 'string:date',
+            'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
+            'attributes.name'       => 'string',
+            'links.self'            => 'string:url',
+        ];
+    }
+
+    public static function sessionResponseJsonApiType(): array
+    {
+        return [
+            'type'              => 'string:!empty',
+            'id'                => 'string:!empty',
+            'attributes'        => [
+                'created_at'    => 'string:date',
+                'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
+                'name'          => 'string',
+            ],
+            'links'             => [
+                'self'          => 'string:url'
+            ],
+        ];
+    }
+
+    public static function userResponseJsonType(): array
+    {
+        return [
+            'type'                  => 'string:!empty',
+            'id'                    => 'string:!empty',
+            'attributes.created_at' => 'string:date',
+            'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
+            'attributes.username'   => 'string:!empty',
+            'attributes.email'      => 'string:email',
+            'attributes.language'   => 'string:!empty',
+            'attributes.theme'      => 'string:!empty',
+            'attributes.rol'        => 'string:!empty',
+            'links.self'            => 'string:url',
+        ];
+    }
+
+    public static function userResponseJsonApiType(): array
+    {
+        return [
+            'type'          => 'string:!empty',
+            'id'            => 'string:!empty',
+            'attributes'    => [
+                'created_at'    => 'string:date',
+                'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
+                'username'      => 'string:!empty',
+                'email'         => 'string:email',
+                'language'      => 'string:!empty',
+                'theme'         => 'string:!empty',
+                'rol'           => 'string:!empty',
+            ],
+            'links'         => [
+                'self'          => 'string:url',
+            ],
+        ];
+    }
+
     public static function groupResponseJsonType(): array
     {
         return [
@@ -389,6 +478,7 @@ class Data
         return [
             'type'                              => 'string:!empty',
             'id'                                => 'string:!empty',
+            //organization_id
             'attributes.created_at'             => 'string:date',
             'attributes.updated_at'             => 'string:date|string', //When is empty is not null... is an empty string
             'attributes.rol'                    => 'string:!empty',

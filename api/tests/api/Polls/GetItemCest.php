@@ -27,22 +27,18 @@ class PollsGetItemCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$pollUrl, $poll_uuid));
 
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::pollResponseJsonType(),
-            [
-                'type'                              => 'polls',
-                // From Data::pollJson()
-                'attributes.public_visibility'      => false,
-                'attributes.public_votes'           => false,
-                'attributes.anon_can_vote'          => false,
-                'attributes.who_can_add_track'      => 'OWNERS',
-                'attributes.anon_votes_max_rating'  => 0,
-                'attributes.user_votes_max_rating'  => 1,
-                'attributes.multiple_user_tracks'   => true,
-                'attributes.multiple_anon_tracks'   => false,
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::pollResponseJsonType(), [
+            'type'                              => 'polls',
+            // From Data::pollJson()
+            'attributes.public_visibility'      => false,
+            'attributes.public_votes'           => false,
+            'attributes.anon_can_vote'          => false,
+            'attributes.who_can_add_track'      => 'OWNERS',
+            'attributes.anon_votes_max_rating'  => 0,
+            'attributes.user_votes_max_rating'  => 1,
+            'attributes.multiple_user_tracks'   => true,
+            'attributes.multiple_anon_tracks'   => false,
+        ]);
     }
 
     public function getPollJsonApi(Login $I, GroupsPostCest $groupsPost,  GroupsPollsPostCest $pollsPost)
@@ -52,23 +48,19 @@ class PollsGetItemCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$pollUrl, $poll_uuid));
 
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::pollResponseJsonApiType(),
-            [
-                'type'                      => 'polls',
-                'attributes' => [
-                    // From Data::pollJson()
-                    'public_visibility'     => false,
-                    'public_votes'          => false,
-                    'anon_can_vote'         => false,
-                    'who_can_add_track'     => 'OWNERS',
-                    'anon_votes_max_rating' => 0,
-                    'user_votes_max_rating' => 1,
-                    'multiple_user_tracks'  => true,
-                    'multiple_anon_tracks'  => false,
-                ]
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::pollResponseJsonApiType(), [
+            'type'                      => 'polls',
+            'attributes' => [
+                // From Data::pollJson()
+                'public_visibility'     => false,
+                'public_votes'          => false,
+                'anon_can_vote'         => false,
+                'who_can_add_track'     => 'OWNERS',
+                'anon_votes_max_rating' => 0,
+                'user_votes_max_rating' => 1,
+                'multiple_user_tracks'  => true,
+                'multiple_anon_tracks'  => false,
             ]
-        );
+        ]);
     }
 }

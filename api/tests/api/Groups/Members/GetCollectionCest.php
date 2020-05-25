@@ -26,14 +26,14 @@ class GroupsMembersGetCollectionCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$membersUrl, $group_uuid));
-        $I->seeCollectionResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::memberResponseJsonType(),
-            [
-                'type'  => 'memberships'
-            ]
-        );
+        $I->seeCollectionResponseIsJsonSuccessful(HttpCode::OK, Data::memberResponseJsonType(), [
+            'type'  => 'memberships'
+        ]);
+        $this->anonCantGetGroupsMembersJson($I, $group_uuid);
+    }
 
+    private function anonCantGetGroupsMembersJson(Login $I, string $group_uuid)
+    {
         list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
@@ -48,14 +48,15 @@ class GroupsMembersGetCollectionCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$membersUrl, $group_uuid));
-        $I->seeCollectionResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::memberResponseJsonApiType(),
-            [
-                'type'  => 'memberships',
-            ]
-        );
+        $I->seeCollectionResponseIsJsonApiSuccessful(HttpCode::OK, Data::memberResponseJsonApiType(), [
+            'type'  => 'memberships',
+        ]);
 
+        $this->anonCantGetGroupsMembersJsonApi($I, $group_uuid);
+    }
+
+    private function anonCantGetGroupsMembersJsonApi(Login $I, string $group_uuid)
+    {
         list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);

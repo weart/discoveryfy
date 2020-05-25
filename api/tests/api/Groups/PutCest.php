@@ -31,33 +31,25 @@ class GroupsPutCest
             'name' => $modified_attrs['name'],
             'description' => $modified_attrs['description']
         ]);
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonType(),
-            [
-                'type'                              => 'groups',
-                'attributes.name'                   => $modified_attrs['name'],
-                'attributes.description'            => $modified_attrs['description'],
-                'attributes.public_visibility'      => $modified_attrs['public_visibility'],
-                'attributes.public_membership'      => $modified_attrs['public_membership'],
-                'attributes.who_can_create_polls'   => $modified_attrs['who_can_create_polls']
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::groupResponseJsonType(), [
+            'type'                              => 'groups',
+            'attributes.name'                   => $modified_attrs['name'],
+            'attributes.description'            => $modified_attrs['description'],
+            'attributes.public_visibility'      => $modified_attrs['public_visibility'],
+            'attributes.public_membership'      => $modified_attrs['public_membership'],
+            'attributes.who_can_create_polls'   => $modified_attrs['who_can_create_polls']
+        ]);
 
         //Leave group as before
         $I->sendPUT(sprintf(Data::$groupUrl, $previous_attrs['id']), $previous_attrs);
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonType(),
-            [
-                'type'                              => 'groups',
-                'attributes.name'                   => $previous_attrs['name'],
-                'attributes.description'            => $previous_attrs['description'],
-                'attributes.public_visibility'      => $previous_attrs['public_visibility'],
-                'attributes.public_membership'      => $previous_attrs['public_membership'],
-                'attributes.who_can_create_polls'   => $previous_attrs['who_can_create_polls']
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::groupResponseJsonType(), [
+            'type'                              => 'groups',
+            'attributes.name'                   => $previous_attrs['name'],
+            'attributes.description'            => $previous_attrs['description'],
+            'attributes.public_visibility'      => $previous_attrs['public_visibility'],
+            'attributes.public_membership'      => $previous_attrs['public_membership'],
+            'attributes.who_can_create_polls'   => $previous_attrs['who_can_create_polls']
+        ]);
     }
 
     public function modifyGroupJsonApi(Login $I)
@@ -74,36 +66,28 @@ class GroupsPutCest
             'name' => $modified_attrs['name'],
             'description' => $modified_attrs['description']
         ]);
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonApiType(),
-            [
-                'type'                          => 'groups',
-                'attributes' => [
-                    'name'                      => $modified_attrs['name'],
-                    'description'               => $modified_attrs['description'],
-                    'public_visibility'         => $modified_attrs['public_visibility'],
-                    'public_membership'         => $modified_attrs['public_membership'],
-                    'who_can_create_polls'      => $modified_attrs['who_can_create_polls'],
-                ]
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::groupResponseJsonApiType(), [
+            'type'                          => 'groups',
+            'attributes' => [
+                'name'                      => $modified_attrs['name'],
+                'description'               => $modified_attrs['description'],
+                'public_visibility'         => $modified_attrs['public_visibility'],
+                'public_membership'         => $modified_attrs['public_membership'],
+                'who_can_create_polls'      => $modified_attrs['who_can_create_polls'],
             ]
-        );
+        ]);
 
         //Leave group as before
         $I->sendPUT(sprintf(Data::$groupUrl, $previous_attrs['id']), $previous_attrs);
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonApiType(),
-            [
-                'type'                          => 'groups',
-                'attributes' => [
-                    'name'                      => $previous_attrs['name'],
-                    'description'               => $previous_attrs['description'],
-                    'public_visibility'         => $previous_attrs['public_visibility'],
-                    'public_membership'         => $previous_attrs['public_membership'],
-                    'who_can_create_polls'      => $previous_attrs['who_can_create_polls'],
-                ]
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::groupResponseJsonApiType(), [
+            'type'                          => 'groups',
+            'attributes' => [
+                'name'                      => $previous_attrs['name'],
+                'description'               => $previous_attrs['description'],
+                'public_visibility'         => $previous_attrs['public_visibility'],
+                'public_membership'         => $previous_attrs['public_membership'],
+                'who_can_create_polls'      => $previous_attrs['who_can_create_polls'],
             ]
-        );
+        ]);
     }
 }

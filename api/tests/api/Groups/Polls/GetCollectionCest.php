@@ -25,22 +25,18 @@ class GroupsPollsGetCollectionCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$groupPollsUrl, $group_uuid));
-        $I->seeCollectionResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::pollResponseJsonType(),
-            [
-                'type'                              => 'polls',
-                // From Data::pollJson()
-                'attributes.public_visibility'      => false,
-                'attributes.public_votes'           => false,
-                'attributes.anon_can_vote'          => false,
-                'attributes.who_can_add_track'      => 'OWNERS',
-                'attributes.anon_votes_max_rating'  => 0,
-                'attributes.user_votes_max_rating'  => 1,
-                'attributes.multiple_user_tracks'   => true,
-                'attributes.multiple_anon_tracks'   => false,
-            ]
-        );
+        $I->seeCollectionResponseIsJsonSuccessful(HttpCode::OK, Data::pollResponseJsonType(), [
+            'type'                              => 'polls',
+            // From Data::pollJson()
+            'attributes.public_visibility'      => false,
+            'attributes.public_votes'           => false,
+            'attributes.anon_can_vote'          => false,
+            'attributes.who_can_add_track'      => 'OWNERS',
+            'attributes.anon_votes_max_rating'  => 0,
+            'attributes.user_votes_max_rating'  => 1,
+            'attributes.multiple_user_tracks'   => true,
+            'attributes.multiple_anon_tracks'   => false,
+        ]);
 
         list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
         $I->setContentType('application/json');
@@ -55,24 +51,20 @@ class GroupsPollsGetCollectionCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$groupPollsUrl, $group_uuid));
-        $I->seeCollectionResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::pollResponseJsonApiType(),
-            [
-                'type'                      => 'polls',
-                'attributes' => [
-                    // From Data::pollJson()
-                    'public_visibility'     => false,
-                    'public_votes'          => false,
-                    'anon_can_vote'         => false,
-                    'who_can_add_track'     => 'OWNERS',
-                    'anon_votes_max_rating' => 0,
-                    'user_votes_max_rating' => 1,
-                    'multiple_user_tracks'  => true,
-                    'multiple_anon_tracks'  => false,
-                ]
+        $I->seeCollectionResponseIsJsonApiSuccessful(HttpCode::OK, Data::pollResponseJsonApiType(), [
+            'type'                      => 'polls',
+            'attributes' => [
+                // From Data::pollJson()
+                'public_visibility'     => false,
+                'public_votes'          => false,
+                'anon_can_vote'         => false,
+                'who_can_add_track'     => 'OWNERS',
+                'anon_votes_max_rating' => 0,
+                'user_votes_max_rating' => 1,
+                'multiple_user_tracks'  => true,
+                'multiple_anon_tracks'  => false,
             ]
-        );
+        ]);
 
         list($anon_jwt, $anon_session_id, $anon_user_id) = $I->loginAsAnon();
         $I->setContentType('application/vnd.api+json');

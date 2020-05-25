@@ -33,27 +33,19 @@ class GroupsGetItemCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendPUT(sprintf(Data::$groupUrl, $group_uuid), [ 'public_visibility' => true ]);
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonType(),
-            [
-                'type'                          => 'groups',
-                'attributes.public_visibility'  => true,
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::groupResponseJsonType(), [
+            'type'                          => 'groups',
+            'attributes.public_visibility'  => true,
+        ]);
 
         // Anon should be able to see the group
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(sprintf(Data::$groupUrl, $group_uuid));
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonType(),
-            [
-                'type'                          => 'groups',
-                'attributes.public_visibility'  => true,
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::groupResponseJsonType(), [
+            'type'                          => 'groups',
+            'attributes.public_visibility'  => true,
+        ]);
 
         // Delete the group
         $I->setContentType('application/json');
@@ -88,31 +80,23 @@ class GroupsGetItemCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendPUT(sprintf(Data::$groupUrl, $group_uuid), [ 'public_visibility' => true ]);
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonApiType(),
-            [
-                'type'                  => 'groups',
-                'attributes' => [
-                    'public_visibility' => true,
-                ]
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::groupResponseJsonApiType(), [
+            'type'                  => 'groups',
+            'attributes' => [
+                'public_visibility' => true,
             ]
-        );
+        ]);
 
         // Anon should be able to see the group
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$anon_jwt);
         $I->sendGET(sprintf(Data::$groupUrl, $group_uuid));
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::groupResponseJsonApiType(),
-            [
-                'type'                  => 'groups',
-                'attributes' => [
-                    'public_visibility' => true,
-                ]
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::groupResponseJsonApiType(), [
+            'type'                  => 'groups',
+            'attributes' => [
+                'public_visibility' => true,
             ]
-        );
+        ]);
 
         // Delete the group
         $I->setContentType('application/vnd.api+json');

@@ -24,19 +24,15 @@ class GroupsPostCest
         $group_data = Data::groupJson();
         $I->sendPOST(Data::$groupsUrl, $group_data);
 
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::CREATED,
-            Data::groupResponseJsonType(),
-            [
-                'type'                              => 'groups',
-                'attributes.updated_at'             => '',
-                'attributes.name'                   => $group_data['name'],
-                'attributes.description'            => $group_data['description'],
-                'attributes.public_visibility'      => $group_data['public_visibility'],
-                'attributes.public_membership'      => $group_data['public_membership'],
-                'attributes.who_can_create_polls'   => $group_data['who_can_create_polls']
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::CREATED, Data::groupResponseJsonType(), [
+            'type'                              => 'groups',
+            'attributes.updated_at'             => '',
+            'attributes.name'                   => $group_data['name'],
+            'attributes.description'            => $group_data['description'],
+            'attributes.public_visibility'      => $group_data['public_visibility'],
+            'attributes.public_membership'      => $group_data['public_membership'],
+            'attributes.who_can_create_polls'   => $group_data['who_can_create_polls']
+        ]);
         $group_uuid = $I->grabDataFromResponseByJsonPath('$.id')[0];
         return [$jwt, $session_id, $user_id, $group_uuid];
     }
@@ -49,21 +45,17 @@ class GroupsPostCest
         $group_data = Data::groupJson();
         $I->sendPOST(Data::$groupsUrl, $group_data);
 
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::CREATED,
-            Data::groupResponseJsonApiType(),
-            [
-                'type'                          => 'groups',
-                'attributes' => [
-                    'name'                      => $group_data['name'],
-                    'description'               => $group_data['description'],
-                    'public_visibility'         => $group_data['public_visibility'],
-                    'public_membership'         => $group_data['public_membership'],
-                    'who_can_create_polls'      => $group_data['who_can_create_polls'],
-                    'updated_at'                => '',
-                ]
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::CREATED, Data::groupResponseJsonApiType(), [
+            'type'                          => 'groups',
+            'attributes' => [
+                'name'                      => $group_data['name'],
+                'description'               => $group_data['description'],
+                'public_visibility'         => $group_data['public_visibility'],
+                'public_membership'         => $group_data['public_membership'],
+                'who_can_create_polls'      => $group_data['who_can_create_polls'],
+                'updated_at'                => '',
             ]
-        );
+        ]);
         $group_uuid = $I->grabDataFromResponseByJsonPath('$.data.id')[0];
         return [$jwt, $session_id, $user_id, $group_uuid];
     }

@@ -23,24 +23,9 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$usersUrl, $user_id));
 
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            [
-                'type'                  => 'string:!empty',
-                'id'                    => 'string:!empty',
-                'attributes.created_at' => 'string:date',
-                'attributes.updated_at' => 'string:date|string', //When is empty is not null... is an empty string
-                'attributes.username'   => 'string:!empty',
-                'attributes.email'      => 'string:email',
-                'attributes.language'   => 'string:!empty',
-                'attributes.theme'      => 'string:!empty',
-                'attributes.rol'        => 'string:!empty',
-                'links.self'            => 'string:url',
-            ],
-            [
-                'type' => 'users'
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::userResponseJsonType(), [
+            'type' => 'users'
+        ]);
     }
 
     public function getUserJsonApi(Login $I)
@@ -50,32 +35,13 @@ class UsersGetCest
         $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
         $I->sendGET(sprintf(Data::$usersUrl, $user_id));
 
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            [
-                'type'          => 'string:!empty',
-                'id'            => 'string:!empty',
-                'attributes'    => [
-                    'created_at'    => 'string:date',
-                    'updated_at'    => 'string:date|string', //When is empty is not null... is an empty string
-                    'username'      => 'string:!empty',
-                    'email'         => 'string:email',
-                    'language'      => 'string:!empty',
-                    'theme'         => 'string:!empty',
-                    'rol'           => 'string:!empty',
-                ],
-                'links'         => [
-                    'self'          => 'string:url',
-                ],
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::userResponseJsonApiType(), [
+            'type'          => 'users',
+            'attributes'    => [
+                'theme'         => 'default',
+                'rol'           => 'ROLE_USER',
             ],
-            [
-                'type'          => 'users',
-                'attributes'    => [
-                    'theme'         => 'default',
-                    'rol'           => 'ROLE_USER',
-                ],
-            ]
-        );
+        ]);
     }
 
     public function getInvalidUserJson(Login $I)

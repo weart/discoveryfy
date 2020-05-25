@@ -40,14 +40,10 @@ class GroupsMembersGetItemCest
         $I->setContentType('application/json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendGET(sprintf(Data::$memberUrl, $group_uuid, $test_user_id));
-        $I->seeItemResponseIsJsonSuccessful(
-            HttpCode::OK,
-            Data::memberResponseJsonType(),
-            [
-                'type'              => 'memberships',
-                'attributes.rol'    => 'ROLE_OWNER',
-            ]
-        );
+        $I->seeItemResponseIsJsonSuccessful(HttpCode::OK, Data::memberResponseJsonType(), [
+            'type'              => 'memberships',
+            'attributes.rol'    => 'ROLE_OWNER',
+        ]);
     }
 
     public function anonGetPublicGroupJsonApi(Login $I, GroupsPostCest $groupsPost)
@@ -71,16 +67,12 @@ class GroupsMembersGetItemCest
         $I->setContentType('application/vnd.api+json');
         $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
         $I->sendGET(sprintf(Data::$memberUrl, $group_uuid, $test_user_id));
-        $I->seeItemResponseIsJsonApiSuccessful(
-            HttpCode::OK,
-            Data::memberResponseJsonApiType(),
+        $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::memberResponseJsonApiType(), [
+            'type'          => 'memberships',
+            'attributes'    =>
             [
-                'type'          => 'memberships',
-                'attributes'    =>
-                [
-                    'rol'       => 'ROLE_OWNER',
-                ]
+                'rol'       => 'ROLE_OWNER',
             ]
-        );
+        ]);
     }
 }
