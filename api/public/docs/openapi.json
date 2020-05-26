@@ -2,7 +2,7 @@
   "openapi": "3.0.2",
   "info": {
     "title": "Discoveryfy",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "description": "Create collaborative playlists in Spotify with your friends and colleagues and rate the songs",
     "contact": {
       "name": "Leninux",
@@ -979,7 +979,7 @@
         ],
         "operationId": "poll.create",
         "summary": "Create one new poll inside a group",
-        "description": "If the fields: spotify-playlist-uri, spotify-playlist-winner-uri or spotify-playlist-historic-uri are empty, an async task is called for create one playlist in Spotify for each empty value."
+        "description": "If the fields: spotify_playlist_uri, spotify_playlist_winner_uri or spotify_playlist_historic_uri are empty, an async task is called for create one playlist in Spotify for each empty value."
       },
       "parameters": [
         {
@@ -1405,7 +1405,7 @@
         ],
         "operationId": "poll.put",
         "summary": "Modify the configuration of one Poll",
-        "description": "If the fields: name, description, spotify-playlist-public or spotify-playlist-collaborative are modified, an async task is called for sync those options in Spotify with the playlist stored in the field spotify-playlist-uri"
+        "description": "If the fields: name, description, spotify_playlist_public or spotify_playlist_collaborative are modified, an async task is called for sync those options in Spotify with the playlist stored in the field spotify_playlist_uri"
       },
       "delete": {
         "tags": [
@@ -1569,7 +1569,7 @@
         ],
         "operationId": "track.create",
         "summary": "Add one new Track into one Poll",
-        "description": "An async task is called for add this track in the Spotify playlist stored in the field spotify-playlist-uri"
+        "description": "An async task is called for add this track in the Spotify playlist stored in the field spotify_playlist_uri"
       },
       "parameters": [
         {
@@ -1694,7 +1694,7 @@
         ],
         "operationId": "track.put",
         "summary": "Modify the information about one Track",
-        "description": "If the field spotify-uri is modified, an async task is called for change the song also in Spotify using the playlist stored in the field spotify-playlist-uri"
+        "description": "If the field spotify_uri is modified, an async task is called for change the song also in Spotify using the playlist stored in the field spotify_playlist_uri"
       },
       "delete": {
         "tags": [
@@ -1721,7 +1721,7 @@
         ],
         "operationId": "track.delete",
         "summary": "Delete one Track from a Poll",
-        "description": "When one track is removed, an async task is called for remove the song also in Spotify using the playlist stored in the field spotify-playlist-uri"
+        "description": "When one track is removed, an async task is called for remove the song also in Spotify using the playlist stored in the field spotify_playlist_uri"
       },
       "parameters": [
         {
@@ -2997,6 +2997,83 @@
         "operationId": "group.create",
         "summary": "Create new Group"
       }
+    },
+    "/spotify": {
+      "summary": "Search information in Spotify",
+      "get": {
+        "tags": [
+          "Polls"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Spotify.Search"
+                }
+              },
+              "application/vnd.api+json": {
+                "schema": {
+                  "required": [
+                    "jsonapi",
+                    "data",
+                    "meta"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "jsonapi": {
+                      "$ref": "#/components/schemas/Jsonapi.Version"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "example": "Track"
+                          },
+                          "id": {
+                            "$ref": "#/components/schemas/Spotify.URI"
+                          },
+                          "attributes": {
+                            "$ref": "#/components/schemas/Spotify.Read"
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Jsonapi.Meta"
+                    }
+                  }
+                }
+              },
+              "application/ld+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Spotify.Read.Jsonld"
+                }
+              }
+            },
+            "description": "Session resource response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad.Request"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal.Server.Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "spotify.get",
+        "summary": "Search information in Spotify"
+      }
     }
   },
   "components": {
@@ -3146,11 +3223,11 @@
             "description": "The password of the user in plain text",
             "type": "string"
           },
-          "public-email": {
+          "public_email": {
             "description": "Is the email of this user visible to anyone?",
             "type": "boolean"
           },
-          "public-visibility": {
+          "public_visibility": {
             "description": "Is this user visible to anyone?",
             "type": "boolean"
           }
@@ -3194,91 +3271,6 @@
           "version": "1.0"
         }
       },
-      "Group.Write": {
-        "description": "An group of users or an organization, such as a school, NGO, corporation, club, etc.",
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the group",
-            "type": "string",
-            "externalDocs": {
-              "url": "http://schema.org/name"
-            }
-          },
-          "public-visibility": {
-            "description": "Is this group public and can be seen be anyone?",
-            "type": "boolean"
-          },
-          "public-membership": {
-            "description": "Can anyone be part of this group? Or an invitation is required?",
-            "type": "boolean"
-          },
-          "who-can-create-polls": {
-            "description": "Who can create new Polls? Members->2, Admins-> 1, Owners-> 0",
-            "maximum": 2,
-            "minimum": 0,
-            "type": "integer"
-          }
-        },
-        "externalDocs": {
-          "url": "https://schema.org/Group"
-        }
-      },
-      "Member.Read.Jsonld": {
-        "description": "A member of an Group",
-        "required": [
-          "created-at",
-          "user-id",
-          "group-id",
-          "rol"
-        ],
-        "type": "object",
-        "properties": {
-          "@context": {
-            "type": "string",
-            "readOnly": true
-          },
-          "@id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "@type": {
-            "type": "string",
-            "readOnly": true
-          },
-          "created-at": {
-            "format": "date-time",
-            "description": "DateTime when this object is created",
-            "type": "string",
-            "readOnly": true
-          },
-          "user-id": {
-            "$ref": "#/components/schemas/User.UUID",
-            "description": "The User Uuid",
-            "readOnly": true,
-            "externalDocs": {
-              "url": "http://schema.org/member"
-            }
-          },
-          "group-id": {
-            "$ref": "#/components/schemas/Group.UUID",
-            "description": "The Group Uuid where this user belong",
-            "readOnly": true,
-            "externalDocs": {
-              "url": "http://schema.org/hostingGroup"
-            }
-          },
-          "rol": {
-            "description": "Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;",
-            "maximum": 3,
-            "minimum": 0,
-            "type": "integer"
-          }
-        },
-        "externalDocs": {
-          "url": "https://schema.org/ProgramMembership"
-        }
-      },
       "Poll.Write": {
         "description": "Poll / Election / Referendum",
         "type": "object",
@@ -3297,36 +3289,36 @@
               "url": "http://schema.org/text"
             }
           },
-          "spotify-playlist-public": {
+          "spotify_playlist_public": {
             "description": "If true the playlist will be public, if false it will be private.",
             "type": "boolean"
           },
-          "spotify-playlist-collaborative": {
+          "spotify_playlist_collaborative": {
             "description": "If true, the playlist will become collaborative and other users\nwill be able to modify the playlist in their Spotify client.\nNote: You can only set collaborative to true on non-public playlists.",
             "type": "boolean"
           },
-          "spotify-playlist-uri": {
+          "spotify_playlist_uri": {
             "description": "Spotify playlist identifier where the Poll is located, prepend \"spotify:playlist:\" for a complete valid spotify uri",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "spotify-playlist-winner-uri": {
+          "spotify_playlist_winner_uri": {
             "description": "Spotify playlist identifier where the winner of the Poll will be saved, prepend \"spotify:playlist:\" for a complete valid spotify uri",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "spotify-playlist-historic-uri": {
+          "spotify_playlist_historic_uri": {
             "description": "Spotify playlist identifier where all the songs of the Poll will be saved when is Poll is finished, prepend \"spotify:playlist:\" for a complete valid spotify uri.",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "start-date": {
+          "start_date": {
             "format": "date-time",
             "description": "The start date of this poll",
             "type": "string",
@@ -3334,52 +3326,52 @@
               "url": "http://schema.org/datePublished"
             }
           },
-          "end-date": {
+          "end_date": {
             "format": "date-time",
-            "description": "The end date of this poll, only used if restart-date is empty.",
+            "description": "The end date of this poll, only used if restart_date is empty.",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/expires"
             }
           },
-          "restart-date": {
+          "restart_date": {
             "description": "String with a crontab style restart command. If setted, this poll is never closed,\nthe winner song goes to winner playlist and the others to the historic playlist.",
             "type": "string"
           },
-          "public-visibility": {
+          "public_visibility": {
             "description": "Is this poll visible to anyone or only to the members of the group?",
             "type": "boolean"
           },
-          "public-votes": {
+          "public_votes": {
             "description": "Are the votes public meanwhile the poll is active?",
             "type": "boolean"
           },
-          "anon-can-vote": {
+          "anon_can_vote": {
             "description": "Can anyone vote into this poll or only the members of the group?",
             "type": "boolean"
           },
-          "who-can-add-track": {
+          "who_can_add_track": {
             "nullable": true,
             "description": "Who can add tracks into this poll?\nnull => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone",
             "maximum": 4,
             "minimum": 0,
             "type": "integer"
           },
-          "anon-votes-max-rating": {
+          "anon_votes_max_rating": {
             "description": "All the ratings given by a anonymous user to this poll can't excede this number",
             "minimum": 0,
             "type": "integer"
           },
-          "user-votes-max-rating": {
+          "user_votes_max_rating": {
             "description": "All the ratings given by a member to this poll can't excede this number",
             "minimum": 0,
             "type": "integer"
           },
-          "multiple-user-tracks": {
+          "multiple_user_tracks": {
             "description": "Can one user add more than one track to this poll?",
             "type": "boolean"
           },
-          "multiple-anon-tracks": {
+          "multiple_anon_tracks": {
             "description": "Can an anonymous user add more than one track to this poll?",
             "type": "boolean"
           }
@@ -3390,22 +3382,22 @@
         "example": {
           "name": "Weekly Public Playlist",
           "description": "Public playlist, restarted weekly",
-          "spotify-playlist-public": true,
-          "spotify-playlist-collaborative": false,
-          "spotify-playlist-uri": "0yRBerq6d7SgJZk77uNx5l",
-          "spotify-playlist-winner-uri": "7FuWGgXiRtjo4VIeTbe5Ph",
-          "spotify-playlist-historic-uri": "7j8RuavEdsKTi06x786QMe",
-          "start-date": "2020-02-13T13:35:20-05:00",
-          "end-date": "2020-03-13T13:35:20-05:00",
-          "restart-date": "0 0 * * 1",
-          "public-visibility": true,
-          "public-votes": true,
-          "anon-can-vote": true,
-          "who-can-add-track": 4,
-          "anon-votes-max-rating": 1,
-          "user-votes-max-rating": 3,
-          "multiple-user-tracks": false,
-          "multiple-anon-tracks": false
+          "spotify_playlist_public": true,
+          "spotify_playlist_collaborative": false,
+          "spotify_playlist_uri": "0yRBerq6d7SgJZk77uNx5l",
+          "spotify_playlist_winner_uri": "7FuWGgXiRtjo4VIeTbe5Ph",
+          "spotify_playlist_historic_uri": "7j8RuavEdsKTi06x786QMe",
+          "start_date": "2020-02-13T13:35:20-05:00",
+          "end_date": "2020-03-13T13:35:20-05:00",
+          "restart_date": "0 0 * * 1",
+          "public_visibility": true,
+          "public_votes": true,
+          "anon_can_vote": true,
+          "who_can_add_track": 4,
+          "anon_votes_max_rating": 1,
+          "user_votes_max_rating": 3,
+          "multiple_user_tracks": false,
+          "multiple_anon_tracks": false
         }
       },
       "Jsonapi.Meta": {
@@ -3485,8 +3477,8 @@
           "id",
           "username",
           "email",
-          "created-at",
-          "updated-at"
+          "created_at",
+          "updated_at"
         ],
         "type": "object",
         "properties": {
@@ -3518,15 +3510,15 @@
             "description": "Theme of the app",
             "type": "string"
           },
-          "public-email": {
+          "public_email": {
             "description": "Is the email of this user visible to anyone?",
             "type": "boolean"
           },
-          "public-visibility": {
+          "public_visibility": {
             "description": "Is this user visible to anyone?",
             "type": "boolean"
           },
-          "created-at": {
+          "created_at": {
             "format": "date-time",
             "description": "The creation date of this user",
             "type": "string",
@@ -3535,7 +3527,7 @@
               "url": "http://schema.org/startTime"
             }
           },
-          "updated-at": {
+          "updated_at": {
             "format": "date-time",
             "description": "The last modification date of this user",
             "type": "string",
@@ -3603,7 +3595,7 @@
             "description": "Theme of the app",
             "type": "string"
           },
-          "created-at": {
+          "created_at": {
             "format": "date-time",
             "description": "The creation date of this user",
             "type": "string",
@@ -3612,15 +3604,15 @@
               "url": "http://schema.org/startTime"
             }
           },
-          "public-email": {
+          "public_email": {
             "description": "Is the email of this user visible to anyone?",
             "type": "boolean"
           },
-          "public-visibility": {
+          "public_visibility": {
             "description": "Is this user visible to anyone?",
             "type": "boolean"
           },
-          "updated-at": {
+          "updated_at": {
             "format": "date-time",
             "description": "The last modification date of this user",
             "type": "string",
@@ -3662,7 +3654,7 @@
               "url": "http://schema.org/agent"
             }
           },
-          "created-at": {
+          "created_at": {
             "format": "date-time",
             "description": "The creation date of this session",
             "type": "string",
@@ -3680,7 +3672,7 @@
         "description": "Current session, is mandatory in order to use the API.",
         "required": [
           "id",
-          "created-at"
+          "created_at"
         ],
         "type": "object",
         "properties": {
@@ -3696,7 +3688,7 @@
               "url": "http://schema.org/agent"
             }
           },
-          "created-at": {
+          "created_at": {
             "format": "date-time",
             "description": "The creation date of this session",
             "type": "string",
@@ -3719,7 +3711,7 @@
         "description": "Poll / Election / Referendum",
         "required": [
           "id",
-          "group-id",
+          "group_id",
           "name"
         ],
         "type": "object",
@@ -3755,7 +3747,7 @@
               "url": "http://schema.org/text"
             }
           },
-          "spotify-playlist-images": {
+          "spotify_playlist_images": {
             "description": "Array with all the images provided by Spotify",
             "type": "array",
             "items": {
@@ -3766,36 +3758,36 @@
               "url": "http://schema.org/image"
             }
           },
-          "spotify-playlist-public": {
+          "spotify_playlist_public": {
             "description": "If true the playlist will be public, if false it will be private.",
             "type": "boolean"
           },
-          "spotify-playlist-collaborative": {
+          "spotify_playlist_collaborative": {
             "description": "If true, the playlist will become collaborative and other users\nwill be able to modify the playlist in their Spotify client.\nNote: You can only set collaborative to true on non-public playlists.",
             "type": "boolean"
           },
-          "spotify-playlist-uri": {
+          "spotify_playlist_uri": {
             "description": "Spotify playlist identifier where the Poll is located, prepend \"spotify:playlist:\" for a complete valid spotify uri",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "spotify-playlist-winner-uri": {
+          "spotify_playlist_winner_uri": {
             "description": "Spotify playlist identifier where the winner of the Poll will be saved, prepend \"spotify:playlist:\" for a complete valid spotify uri",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "spotify-playlist-historic-uri": {
+          "spotify_playlist_historic_uri": {
             "description": "Spotify playlist identifier where all the songs of the Poll will be saved when is Poll is finished, prepend \"spotify:playlist:\" for a complete valid spotify uri.",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "start-date": {
+          "start_date": {
             "format": "date-time",
             "description": "The start date of this poll",
             "type": "string",
@@ -3803,56 +3795,56 @@
               "url": "http://schema.org/datePublished"
             }
           },
-          "end-date": {
+          "end_date": {
             "format": "date-time",
-            "description": "The end date of this poll, only used if restart-date is empty.",
+            "description": "The end date of this poll, only used if restart_date is empty.",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/expires"
             }
           },
-          "restart-date": {
+          "restart_date": {
             "description": "String with a crontab style restart command. If setted, this poll is never closed,\nthe winner song goes to winner playlist and the others to the historic playlist.",
             "type": "string"
           },
-          "public-visibility": {
+          "public_visibility": {
             "description": "Is this poll visible to anyone or only to the members of the group?",
             "type": "boolean"
           },
-          "public-votes": {
+          "public_votes": {
             "description": "Are the votes public meanwhile the poll is active?",
             "type": "boolean"
           },
-          "anon-can-vote": {
+          "anon_can_vote": {
             "description": "Can anyone vote into this poll or only the members of the group?",
             "type": "boolean"
           },
-          "who-can-add-track": {
+          "who_can_add_track": {
             "nullable": true,
             "description": "Who can add tracks into this poll?\nnull => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone",
             "maximum": 4,
             "minimum": 0,
             "type": "integer"
           },
-          "anon-votes-max-rating": {
+          "anon_votes_max_rating": {
             "description": "All the ratings given by a anonymous user to this poll can't excede this number",
             "minimum": 0,
             "type": "integer"
           },
-          "user-votes-max-rating": {
+          "user_votes_max_rating": {
             "description": "All the ratings given by a member to this poll can't excede this number",
             "minimum": 0,
             "type": "integer"
           },
-          "multiple-user-tracks": {
+          "multiple_user_tracks": {
             "description": "Can one user add more than one track to this poll?",
             "type": "boolean"
           },
-          "multiple-anon-tracks": {
+          "multiple_anon_tracks": {
             "description": "Can an anonymous user add more than one track to this poll?",
             "type": "boolean"
           },
-          "group-id": {
+          "group_id": {
             "$ref": "#/components/schemas/Group.UUID",
             "description": "The Group Uuid where this Poll belong",
             "readOnly": true,
@@ -3860,7 +3852,7 @@
               "url": "http://schema.org/hostingGroup"
             }
           },
-          "num-tracks": {
+          "num_tracks": {
             "description": "Number of tracks of this poll",
             "minimum": 0,
             "type": "integer",
@@ -3874,7 +3866,7 @@
             },
             "readOnly": true
           },
-          "num-rates": {
+          "num_rates": {
             "description": "Number of rates of this poll",
             "minimum": 0,
             "type": "integer",
@@ -3896,337 +3888,71 @@
           "id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
           "name": "Weekly Public Playlist",
           "description": "Public playlist, restarted weekly",
-          "spotify-playlist-images": [
+          "spotify_playlist_images": [
             "https://pl.scdn.co/images/pl/default/1a165c7ee8ad6beeb36ceae02e5ca465129a7342",
             "https://pl.scdn.co/images/pl/default/59a801c4bb5bdfa9dd690de51d2aa904f7809f58"
           ],
-          "spotify-playlist-public": true,
-          "spotify-playlist-collaborative": false,
-          "spotify-playlist-uri": "0yRBerq6d7SgJZk77uNx5l",
-          "spotify-playlist-winner-uri": "7FuWGgXiRtjo4VIeTbe5Ph",
-          "spotify-playlist-historic-uri": "7j8RuavEdsKTi06x786QMe",
-          "start-date": "2020-02-13T13:35:20-05:00",
-          "end-date": "2020-03-13T13:35:20-05:00",
-          "restart-date": "0 0 * * 1",
-          "public-visibility": true,
-          "public-votes": true,
-          "anon-can-vote": true,
-          "who-can-add-track": 4,
-          "anon-votes-max-rating": 1,
-          "user-votes-max-rating": 3,
-          "multiple-user-tracks": false,
-          "multiple-anon-tracks": false,
-          "group-id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
-          "num-tracks": 2,
+          "spotify_playlist_public": true,
+          "spotify_playlist_collaborative": false,
+          "spotify_playlist_uri": "0yRBerq6d7SgJZk77uNx5l",
+          "spotify_playlist_winner_uri": "7FuWGgXiRtjo4VIeTbe5Ph",
+          "spotify_playlist_historic_uri": "7j8RuavEdsKTi06x786QMe",
+          "start_date": "2020-02-13T13:35:20-05:00",
+          "end_date": "2020-03-13T13:35:20-05:00",
+          "restart_date": "0 0 * * 1",
+          "public_visibility": true,
+          "public_votes": true,
+          "anon_can_vote": true,
+          "who_can_add_track": 4,
+          "anon_votes_max_rating": 1,
+          "user_votes_max_rating": 3,
+          "multiple_user_tracks": false,
+          "multiple_anon_tracks": false,
+          "group_id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
+          "num_tracks": 2,
           "tracks": [
             {
               "id": "a9269c43-94dc-4b6a-9e97-f8871d2b630b",
               "artist": "Lágrimas de Sangre",
               "name": "Rojos y separatistas",
-              "proposal-date": "2020-02-13T15:35:20-05:00",
-              "spotify-uri": "1ECc1EhfkRx08o8uIwYOxW",
-              "spotify-images": [
+              "proposal_date": "2020-02-13T15:35:20-05:00",
+              "spotify_uri": "1ECc1EhfkRx08o8uIwYOxW",
+              "spotify_images": [
                 "https://i.scdn.co/image/ab67616d0000b273ae0fe33eda83f26bd0fdd956"
               ],
-              "youtube-uri": "t67NhxJhrUU"
+              "youtube_uri": "t67NhxJhrUU"
             },
             {
               "id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
               "artist": "Queen",
               "name": "I Was Born To Love You - 2011 Remaster",
-              "proposal-date": "2020-02-14T13:35:20-05:00",
-              "spotify-uri": "7DtdhIJlSSOaAFNk4JdXCb",
-              "spotify-images": [
+              "proposal_date": "2020-02-14T13:35:20-05:00",
+              "spotify_uri": "7DtdhIJlSSOaAFNk4JdXCb",
+              "spotify_images": [
                 "https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7"
               ]
             }
           ],
-          "num-rates": 1,
+          "num_rates": 1,
           "rates": [
             {
               "rating": 3,
-              "createdAt": "2020-02-14T13:35:20-05:00",
-              "poll-id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
-              "track-id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
-              "session-id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
-              "user-id": "b85dc364-a646-4230-9f52-adfd45561b20"
+              "created_at": "2020-02-14T13:35:20-05:00",
+              "poll_id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
+              "track_id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
+              "session_id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
+              "user_id": "b85dc364-a646-4230-9f52-adfd45561b20"
             }
           ]
-        }
-      },
-      "Poll.List": {
-        "description": "Poll / Election / Referendum",
-        "required": [
-          "name",
-          "id"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/Poll.UUID",
-            "description": "Poll unique identifier",
-            "readOnly": true
-          },
-          "name": {
-            "description": "The name of the poll, this value is also the name showed in the Spotify playlist",
-            "type": "string",
-            "externalDocs": {
-              "url": "http://schema.org/text"
-            }
-          },
-          "description": {
-            "description": "The description of the poll, this value is also the description showed in the Spotify playlist",
-            "type": "string",
-            "externalDocs": {
-              "url": "http://schema.org/text"
-            }
-          },
-          "spotify-playlist-images": {
-            "description": "Array with all the images provided by Spotify",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "readOnly": true,
-            "externalDocs": {
-              "url": "http://schema.org/image"
-            }
-          },
-          "spotify-playlist-public": {
-            "description": "If true the playlist will be public, if false it will be private.",
-            "type": "boolean"
-          },
-          "spotify-playlist-collaborative": {
-            "description": "If true, the playlist will become collaborative and other users\nwill be able to modify the playlist in their Spotify client.\nNote: You can only set collaborative to true on non-public playlists.",
-            "type": "boolean"
-          },
-          "spotify-playlist-uri": {
-            "description": "Spotify playlist identifier where the Poll is located, prepend \"spotify:playlist:\" for a complete valid spotify uri",
-            "type": "string",
-            "externalDocs": {
-              "url": "http://schema.org/identifier"
-            }
-          },
-          "spotify-playlist-winner-uri": {
-            "description": "Spotify playlist identifier where the winner of the Poll will be saved, prepend \"spotify:playlist:\" for a complete valid spotify uri",
-            "type": "string",
-            "externalDocs": {
-              "url": "http://schema.org/identifier"
-            }
-          },
-          "spotify-playlist-historic-uri": {
-            "description": "Spotify playlist identifier where all the songs of the Poll will be saved when is Poll is finished, prepend \"spotify:playlist:\" for a complete valid spotify uri.",
-            "type": "string",
-            "externalDocs": {
-              "url": "http://schema.org/identifier"
-            }
-          },
-          "start-date": {
-            "format": "date-time",
-            "description": "The start date of this poll",
-            "type": "string",
-            "externalDocs": {
-              "url": "http://schema.org/datePublished"
-            }
-          },
-          "end-date": {
-            "format": "date-time",
-            "description": "The end date of this poll, only used if restart-date is empty.",
-            "type": "string",
-            "externalDocs": {
-              "url": "http://schema.org/expires"
-            }
-          },
-          "restart-date": {
-            "description": "String with a crontab style restart command. If setted, this poll is never closed,\nthe winner song goes to winner playlist and the others to the historic playlist.",
-            "type": "string"
-          },
-          "public-visibility": {
-            "description": "Is this poll visible to anyone or only to the members of the group?",
-            "type": "boolean"
-          },
-          "public-votes": {
-            "description": "Are the votes public meanwhile the poll is active?",
-            "type": "boolean"
-          },
-          "anon-can-vote": {
-            "description": "Can anyone vote into this poll or only the members of the group?",
-            "type": "boolean"
-          },
-          "who-can-add-track": {
-            "nullable": true,
-            "description": "Who can add tracks into this poll?\nnull => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone",
-            "maximum": 4,
-            "minimum": 0,
-            "type": "integer"
-          },
-          "anon-votes-max-rating": {
-            "description": "All the ratings given by a anonymous user to this poll can't excede this number",
-            "minimum": 0,
-            "type": "integer"
-          },
-          "user-votes-max-rating": {
-            "description": "All the ratings given by a member to this poll can't excede this number",
-            "minimum": 0,
-            "type": "integer"
-          },
-          "multiple-user-tracks": {
-            "description": "Can one user add more than one track to this poll?",
-            "type": "boolean"
-          },
-          "multiple-anon-tracks": {
-            "description": "Can an anonymous user add more than one track to this poll?",
-            "type": "boolean"
-          },
-          "group-id": {
-            "$ref": "#/components/schemas/Group.UUID",
-            "description": "The Group Uuid where this Poll belong",
-            "readOnly": true,
-            "externalDocs": {
-              "url": "http://schema.org/hostingGroup"
-            }
-          },
-          "num-tracks": {
-            "description": "Number of tracks of this poll",
-            "minimum": 0,
-            "type": "integer",
-            "readOnly": true
-          },
-          "num-rates": {
-            "description": "Number of rates of this poll",
-            "minimum": 0,
-            "type": "integer",
-            "readOnly": true
-          }
-        },
-        "externalDocs": {
-          "url": "https://schema.org/Question"
-        },
-        "example": {
-          "id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
-          "name": "Weekly Public Playlist",
-          "description": "Public playlist, restarted weekly",
-          "spotify-playlist-images": [
-            "https://pl.scdn.co/images/pl/default/1a165c7ee8ad6beeb36ceae02e5ca465129a7342",
-            "https://pl.scdn.co/images/pl/default/59a801c4bb5bdfa9dd690de51d2aa904f7809f58"
-          ],
-          "spotify-playlist-public": true,
-          "spotify-playlist-collaborative": false,
-          "spotify-playlist-uri": "0yRBerq6d7SgJZk77uNx5l",
-          "spotify-playlist-winner-uri": "7FuWGgXiRtjo4VIeTbe5Ph",
-          "spotify-playlist-historic-uri": "7j8RuavEdsKTi06x786QMe",
-          "start-date": "2020-02-13T13:35:20-05:00",
-          "end-date": "2020-03-13T13:35:20-05:00",
-          "restart-date": "0 0 * * 1",
-          "public-visibility": true,
-          "public-votes": true,
-          "anon-can-vote": true,
-          "who-can-add-track": 4,
-          "anon-votes-max-rating": 1,
-          "user-votes-max-rating": 3,
-          "multiple-user-tracks": false,
-          "multiple-anon-tracks": false,
-          "group-id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
-          "num-tracks": 2,
-          "num-rates": 1
-        }
-      },
-      "Group.Read.Jsonld": {
-        "description": "An group of users or an organization, such as a school, NGO, corporation, club, etc.",
-        "required": [
-          "id",
-          "created-at",
-          "name",
-          "public-visibility",
-          "public-membership"
-        ],
-        "type": "object",
-        "properties": {
-          "@context": {
-            "type": "string",
-            "readOnly": true
-          },
-          "@id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "@type": {
-            "type": "string",
-            "readOnly": true
-          },
-          "id": {
-            "$ref": "#/components/schemas/Group.UUID",
-            "description": "Group unique identifier",
-            "readOnly": true
-          },
-          "created-at": {
-            "format": "date-time",
-            "description": "DateTime when this object is created",
-            "type": "string",
-            "readOnly": true,
-            "externalDocs": {
-              "url": "http://schema.org/foundingDate"
-            }
-          },
-          "name": {
-            "description": "The name of the group",
-            "type": "string",
-            "externalDocs": {
-              "url": "http://schema.org/name"
-            }
-          },
-          "public-visibility": {
-            "description": "Is this group public and can be seen be anyone?",
-            "type": "boolean"
-          },
-          "public-membership": {
-            "description": "Can anyone be part of this group? Or an invitation is required?",
-            "type": "boolean"
-          },
-          "who-can-create-polls": {
-            "description": "Who can create new Polls? Members->2, Admins-> 1, Owners-> 0",
-            "maximum": 2,
-            "minimum": 0,
-            "type": "integer"
-          },
-          "num-members": {
-            "description": "Number of members in this group",
-            "type": "integer",
-            "readOnly": true
-          },
-          "members": {
-            "description": "Members in this group",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/User.List"
-            },
-            "readOnly": true
-          },
-          "num-polls": {
-            "description": "Number of polls in this group",
-            "type": "integer",
-            "readOnly": true
-          },
-          "polls": {
-            "description": "Polls in this group",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Poll.List"
-            },
-            "readOnly": true
-          }
-        },
-        "externalDocs": {
-          "url": "https://schema.org/Group"
         }
       },
       "Rate.Read.Jsonld": {
         "description": "Vote / Rating",
         "required": [
           "rating",
-          "poll-id",
-          "track-id",
-          "session-id"
+          "poll_id",
+          "track_id",
+          "session_id"
         ],
         "type": "object",
         "properties": {
@@ -4249,28 +3975,28 @@
               "url": "http://schema.org/ratingValue"
             }
           },
-          "created-at": {
+          "created_at": {
             "format": "date-time",
             "description": "The creation date of this vote",
             "type": "string",
             "readOnly": true
           },
-          "poll-id": {
+          "poll_id": {
             "$ref": "#/components/schemas/Poll.UUID",
             "description": "The poll this vote is about",
             "readOnly": true
           },
-          "track-id": {
+          "track_id": {
             "$ref": "#/components/schemas/Track.UUID",
             "description": "The track this vote is about",
             "readOnly": true
           },
-          "session-id": {
+          "session_id": {
             "$ref": "#/components/schemas/Session.UUID",
             "description": "The session who emit this vote, mandatory",
             "readOnly": true
           },
-          "user-id": {
+          "user_id": {
             "$ref": "#/components/schemas/User.UUID",
             "description": "The user who emit this vote, optional",
             "readOnly": true
@@ -4281,20 +4007,20 @@
         },
         "example": {
           "rating": 3,
-          "created-at": "2020-02-13T13:35:20-05:00",
-          "poll-id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
-          "track-id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
-          "session-id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
-          "user-id": "b85dc364-a646-4230-9f52-adfd45561b20"
+          "created_at": "2020-02-13T13:35:20-05:00",
+          "poll_id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
+          "track_id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
+          "session_id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
+          "user_id": "b85dc364-a646-4230-9f52-adfd45561b20"
         }
       },
       "Rate.Read": {
         "description": "Vote / Rating",
         "required": [
           "rating",
-          "poll-id",
-          "track-id",
-          "session-id"
+          "poll_id",
+          "track_id",
+          "session_id"
         ],
         "type": "object",
         "properties": {
@@ -4305,28 +4031,28 @@
               "url": "http://schema.org/ratingValue"
             }
           },
-          "created-at": {
+          "created_at": {
             "format": "date-time",
             "description": "The creation date of this vote",
             "type": "string",
             "readOnly": true
           },
-          "poll-id": {
+          "poll_id": {
             "$ref": "#/components/schemas/Poll.UUID",
             "description": "The poll this vote is about",
             "readOnly": true
           },
-          "track-id": {
+          "track_id": {
             "$ref": "#/components/schemas/Track.UUID",
             "description": "The track this vote is about",
             "readOnly": true
           },
-          "session-id": {
+          "session_id": {
             "$ref": "#/components/schemas/Session.UUID",
             "description": "The session who emit this vote, mandatory",
             "readOnly": true
           },
-          "user-id": {
+          "user_id": {
             "$ref": "#/components/schemas/User.UUID",
             "description": "The user who emit this vote, optional",
             "readOnly": true
@@ -4337,11 +4063,11 @@
         },
         "example": {
           "rating": 3,
-          "created-at": "2020-02-13T13:35:20-05:00",
-          "poll-id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
-          "track-id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
-          "session-id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
-          "user-id": "b85dc364-a646-4230-9f52-adfd45561b20"
+          "created_at": "2020-02-13T13:35:20-05:00",
+          "poll_id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
+          "track_id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
+          "session_id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
+          "user_id": "b85dc364-a646-4230-9f52-adfd45561b20"
         }
       },
       "Rate.Write": {
@@ -4358,19 +4084,19 @@
               "url": "http://schema.org/ratingValue"
             }
           },
-          "poll-id": {
+          "poll_id": {
             "$ref": "#/components/schemas/Poll.UUID",
             "description": "The poll this vote is about"
           },
-          "track-id": {
+          "track_id": {
             "$ref": "#/components/schemas/Track.UUID",
             "description": "The track this vote is about"
           },
-          "session-id": {
+          "session_id": {
             "$ref": "#/components/schemas/Session.UUID",
             "description": "The session who emit this vote, mandatory"
           },
-          "user-id": {
+          "user_id": {
             "$ref": "#/components/schemas/User.UUID",
             "description": "The user who emit this vote, optional"
           }
@@ -4380,10 +4106,10 @@
         },
         "example": {
           "rating": 3,
-          "poll-id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
-          "track-id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
-          "session-id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
-          "user-id": "b85dc364-a646-4230-9f52-adfd45561b20"
+          "poll_id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
+          "track_id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
+          "session_id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
+          "user_id": "b85dc364-a646-4230-9f52-adfd45561b20"
         }
       },
       "Track.Write": {
@@ -4408,29 +4134,29 @@
               "url": "http://schema.org/name"
             }
           },
-          "spotify-uri": {
+          "spotify_uri": {
             "description": "Spotify track identifier",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "youtube-uri": {
+          "youtube_uri": {
             "description": "Youtube resource identifier",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "poll-id": {
+          "poll_id": {
             "$ref": "#/components/schemas/Poll.UUID",
             "description": "The poll where track is participating"
           },
-          "session-id": {
+          "session_id": {
             "$ref": "#/components/schemas/Session.UUID",
             "description": "The Session who suggest this Track, used in anonymous sessions"
           },
-          "user-id": {
+          "user_id": {
             "$ref": "#/components/schemas/User.UUID",
             "description": "The User who suggest this Track"
           }
@@ -4441,14 +4167,14 @@
         "example": {
           "artist": "Queen",
           "name": "I Was Born To Love You - 2011 Remaster",
-          "spotify-uri": "7DtdhIJlSSOaAFNk4JdXCb",
-          "spotify-images": [
+          "spotify_uri": "7DtdhIJlSSOaAFNk4JdXCb",
+          "spotify_images": [
             "https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7"
           ],
-          "youtube-uri": "vNhhAEupU4g",
-          "poll-id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
-          "session-id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
-          "user-id": "b85dc364-a646-4230-9f52-adfd45561b20"
+          "youtube_uri": "vNhhAEupU4g",
+          "poll_id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
+          "session_id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
+          "user_id": "b85dc364-a646-4230-9f52-adfd45561b20"
         }
       },
       "Track.Read": {
@@ -4479,20 +4205,20 @@
               "url": "http://schema.org/name"
             }
           },
-          "proposal-date": {
+          "proposal_date": {
             "format": "date-time",
             "description": "The proposal date of this track",
             "type": "string",
             "readOnly": true
           },
-          "spotify-uri": {
+          "spotify_uri": {
             "description": "Spotify track identifier",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "spotify-images": {
+          "spotify_images": {
             "description": "All the images from the Spotify track",
             "type": "array",
             "items": {
@@ -4503,24 +4229,24 @@
               "url": "http://schema.org/image"
             }
           },
-          "youtube-uri": {
+          "youtube_uri": {
             "description": "Youtube resource identifier",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "poll-id": {
+          "poll_id": {
             "$ref": "#/components/schemas/Poll.UUID",
             "description": "The poll where track is participating",
             "readOnly": true
           },
-          "session-id": {
+          "session_id": {
             "$ref": "#/components/schemas/Session.UUID",
             "description": "The Session who suggest this Track, used in anonymous sessions",
             "readOnly": true
           },
-          "user-id": {
+          "user_id": {
             "$ref": "#/components/schemas/User.UUID",
             "description": "The User who suggest this Track",
             "readOnly": true
@@ -4533,15 +4259,15 @@
           "id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
           "artist": "Queen",
           "name": "I Was Born To Love You - 2011 Remaster",
-          "proposal-date": "2020-02-14T13:35:20-05:00",
-          "spotify-uri": "7DtdhIJlSSOaAFNk4JdXCb",
-          "spotify-images": [
+          "proposal_date": "2020-02-14T13:35:20-05:00",
+          "spotify_uri": "7DtdhIJlSSOaAFNk4JdXCb",
+          "spotify_images": [
             "https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7"
           ],
-          "youtube-uri": "vNhhAEupU4g",
-          "poll-id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
-          "session-id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
-          "user-id": "b85dc364-a646-4230-9f52-adfd45561b20"
+          "youtube_uri": "vNhhAEupU4g",
+          "poll_id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
+          "session_id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
+          "user_id": "b85dc364-a646-4230-9f52-adfd45561b20"
         }
       },
       "Track.Read.Jsonld": {
@@ -4584,20 +4310,20 @@
               "url": "http://schema.org/name"
             }
           },
-          "proposal-date": {
+          "proposal_date": {
             "format": "date-time",
             "description": "The proposal date of this track",
             "type": "string",
             "readOnly": true
           },
-          "spotify-uri": {
+          "spotify_uri": {
             "description": "Spotify track identifier",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "spotify-images": {
+          "spotify_images": {
             "description": "All the images from the Spotify track",
             "type": "array",
             "items": {
@@ -4608,24 +4334,24 @@
               "url": "http://schema.org/image"
             }
           },
-          "youtube-uri": {
+          "youtube_uri": {
             "description": "Youtube resource identifier",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "poll-id": {
+          "poll_id": {
             "$ref": "#/components/schemas/Poll.UUID",
             "description": "The poll where track is participating",
             "readOnly": true
           },
-          "session-id": {
+          "session_id": {
             "$ref": "#/components/schemas/Session.UUID",
             "description": "The Session who suggest this Track, used in anonymous sessions",
             "readOnly": true
           },
-          "user-id": {
+          "user_id": {
             "$ref": "#/components/schemas/User.UUID",
             "description": "The User who suggest this Track",
             "readOnly": true
@@ -4638,15 +4364,15 @@
           "id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
           "artist": "Queen",
           "name": "I Was Born To Love You - 2011 Remaster",
-          "proposal-date": "2020-02-14T13:35:20-05:00",
-          "spotify-uri": "7DtdhIJlSSOaAFNk4JdXCb",
-          "spotify-images": [
+          "proposal_date": "2020-02-14T13:35:20-05:00",
+          "spotify_uri": "7DtdhIJlSSOaAFNk4JdXCb",
+          "spotify_images": [
             "https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7"
           ],
-          "youtube-uri": "vNhhAEupU4g",
-          "poll-id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
-          "session-id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
-          "user-id": "b85dc364-a646-4230-9f52-adfd45561b20"
+          "youtube_uri": "vNhhAEupU4g",
+          "poll_id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
+          "session_id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
+          "user_id": "b85dc364-a646-4230-9f52-adfd45561b20"
         }
       },
       "User.Modify": {
@@ -4686,11 +4412,11 @@
             "description": "The password of the user in plain text",
             "type": "string"
           },
-          "public-email": {
+          "public_email": {
             "description": "Is the email of this user visible to anyone?",
             "type": "boolean"
           },
-          "public-visibility": {
+          "public_visibility": {
             "description": "Is this user visible to anyone?",
             "type": "boolean"
           }
@@ -4784,7 +4510,7 @@
           "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.2gSBz9EOsQRN9I-3iSxJoFt7NtgV6Rm0IL6a8CAwl3Q",
           "session": {
             "id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
-            "created-at": "2020-02-13T13:35:20-05:00",
+            "created_at": "2020-02-13T13:35:20-05:00",
             "name": "Leninux"
           }
         }
@@ -4836,6 +4562,14 @@
             "description": "Poll unique identifier",
             "readOnly": true
           },
+          "group_id": {
+            "$ref": "#/components/schemas/Group.UUID",
+            "description": "The Group Uuid where this Poll belong",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/hostingGroup"
+            }
+          },
           "name": {
             "description": "The name of the poll, this value is also the name showed in the Spotify playlist",
             "type": "string",
@@ -4850,7 +4584,7 @@
               "url": "http://schema.org/text"
             }
           },
-          "spotify-playlist-images": {
+          "spotify_playlist_images": {
             "description": "Array with all the images provided by Spotify",
             "type": "array",
             "items": {
@@ -4861,36 +4595,36 @@
               "url": "http://schema.org/image"
             }
           },
-          "spotify-playlist-public": {
+          "spotify_playlist_public": {
             "description": "If true the playlist will be public, if false it will be private.",
             "type": "boolean"
           },
-          "spotify-playlist-collaborative": {
+          "spotify_playlist_collaborative": {
             "description": "If true, the playlist will become collaborative and other users\nwill be able to modify the playlist in their Spotify client.\nNote: You can only set collaborative to true on non-public playlists.",
             "type": "boolean"
           },
-          "spotify-playlist-uri": {
+          "spotify_playlist_uri": {
             "description": "Spotify playlist identifier where the Poll is located, prepend \"spotify:playlist:\" for a complete valid spotify uri",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "spotify-playlist-winner-uri": {
+          "spotify_playlist_winner_uri": {
             "description": "Spotify playlist identifier where the winner of the Poll will be saved, prepend \"spotify:playlist:\" for a complete valid spotify uri",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "spotify-playlist-historic-uri": {
+          "spotify_playlist_historic_uri": {
             "description": "Spotify playlist identifier where all the songs of the Poll will be saved when is Poll is finished, prepend \"spotify:playlist:\" for a complete valid spotify uri.",
             "type": "string",
             "externalDocs": {
               "url": "http://schema.org/identifier"
             }
           },
-          "start-date": {
+          "start_date": {
             "format": "date-time",
             "description": "The start date of this poll",
             "type": "string",
@@ -4898,7 +4632,7 @@
               "url": "http://schema.org/datePublished"
             }
           },
-          "end-date": {
+          "end_date": {
             "format": "date-time",
             "description": "The end date of this poll, only used if restart-date is empty.",
             "type": "string",
@@ -4906,62 +4640,54 @@
               "url": "http://schema.org/expires"
             }
           },
-          "restart-date": {
+          "restart_date": {
             "description": "String with a crontab style restart command. If setted, this poll is never closed,\nthe winner song goes to winner playlist and the others to the historic playlist.",
             "type": "string"
           },
-          "public-visibility": {
+          "public_visibility": {
             "description": "Is this poll visible to anyone or only to the members of the group?",
             "type": "boolean"
           },
-          "public-votes": {
+          "public_votes": {
             "description": "Are the votes public meanwhile the poll is active?",
             "type": "boolean"
           },
-          "anon-can-vote": {
+          "anon_can_vote": {
             "description": "Can anyone vote into this poll or only the members of the group?",
             "type": "boolean"
           },
-          "who-can-add-track": {
+          "who_can_add_track": {
             "nullable": true,
             "description": "Who can add tracks into this poll?\nnull => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone",
             "maximum": 4,
             "minimum": 0,
             "type": "integer"
           },
-          "anon-votes-max-rating": {
+          "anon_votes_max_rating": {
             "description": "All the ratings given by a anonymous user to this poll can't excede this number",
             "minimum": 0,
             "type": "integer"
           },
-          "user-votes-max-rating": {
+          "user_votes_max_rating": {
             "description": "All the ratings given by a member to this poll can't excede this number",
             "minimum": 0,
             "type": "integer"
           },
-          "multiple-user-tracks": {
+          "multiple_user_tracks": {
             "description": "Can one user add more than one track to this poll?",
             "type": "boolean"
           },
-          "multiple-anon-tracks": {
+          "multiple_anon_tracks": {
             "description": "Can an anonymous user add more than one track to this poll?",
             "type": "boolean"
           },
-          "group-id": {
-            "$ref": "#/components/schemas/Group.UUID",
-            "description": "The Group Uuid where this Poll belong",
-            "readOnly": true,
-            "externalDocs": {
-              "url": "http://schema.org/hostingGroup"
-            }
-          },
-          "num-tracks": {
+          "num_tracks": {
             "description": "Number of tracks of this poll",
             "minimum": 0,
             "type": "integer",
             "readOnly": true
           },
-          "num-rates": {
+          "num_rates": {
             "description": "Number of rates of this poll",
             "minimum": 0,
             "type": "integer",
@@ -4983,89 +4709,194 @@
           "id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
           "name": "Weekly Public Playlist",
           "description": "Public playlist, restarted weekly",
-          "spotify-playlist-images": [
+          "spotify_playlist_images": [
             "https://pl.scdn.co/images/pl/default/1a165c7ee8ad6beeb36ceae02e5ca465129a7342",
             "https://pl.scdn.co/images/pl/default/59a801c4bb5bdfa9dd690de51d2aa904f7809f58"
           ],
-          "spotify-playlist-public": true,
-          "spotify-playlist-collaborative": false,
-          "spotify-playlist-uri": "0yRBerq6d7SgJZk77uNx5l",
-          "spotify-playlist-winner-uri": "7FuWGgXiRtjo4VIeTbe5Ph",
-          "spotify-playlist-historic-uri": "7j8RuavEdsKTi06x786QMe",
-          "start-date": "2020-02-13T13:35:20-05:00",
-          "end-date": "2020-03-13T13:35:20-05:00",
-          "restart-date": "0 0 * * 1",
-          "public-visibility": true,
-          "public-votes": true,
-          "anon-can-vote": true,
-          "who-can-add-track": 4,
-          "anon-votes-max-rating": 1,
-          "user-votes-max-rating": 3,
-          "multiple-user-tracks": false,
-          "multiple-anon-tracks": false,
-          "group-id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
-          "num-tracks": 2,
+          "spotify_playlist_public": true,
+          "spotify_playlist_collaborative": false,
+          "spotify_playlist_uri": "0yRBerq6d7SgJZk77uNx5l",
+          "spotify_playlist_winner_uri": "7FuWGgXiRtjo4VIeTbe5Ph",
+          "spotify_playlist_historic_uri": "7j8RuavEdsKTi06x786QMe",
+          "start_date": "2020-02-13T13:35:20-05:00",
+          "end_date": "2020-03-13T13:35:20-05:00",
+          "restart_date": "0 0 * * 1",
+          "public_visibility": true,
+          "public_votes": true,
+          "anon_can_vote": true,
+          "who_can_add_track": 4,
+          "anon_votes_max_rating": 1,
+          "user_votes_max_rating": 3,
+          "multiple_user_tracks": false,
+          "multiple_anon_tracks": false,
+          "group_id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
+          "num_tracks": 2,
           "tracks": [
             {
               "id": "a9269c43-94dc-4b6a-9e97-f8871d2b630b",
               "artist": "Lágrimas de Sangre",
               "name": "Rojos y separatistas",
-              "proposal-date": "2020-02-13T15:35:20-05:00",
-              "spotify-uri": "1ECc1EhfkRx08o8uIwYOxW",
-              "spotify-images": [
+              "proposal_date": "2020-02-13T15:35:20-05:00",
+              "spotify_uri": "1ECc1EhfkRx08o8uIwYOxW",
+              "spotify_images": [
                 "https://i.scdn.co/image/ab67616d0000b273ae0fe33eda83f26bd0fdd956"
               ],
-              "youtube-uri": "t67NhxJhrUU"
+              "youtube_uri": "t67NhxJhrUU"
             },
             {
               "id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
               "artist": "Queen",
               "name": "I Was Born To Love You - 2011 Remaster",
-              "proposal-date": "2020-02-14T13:35:20-05:00",
-              "spotify-uri": "7DtdhIJlSSOaAFNk4JdXCb",
-              "spotify-images": [
+              "proposal_date": "2020-02-14T13:35:20-05:00",
+              "spotify_uri": "7DtdhIJlSSOaAFNk4JdXCb",
+              "spotify_images": [
                 "https://i.scdn.co/image/58476b3d9c1690d25f356a5c7f4280499a2624b7"
               ]
             }
           ],
-          "num-rates": 1,
+          "num_rates": 1,
           "rates": [
             {
               "rating": 3,
-              "createdAt": "2020-02-14T13:35:20-05:00",
-              "poll-id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
-              "track-id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
-              "session-id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
-              "user-id": "b85dc364-a646-4230-9f52-adfd45561b20"
+              "created_at": "2020-02-14T13:35:20-05:00",
+              "poll_id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
+              "track_id": "8a34652d-9535-41e9-96d7-ee0b09e82a36",
+              "session_id": "91cac577-0cd4-4d0e-ae7a-bcd62bfa8e40",
+              "user_id": "b85dc364-a646-4230-9f52-adfd45561b20"
             }
           ]
         }
       },
-      "Group.Read": {
-        "description": "An group of users or an organization, such as a school, NGO, corporation, club, etc.",
+      "Spotify.Search": {
+        "description": "Object",
+        "type": "object",
+        "properties": {
+          "album_uri": {
+            "$ref": "#/components/schemas/Spotify.URI",
+            "description": "Album unique identifier"
+          },
+          "artist_uri": {
+            "$ref": "#/components/schemas/Spotify.URI",
+            "description": "Artist unique identifier"
+          },
+          "track_uri": {
+            "$ref": "#/components/schemas/Spotify.URI",
+            "description": "Track unique identifier"
+          },
+          "playlist_uri": {
+            "$ref": "#/components/schemas/Spotify.URI",
+            "description": "Playlist unique identifier"
+          },
+          "query": {
+            "description": "Search query keywords and optional field filters and operators.",
+            "type": "string",
+            "externalDocs": {
+              "url": "https://developer.spotify.com/documentation/web-api/reference/search/search/"
+            }
+          },
+          "type": {
+            "description": "A comma-separated list of item types to search across. Valid types are: album , artist, playlist, track, show and episode.",
+            "type": "string"
+          }
+        },
+        "example": {
+          "album_uri": "11vOC497hO0Z0IWRrh3YdT",
+          "artist_uri": "1dfeR4HaWDbWqFHLkxsg1d",
+          "track_uri": "6rqhFgbbKwnb9MLmUQDhG6",
+          "playlist_uri": "0yRBerq6d7SgJZk77uNx5l",
+          "query": "roadhouse%20blues",
+          "type": "album"
+        }
+      },
+      "Spotify.URI": {
+        "description": "The base-62 identifier that you can find at the end of the Spotify URI (see above) for an artist, track, album, playlist, etc. Unlike a Spotify URI, a Spotify ID does not clearly identify the type of resource; that information is provided elsewhere in the call.",
+        "type": "string",
+        "example": "1dfeR4HaWDbWqFHLkxsg1d"
+      },
+      "Spotify.Read": {
+        "description": "Spotify Object",
         "required": [
-          "id",
-          "created-at",
-          "name",
-          "public-visibility",
-          "public-membership"
+          "id"
         ],
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Group.UUID",
-            "description": "Group unique identifier",
+            "$ref": "#/components/schemas/Spotify.URI",
+            "description": "Spotify unique identifier",
             "readOnly": true
           },
-          "created-at": {
-            "format": "date-time",
-            "description": "DateTime when this object is created",
-            "type": "string",
-            "readOnly": true,
-            "externalDocs": {
-              "url": "http://schema.org/foundingDate"
-            }
+          "type": {
+            "description": "Type of the object",
+            "type": "string"
           },
+          "artist": {
+            "description": "The name of the artist.",
+            "type": "string"
+          },
+          "album": {
+            "description": "The name of the album.",
+            "type": "string"
+          },
+          "track": {
+            "description": "The name of the track.",
+            "type": "string"
+          },
+          "playlist": {
+            "description": "The name of the playlist.",
+            "type": "string"
+          }
+        }
+      },
+      "Spotify.Read.Jsonld": {
+        "description": "Spotify Object",
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "id": {
+            "$ref": "#/components/schemas/Spotify.URI",
+            "description": "Spotify unique identifier",
+            "readOnly": true
+          },
+          "type": {
+            "description": "Type of the object",
+            "type": "string"
+          },
+          "artist": {
+            "description": "The name of the artist.",
+            "type": "string"
+          },
+          "album": {
+            "description": "The name of the album.",
+            "type": "string"
+          },
+          "track": {
+            "description": "The name of the track.",
+            "type": "string"
+          },
+          "playlist": {
+            "description": "The name of the playlist.",
+            "type": "string"
+          }
+        }
+      },
+      "Group.Write": {
+        "description": "An group of users or an organization, such as a school, NGO, corporation, club, etc.",
+        "type": "object",
+        "properties": {
           "name": {
             "description": "The name of the group",
             "type": "string",
@@ -5073,57 +4904,37 @@
               "url": "http://schema.org/name"
             }
           },
-          "public-visibility": {
+          "public_visibility": {
             "description": "Is this group public and can be seen be anyone?",
             "type": "boolean"
           },
-          "public-membership": {
+          "public_membership": {
             "description": "Can anyone be part of this group? Or an invitation is required?",
             "type": "boolean"
           },
-          "who-can-create-polls": {
+          "who_can_create_polls": {
             "description": "Who can create new Polls? Members->2, Admins-> 1, Owners-> 0",
             "maximum": 2,
             "minimum": 0,
             "type": "integer"
-          },
-          "num-members": {
-            "description": "Number of members in this group",
-            "type": "integer",
-            "readOnly": true
-          },
-          "num-polls": {
-            "description": "Number of polls in this group",
-            "type": "integer",
-            "readOnly": true
           }
         },
         "externalDocs": {
           "url": "https://schema.org/Group"
-        },
-        "example": {
-          "id": "a9894239-905a-4a14-b43f-5f116b9e0532",
-          "createdAt": "2020-02-13T13:35:20-05:00",
-          "name": "Discoveryfy",
-          "public-visibility": true,
-          "public-membership": true,
-          "who-can-create-polls": 0,
-          "num-members": 1,
-          "num-polls": 1
         }
       },
       "Member.Read": {
         "description": "A member of an Group",
         "required": [
-          "created-at",
+          "created_at",
           "id",
-          "group-id",
+          "group_id",
           "username",
           "rol"
         ],
         "type": "object",
         "properties": {
-          "created-at": {
+          "created_at": {
             "format": "date-time",
             "description": "DateTime when this object is created",
             "type": "string",
@@ -5137,7 +4948,7 @@
               "url": "http://schema.org/member"
             }
           },
-          "group-id": {
+          "group_id": {
             "$ref": "#/components/schemas/Group.UUID",
             "description": "The Group Uuid where this user belong",
             "readOnly": true,
@@ -5167,9 +4978,408 @@
           "url": "https://schema.org/ProgramMembership"
         },
         "example": {
-          "created-at": "2020-02-13T13:35:20-05:00",
-          "user-id": "b85dc364-a646-4230-9f52-adfd45561b20",
+          "created_at": "2020-02-13T13:35:20-05:00",
+          "user_id": "b85dc364-a646-4230-9f52-adfd45561b20",
           "rol": 0
+        }
+      },
+      "Group.Read": {
+        "description": "An group of users or an organization, such as a school, NGO, corporation, club, etc.",
+        "required": [
+          "id",
+          "created_at",
+          "name",
+          "public_visibility",
+          "public_membership"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Group.UUID",
+            "description": "Group unique identifier",
+            "readOnly": true
+          },
+          "created_at": {
+            "format": "date-time",
+            "description": "DateTime when this object is created",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/foundingDate"
+            }
+          },
+          "name": {
+            "description": "The name of the group",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/name"
+            }
+          },
+          "description": {
+            "description": "The description of the group",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/text"
+            }
+          },
+          "public_visibility": {
+            "description": "Is this group public and can be seen be anyone?",
+            "type": "boolean"
+          },
+          "public_membership": {
+            "description": "Can anyone be part of this group? Or an invitation is required?",
+            "type": "boolean"
+          },
+          "who_can_create_polls": {
+            "description": "Who can create new Polls? Members->2, Admins-> 1, Owners-> 0",
+            "maximum": 2,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "num_members": {
+            "description": "Number of members in this group",
+            "type": "integer",
+            "readOnly": true
+          },
+          "num_polls": {
+            "description": "Number of polls in this group",
+            "type": "integer",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Group"
+        },
+        "example": {
+          "id": "a9894239-905a-4a14-b43f-5f116b9e0532",
+          "created_at": "2020-02-13T13:35:20-05:00",
+          "name": "Discoveryfy",
+          "public_visibility": true,
+          "public_membership": true,
+          "who_can_create_polls": 0,
+          "num_members": 1,
+          "num_polls": 1
+        }
+      },
+      "Group.Read.Jsonld": {
+        "description": "An group of users or an organization, such as a school, NGO, corporation, club, etc.",
+        "required": [
+          "id",
+          "created_at",
+          "name",
+          "public_visibility",
+          "public_membership"
+        ],
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "id": {
+            "$ref": "#/components/schemas/Group.UUID",
+            "description": "Group unique identifier",
+            "readOnly": true
+          },
+          "created_at": {
+            "format": "date-time",
+            "description": "DateTime when this object is created",
+            "type": "string",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/foundingDate"
+            }
+          },
+          "name": {
+            "description": "The name of the group",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/name"
+            }
+          },
+          "public_visibility": {
+            "description": "Is this group public and can be seen be anyone?",
+            "type": "boolean"
+          },
+          "public_membership": {
+            "description": "Can anyone be part of this group? Or an invitation is required?",
+            "type": "boolean"
+          },
+          "who_can_create_polls": {
+            "description": "Who can create new Polls? Members->2, Admins-> 1, Owners-> 0",
+            "maximum": 2,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "num_members": {
+            "description": "Number of members in this group",
+            "type": "integer",
+            "readOnly": true
+          },
+          "members": {
+            "description": "Members in this group",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User.List"
+            },
+            "readOnly": true
+          },
+          "num_polls": {
+            "description": "Number of polls in this group",
+            "type": "integer",
+            "readOnly": true
+          },
+          "polls": {
+            "description": "Polls in this group",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Poll.List"
+            },
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Group"
+        }
+      },
+      "Member.Read.Jsonld": {
+        "description": "A member of an Group",
+        "required": [
+          "created_at",
+          "user_id",
+          "group_id",
+          "rol"
+        ],
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "@type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "created_at": {
+            "format": "date-time",
+            "description": "DateTime when this object is created",
+            "type": "string",
+            "readOnly": true
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/User.UUID",
+            "description": "The User Uuid",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/member"
+            }
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/Group.UUID",
+            "description": "The Group Uuid where this user belong",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/hostingGroup"
+            }
+          },
+          "rol": {
+            "description": "Rol of the user in this group: OWNER = 0;ADMIN = 1;MEMBER = 2;INVITED = 3;",
+            "maximum": 3,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/ProgramMembership"
+        }
+      },
+      "Poll.List": {
+        "description": "Poll / Election / Referendum",
+        "required": [
+          "name",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Poll.UUID",
+            "description": "Poll unique identifier",
+            "readOnly": true
+          },
+          "name": {
+            "description": "The name of the poll, this value is also the name showed in the Spotify playlist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/text"
+            }
+          },
+          "description": {
+            "description": "The description of the poll, this value is also the description showed in the Spotify playlist",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/text"
+            }
+          },
+          "spotify_playlist_images": {
+            "description": "Array with all the images provided by Spotify",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/image"
+            }
+          },
+          "spotify_playlist_public": {
+            "description": "If true the playlist will be public, if false it will be private.",
+            "type": "boolean"
+          },
+          "spotify_playlist_collaborative": {
+            "description": "If true, the playlist will become collaborative and other users\nwill be able to modify the playlist in their Spotify client.\nNote: You can only set collaborative to true on non-public playlists.",
+            "type": "boolean"
+          },
+          "spotify_playlist_uri": {
+            "description": "Spotify playlist identifier where the Poll is located, prepend \"spotify:playlist:\" for a complete valid spotify uri",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotify_playlist_winner_uri": {
+            "description": "Spotify playlist identifier where the winner of the Poll will be saved, prepend \"spotify:playlist:\" for a complete valid spotify uri",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "spotify_playlist_historic_uri": {
+            "description": "Spotify playlist identifier where all the songs of the Poll will be saved when is Poll is finished, prepend \"spotify:playlist:\" for a complete valid spotify uri.",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/identifier"
+            }
+          },
+          "start_date": {
+            "format": "date-time",
+            "description": "The start date of this poll",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/datePublished"
+            }
+          },
+          "end_date": {
+            "format": "date-time",
+            "description": "The end date of this poll, only used if restart-date is empty.",
+            "type": "string",
+            "externalDocs": {
+              "url": "http://schema.org/expires"
+            }
+          },
+          "restart_date": {
+            "description": "String with a crontab style restart command. If setted, this poll is never closed,\nthe winner song goes to winner playlist and the others to the historic playlist.",
+            "type": "string"
+          },
+          "public_visibility": {
+            "description": "Is this poll visible to anyone or only to the members of the group?",
+            "type": "boolean"
+          },
+          "public_votes": {
+            "description": "Are the votes public meanwhile the poll is active?",
+            "type": "boolean"
+          },
+          "anon_can_vote": {
+            "description": "Can anyone vote into this poll or only the members of the group?",
+            "type": "boolean"
+          },
+          "who_can_add_track": {
+            "nullable": true,
+            "description": "Who can add tracks into this poll?\nnull => nobody, 0 => owner, 1 => admin, 2 => member, 3 => invited, 4 => anyone",
+            "maximum": 4,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "anon_votes_max_rating": {
+            "description": "All the ratings given by a anonymous user to this poll can't excede this number",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "user_votes_max_rating": {
+            "description": "All the ratings given by a member to this poll can't excede this number",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "multiple_user_tracks": {
+            "description": "Can one user add more than one track to this poll?",
+            "type": "boolean"
+          },
+          "multiple_anon_tracks": {
+            "description": "Can an anonymous user add more than one track to this poll?",
+            "type": "boolean"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/Group.UUID",
+            "description": "The Group Uuid where this Poll belong",
+            "readOnly": true,
+            "externalDocs": {
+              "url": "http://schema.org/hostingGroup"
+            }
+          },
+          "num_tracks": {
+            "description": "Number of tracks of this poll",
+            "minimum": 0,
+            "type": "integer",
+            "readOnly": true
+          },
+          "num_rates": {
+            "description": "Number of rates of this poll",
+            "minimum": 0,
+            "type": "integer",
+            "readOnly": true
+          }
+        },
+        "externalDocs": {
+          "url": "https://schema.org/Question"
+        },
+        "example": {
+          "id": "15de7d9a-4b1f-4260-b0fd-91c2c9b76bd5",
+          "name": "Weekly Public Playlist",
+          "description": "Public playlist, restarted weekly",
+          "spotify_playlist_images": [
+            "https://pl.scdn.co/images/pl/default/1a165c7ee8ad6beeb36ceae02e5ca465129a7342",
+            "https://pl.scdn.co/images/pl/default/59a801c4bb5bdfa9dd690de51d2aa904f7809f58"
+          ],
+          "spotify_playlist_public": true,
+          "spotify_playlist_collaborative": false,
+          "spotify_playlist_uri": "0yRBerq6d7SgJZk77uNx5l",
+          "spotify_playlist_winner_uri": "7FuWGgXiRtjo4VIeTbe5Ph",
+          "spotify_playlist_historic_uri": "7j8RuavEdsKTi06x786QMe",
+          "start_date": "2020-02-13T13:35:20-05:00",
+          "end_date": "2020-03-13T13:35:20-05:00",
+          "restart_date": "0 0 * * 1",
+          "public_visibility": true,
+          "public_votes": true,
+          "anon_can_vote": true,
+          "who_can_add_track": 4,
+          "anon_votes_max_rating": 1,
+          "user_votes_max_rating": 3,
+          "multiple_user_tracks": false,
+          "multiple_anon_tracks": false,
+          "group_id": "9fea1130-479a-44be-bcf6-d10030b76c4b",
+          "num_tracks": 2,
+          "num_rates": 1
         }
       }
     },
