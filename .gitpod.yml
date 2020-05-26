@@ -1,4 +1,5 @@
-image: leninux/gitpod-phalcon:discoveryfy
+image:
+    file: .gitpod.Dockerfile
 ports:
 - port: 8000
   onOpen: open-browser
@@ -9,7 +10,7 @@ ports:
 - port: 8080
   onOpen: open-browser
 tasks:
-#  - init: echo "Replace me with a build script for the project."
-#    command: echo "Replace me with omething that should run on every start, or just
-#      remove me entirely."
-  - command: $(which php) -S 0.0.0.0:8000 -t ./api/public .htrouter.php
+  - init: cd api && composer install
+    command: $(which php) -S 0.0.0.0:8000 -t ./api/public .htrouter.php
+  - init: cd client && npm install
+    command: quasar dev
