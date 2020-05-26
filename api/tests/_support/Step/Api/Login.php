@@ -10,21 +10,29 @@ use function json_decode;
 class Login extends \ApiTester
 {
 
-    public function loginAsAnon()
+    public function loginAsAnon(): array
     {
-        $this->comment('Do login as anon user');
-        return $this->getAuthTokenJson();
+        $I = $this;
+        $I->comment('Do login as anon user');
+        return $I->getAuthTokenJson();
     }
 
-    public function loginAsTest()
+    public function loginAsTest(): array
     {
-        $this->comment('Do login as test user');
         $I = $this;
+        $I->comment('Do login as test user');
         $I->haveRecordWithFields($I->getDefaultModel(), $I->getDefaultModelAttributes());
         return $I->getAuthTokenJson(Data::loginJson());
     }
 
-    public function loginAsAdmin()
+    public function loginAsSecondaryTest(): array
+    {
+        $I = $this;
+        $I->comment('Do login as alternative test user');
+        return $I->getAuthTokenJson(Data::loginAltJson());
+    }
+
+    public function loginAsAdmin(): array
     {
         $this->comment('Do login as admin user');
         if (false === getenv('SEED_ROOT_USER') || false === getenv('SEED_ROOT_PASS')) {
@@ -47,7 +55,7 @@ class Login extends \ApiTester
         return trim($I->grabResponse(), '"');
     }
 
-    public function getLoginCSRFTokenJsonApi()
+    public function getLoginCSRFTokenJsonApi(): string
     {
         $I = $this;
         $I->setContentType('application/vnd.api+json');
@@ -97,7 +105,7 @@ class Login extends \ApiTester
         return $I->getLoginData($I->grabDataFromResponseByJsonPath('$.data')[0]);
     }
 
-    private function getLoginData(array $data)
+    private function getLoginData(array $data): array
     {
         $jwt = $session_id = $user_id = null;
         foreach ($data as $obj) {
@@ -112,31 +120,31 @@ class Login extends \ApiTester
         if (empty($jwt) || empty($session_id)) { //Anon doesnt have $user_id || empty($user_id)
             throw new TestRuntimeException('Invalid login');
         }
-        return [$jwt, $session_id, $user_id];
+        return [ $jwt, $session_id, $user_id ];
     }
 
-    public function setContentType($content_type = 'application/json')
+    public function setContentType($content_type = 'application/json'): void
     {
         $I = $this;
         $I->haveHttpHeader('Content-Type', $content_type);
         $I->haveHttpHeader('accept', $content_type);
     }
 
-    public function removeContentType()
+    public function removeContentType(): void
     {
         $I = $this;
         $I->deleteHeader('Content-Type');
         $I->deleteHeader('accept');
     }
 
-    public function testCSRFToken(string $token)
+    public function testCSRFToken(string $token): void
     {
         $I = $this;
         $I->assertIsString($token, 'Token is a string');
         $I->assertRegExp('/^[a-zA-Z0-9\-\_]{32}$/', $token, 'Token must be valid');
     }
 
-    public function testJWTToken(string $jwt)
+    public function testJWTToken(string $jwt): void
     {
         $I = $this;
         $I->assertRegExp(
@@ -151,7 +159,7 @@ class Login extends \ApiTester
         );
     }
 
-    public function testUUID(string $uuid)
+    public function testUUID(string $uuid): void
     {
         $I = $this;
         $I->assertRegExp(

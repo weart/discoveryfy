@@ -62,4 +62,26 @@ class GroupsDeleteCest
 
         $I->seeResponseIsJsonApiError(HttpCode::UNAUTHORIZED, 'Only available to registered users');
     }
+
+    public function userCantDeleteGroupJson(Login $I, GroupsPostCest $groupsPost)
+    {
+        list($jwt, $session_id, $user_id, $group_uuid) = $groupsPost->createGroupAsTestJson($I);
+        list($user_jwt, $user_session_id, $user_user_id) = $I->loginAsSecondaryTest();
+        $I->setContentType('application/vnd.api+json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$user_jwt);
+        $I->sendDELETE(sprintf(Data::$groupUrl, $group_uuid));
+
+        $I->seeResponseIsJsonError(HttpCode::UNAUTHORIZED, 'This user not belong to this group');
+    }
+
+    public function userCantDeleteGroupJsonApi(Login $I, GroupsPostCest $groupsPost)
+    {
+        list($jwt, $session_id, $user_id, $group_uuid) = $groupsPost->createGroupAsTestJsonApi($I);
+        list($user_jwt, $user_session_id, $user_user_id) = $I->loginAsSecondaryTest();
+        $I->setContentType('application/vnd.api+json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$user_jwt);
+        $I->sendDELETE(sprintf(Data::$groupUrl, $group_uuid));
+
+        $I->seeResponseIsJsonApiError(HttpCode::UNAUTHORIZED, 'This user not belong to this group');
+    }
 }

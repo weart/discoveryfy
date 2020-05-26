@@ -22,6 +22,7 @@ use Phalcon\Mvc\Model\Behavior\SoftDelete;
 use Phalcon\Mvc\Model\Query\Builder;
 use Phalcon\Mvc\Model\Resultset;
 use Phalcon\Mvc\Model\Resultset\Complex;
+use Phalcon\Mvc\Model\ResultsetInterface;
 use Phalcon\Mvc\Model\Row;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\InclusionIn;
@@ -238,10 +239,10 @@ class Organizations extends TimestampableModel
      * @param string $orderBy
      * @return Resultset Simple when user_id is null, Complex otherwise
      */
-    public static function getPublicVisibilityOrMemberGroups(?string $user_uuid, string $orderBy = ''): Resultset
+    public static function getPublicVisibilityOrMemberGroups(?string $user_uuid, string $orderBy = '', array $pagination = []): ResultsetInterface
     {
         $q = self::getBuilder()
-            ->columns('org.*')
+//            ->columns('org.*')
             ->from([ 'org' => Organizations::class])
             ->where('org.deleted_at IS NULL')
             ->setBindTypes([ 'public_visibility' => \PDO::PARAM_BOOL ])
@@ -249,7 +250,7 @@ class Organizations extends TimestampableModel
 
         if ($user_uuid) {
             $q
-                ->columns('org.*, member.*, user.id as user_id')
+//                ->columns('org.*, member.*, user.id as user_id')
                 ->leftJoin(Memberships::class, 'org.id = member.organization_id', 'member')
                 ->innerJoin(Users::class, 'member.user_id = user.id AND user.deleted_at IS NULL AND user.enabled = :enabled:', 'user') // Necessary for check if user isActive
                 ->andWhere('((org.public_visibility = :public_visibility:) OR (user.id = :user_uuid: AND member.rol != :member_rol:))')
@@ -260,6 +261,9 @@ class Organizations extends TimestampableModel
         }
         if (true !== empty($orderBy)) {
             $q->orderBy($orderBy);
+        }
+        if (true !== empty($pagination)) {
+            $q->limit($pagination['limit'], $pagination['offset']);
         }
         return $q->getQuery()->execute();
     }

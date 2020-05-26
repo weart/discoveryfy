@@ -40,6 +40,14 @@ class Data
         ];
     }
 
+    public static function loginAltJson()
+    {
+        return [
+            'username' => 'testaltuser',
+            'password' => 'testaltpassword',
+        ];
+    }
+
     public static function registerJson()
     {
         return [

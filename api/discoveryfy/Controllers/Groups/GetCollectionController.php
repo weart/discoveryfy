@@ -64,9 +64,9 @@ class GetCollectionController extends BaseCollectionApiController
         return $parameters;
     }
 
-    protected function getRecords(array $parameters = [], string $orderBy = ''): ResultsetInterface
+    protected function getRecords(array $parameters = [], string $orderBy = '', array $pagination = []): ResultsetInterface
     {
         $user_id = $this->auth->getUser() ? $this->auth->getUser()->get('id') : null;
-        return Organizations::getPublicVisibilityOrMemberGroups($user_id, $orderBy);
+        return Organizations::getPublicVisibilityOrMemberGroups($user_id, $orderBy, $pagination);
     }
 }

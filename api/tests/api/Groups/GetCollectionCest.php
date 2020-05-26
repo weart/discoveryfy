@@ -43,4 +43,60 @@ class GroupsGetCollectionCest
             ]
         ]);
     }
+
+    public function userGetPublicGroupsJson(Login $I)
+    {
+        list($jwt, $session_id, $user_id) = $I->loginAsSecondaryTest();
+        $I->setContentType('application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
+        $I->sendGET(Data::$groupsUrl);
+        $I->seeCollectionResponseIsJsonSuccessful(HttpCode::OK, Data::groupResponseJsonType(), [
+            'type'                          => 'groups',
+            'attributes.public_visibility'  => true,
+        ]);
+    }
+
+    public function userGetPublicGroupsJsonApi(Login $I)
+    {
+        list($jwt, $session_id, $user_id) = $I->loginAsSecondaryTest();
+        $I->setContentType('application/vnd.api+json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
+        $I->comment($jwt);
+        $I->sendGET(Data::$groupsUrl);
+        $I->seeCollectionResponseIsJsonApiSuccessful(HttpCode::OK, Data::groupResponseJsonApiType(), [
+            'type'                  => 'groups',
+            'attributes'            => [
+                'public_visibility' => true,
+            ]
+        ]);
+    }
+
+    public function memberGetPublicGroupsJson(Login $I, GroupsPostCest $groupsPost)
+    {
+        list($jwt, $session_id, $user_id, $group_uuid) = $groupsPost->createGroupAsTestJson($I);
+        $I->setContentType('application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
+        $I->sendGET(Data::$groupsUrl);
+
+        $I->seeCollectionResponseIsJsonSuccessful(HttpCode::OK, Data::groupResponseJsonType(), [
+            'type' => 'groups'
+        ]);
+//        $I->seeResponseContainsJson([
+//            [ 'id' => $group_uuid ]
+//        ]);
+    }
+
+    public function memberGetPublicGroupsJsonApi(Login $I, GroupsPostCest $groupsPost)
+    {
+        list($jwt, $session_id, $user_id, $group_uuid) = $groupsPost->createGroupAsTestJson($I);
+        $I->setContentType('application/vnd.api+json');
+        $I->haveHttpHeader('Authorization', 'Bearer '.$jwt);
+        $I->sendGET(Data::$groupsUrl);
+        $I->seeCollectionResponseIsJsonApiSuccessful(HttpCode::OK, Data::groupResponseJsonApiType(), [
+            'type' => 'groups',
+        ]);
+//        $I->seeResponseContainsJsonKey('data', [
+//            [ 'id' => $group_uuid ]
+//        ]);
+    }
 }

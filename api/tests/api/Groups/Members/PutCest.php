@@ -46,11 +46,13 @@ class GroupsMembersPutCest
 
         // Test user promote Admin user to group admin
 //        $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
+//        $I->comment($test_jwt);
 //        $I->sendPUT(sprintf(Data::$memberUrl, $group_id, $admin_user_id), [ 'rol' => 'ROLE_ADMIN' ]);
 //        $this->checkMembershipResponse($I, 'ROLE_ADMIN', $contentType);
 
         // Test user downgrade Admin user to group member again
 //        $I->haveHttpHeader('Authorization', 'Bearer '.$test_jwt);
+//        $I->comment($test_jwt);
 //        $I->sendPUT(sprintf(Data::$memberUrl, $group_id, $admin_user_id), [ 'rol' => 'ROLE_MEMBER' ]);
 //        $this->checkMembershipResponse($I, 'ROLE_MEMBER', $contentType);
 

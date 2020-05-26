@@ -40,6 +40,18 @@ class UserSeeder extends AbstractSeed
                 'language'          => 'en',
                 'theme'             => 'default',
                 'rol'               => 'ROLE_USER',
+            ],[
+//                'id'                => $this->getRandomService()->uuid(),
+                'id'                => '5860b321-e7ce-4927-8b81-0f0dd6058350',
+                'username'          => 'testaltuser',
+                'password'          => $this->getSecurityService()->hash('testaltpassword'),
+                'email'             => 'testalt@user.net',
+                'enabled'           => true,
+                'public_visibility' => false,
+                'public_email'      => false,
+                'language'          => 'en',
+                'theme'             => 'default',
+                'rol'               => 'ROLE_USER',
             ]
         ];
 
