@@ -24,6 +24,7 @@ class Data
     public static $pollTracksUrl        = '/polls/%s/tracks';
     public static $pollTrackUrl         = '/polls/%s/tracks/%s';
     public static $pollTrackRateUrl     = '/polls/%s/tracks/%s/rate';
+    public static $spotifyUrl           = '/spotify';
     public static $wrongUrl             = '/sommething';
 
 //    public static $companiesSortUrl                 = '/companies?sort=%s';
@@ -635,6 +636,42 @@ class Data
             'links' => [
                 'self'                              => 'string:url',
             ]
+        ];
+    }
+
+    public static function searchResponseJsonType(): array
+    {
+        return [
+            'type'                                  => 'string:!empty',
+            'id'                                    => 'string:!empty',
+            'attributes.type'                       => 'string',
+            'attributes.artist'                     => 'string',
+            'attributes.album'                      => 'string',
+            'attributes.track'                      => 'string',
+            'attributes.playlist'                   => 'string',
+            'attributes.show'                       => 'string',
+            'attributes.episode'                    => 'string',
+//            'links.self'                            => 'string:url',
+        ];
+    }
+
+    public static function searchResponseJsonApiType(): array
+    {
+        return [
+            'type'                                  => 'string:!empty',
+            'id'                                    => 'string:!empty',
+            'attributes' => [
+                'type'                              => 'string',
+                'artist'                            => 'string',
+                'album'                             => 'string',
+                'track'                             => 'string',
+                'playlist'                          => 'string',
+                'show'                              => 'string',
+                'episode'                           => 'string',
+            ],
+//            'links' => [
+//                'self'                              => 'string:url',
+//            ]
         ];
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Codeception\Actor;
+use Codeception\Exception\TestRuntimeException;
 use Codeception\Lib\Friend;
 use Codeception\PHPUnit\Constraint\JsonContains;
 use Codeception\PHPUnit\Constraint\JsonType;
@@ -218,6 +219,19 @@ $I->seeItemResponseIsJsonApiSuccessful(HttpCode::OK, Data::groupResponseJsonType
             ],
             $httpCode
         );
+    }
+
+    public function seeResponseIsError(string $contentType, int $httpCode = HttpCode::BAD_REQUEST, ?string $title = null, ?int $appCode = null): void
+    {
+        if ($contentType === 'application/json') {
+            $this->seeResponseIsJsonError($httpCode, $title, $appCode);
+
+        } else if ($contentType === 'application/vnd.api+json') {
+            $this->seeResponseIsJsonApiError($httpCode, $title, $appCode);
+
+        } else {
+            throw new TestRuntimeException('Invalid contentType');
+        }
     }
 
     private function checkErrors($resp_errors, $test_errors): void

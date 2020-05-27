@@ -3000,7 +3000,45 @@
     },
     "/spotify": {
       "summary": "Search information in Spotify",
-      "get": {
+      "description": "Get Spotify Catalog information about albums, artists, playlists, tracks, shows or episodes that match a keyword string.",
+      "post": {
+        "requestBody": {
+          "description": "Object with the information to be used as a search",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Spotify.Search"
+              }
+            },
+            "application/vnd.api+json": {
+              "schema": {
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "example": "Spotify.Search"
+                      },
+                      "attributes": {
+                        "$ref": "#/components/schemas/Spotify.Search"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "application/ld+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Spotify.Search"
+              }
+            }
+          },
+          "required": true
+        },
         "tags": [
           "Polls"
         ],
@@ -3009,7 +3047,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Spotify.Search"
+                  "$ref": "#/components/schemas/Spotify.Read"
                 }
               },
               "application/vnd.api+json": {
@@ -3071,8 +3109,9 @@
             "bearerAuth": []
           }
         ],
-        "operationId": "spotify.get",
-        "summary": "Search information in Spotify"
+        "operationId": "spotify.search",
+        "summary": "Search information in Spotify",
+        "description": "Get Spotify Catalog information about albums, artists, playlists, tracks, shows or episodes that match a keyword string."
       }
     }
   },

@@ -28,7 +28,7 @@ use Phalcon\Http\ResponseInterface;
  * Replaces the name of the Session
  *
  * Module       Sessions
- * Class        PostApiController
+ * Class        PutController
  * OperationId  session.put
  * Operation    PUT
  * OperationUrl /sessions/{session_uuid}

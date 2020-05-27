@@ -82,6 +82,7 @@ return [
         \Discoveryfy\Routes\UserRoutes::class,
         \Discoveryfy\Routes\GroupsRoutes::class,
         \Discoveryfy\Routes\PollsRoutes::class,
+        \Discoveryfy\Routes\SpotifyRoutes::class,
         \Discoveryfy\Routes\TestRoutes::class,
     ],
     'public_routes' => [

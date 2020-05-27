@@ -31,7 +31,7 @@ use Phalcon\Security\Random;
  * Modify the rol of an User in a Group
  *
  * Module       GroupsMembers
- * Class        PutApiController
+ * Class        PutController
  * OperationId  member.put (or member.modify)
  * Operation    PUT
  * OperationUrl /groups/{group_uuid}/members/{user_uuid}

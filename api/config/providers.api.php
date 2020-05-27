@@ -23,6 +23,7 @@ use Phalcon\Api\Providers\RouterProvider;
 use Phalcon\Api\Providers\FiltersProvider;
 use Phalcon\Api\Providers\SecurityProvider;
 use Phalcon\Api\Providers\AuthProvider;
+use Phalcon\Api\Providers\SpotifyProvider;
 
 /**
  * Enabled providers. Order does matter
@@ -40,5 +41,6 @@ return [
     ModelsCacheProvider::class,
     FiltersProvider::class,
     SecurityProvider::class,
-    AuthProvider::class
+    AuthProvider::class,
+    SpotifyProvider::class
 ];

@@ -28,7 +28,7 @@ use Phalcon\Http\ResponseInterface;
  * Modify one group
  *
  * Module       Groups
- * Class        PostApiController
+ * Class        PutController
  * OperationId  group.put (or group.modify)
  * Operation    PUT
  * OperationUrl /groups/{group_uuid}

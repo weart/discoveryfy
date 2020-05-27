@@ -24,7 +24,7 @@
         "psr/log": "^1.0",
         "robmorgan/phinx": "^0.11",
         "vlucas/phpdotenv": "^3.0",
-        "jwilsson/spotify-web-api-php": "^2.8"
+        "jwilsson/spotify-web-api-php": "^3.0"
     },
     "require-dev": {
         "codeception/c3": "^2.4",

@@ -43,7 +43,7 @@ trait FractalTrait
         array $relationships = [],
         array $fields = []
     ): array {
-        $url      = envValue('APP_URL', 'http://localhost');
+        $url      = envValue('APP_URL', null); //'http://localhost'
         $manager  = new Manager();
         $manager->setSerializer(new JsonApiSerializer($url));
 

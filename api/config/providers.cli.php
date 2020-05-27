@@ -17,6 +17,7 @@ use Phalcon\Api\Providers\DatabaseProvider;
 use Phalcon\Api\Providers\ErrorHandlerProvider;
 use Phalcon\Api\Providers\LoggerProvider;
 use Phalcon\Api\Providers\ModelsMetadataProvider;
+use Phalcon\Api\Providers\SpotifyProvider;
 
 /**
  * Enabled providers. Order does matter
@@ -29,4 +30,5 @@ return [
     ModelsMetadataProvider::class,
     CliDispatcherProvider::class,
     CacheDataProvider::class,
+    SpotifyProvider::class
 ];

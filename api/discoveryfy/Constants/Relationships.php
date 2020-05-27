@@ -22,4 +22,5 @@ class Relationships
     const SESSION       = 'sessions';
     const TRACK         = 'tracks';
     const USER          = 'users';
+    const SEARCH        = 'results';
 }

@@ -27,7 +27,7 @@ use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
  * Retrieves a Group Member
  *
  * Module       GroupsMembers
- * Class        ItemApiController
+ * Class        GetItemController
  * OperationId  member.get
  * Operation    GET
  * OperationUrl /groups/{group_uuid}/members/{user_uuid}

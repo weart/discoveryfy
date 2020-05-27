@@ -17,6 +17,7 @@ class CacheKeys
     const LOGIN_CSRF        = 'login.csrf.';
     const REGISTER_CSRF     = 'register.csrf.';
     const JWT               = 'jwt.';
+    const SPO_ACC_TKN       = 'SPO_ACC_TKN';
 
     public static function getLoginCSRFCacheKey(string $csrf_token): string
     {
@@ -41,5 +42,10 @@ class CacheKeys
     public static function getQueryCacheKey(string $sql, string $params): string
     {
         return sha1(sprintf('%s-%s.cache', $sql, $params));
+    }
+
+    public static function getSpotifyAccessToken(): string
+    {
+        return self::SPO_ACC_TKN;
     }
 }

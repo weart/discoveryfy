@@ -24,7 +24,7 @@ use Phalcon\Http\ResponseInterface;
  * Get one session
  *
  * Module       Sessions
- * Class        ApiController
+ * Class        GetController
  * OperationId  session.get
  * Operation    GET
  * OperationUrl /sessions/{session_uuid}
