@@ -2,7 +2,7 @@
 
 namespace Discoveryfy\Tests\unit\cli;
 
-use Discoveryfy\Tasks\MainTask;
+use Discoveryfy\Tasks\WelcomeTask;
 use Phalcon\Di\FactoryDefault\Cli;
 use UnitTester;
 use function ob_end_clean;
@@ -14,28 +14,29 @@ class BaseCest
     public function checkOutput(UnitTester $I)
     {
         $container = new Cli();
-        $task      = new MainTask();
+        $task      = new WelcomeTask();
         $task->setDI($container);
 
         ob_start();
-        $task->mainAction();
+        $task->runAction();
         $actual = ob_get_contents();
         ob_end_clean();
 
-//        $actual   = str_replace("\n", "\r\n", $actual);
-        $year     = date('Y');
         $expected = <<<EOF
-******************************************************
- Phalcon Team | (C) {$year}
-******************************************************
+*********************************
+* \e[32mWelcome to Discoveryfy Tasks!\e[39m *
+*********************************
 
-Usage: runCli <command>
+Available tasks:
+  * \e[31mClearCache\e[39m -> Clear cache in Redis, files in storage/cache folder
+  * \e[31mJobStats\e[39m -> Show job queue information
+  * \e[31mJobWorker\e[39m -> Execute the next job in the queue
+  * \e[31mJobCleaner\e[39m -> Remove jobs from the queue
+  * \e[31mRestartPolls\e[39m -> Check if any poll should be restarted
+  * \e[31mUpdatePollsImages\e[39m -> Check if any poll should grab new images from spotify
 
-  --help         \e[0;32m(safe)\e[0m shows the help screen/available commands
-  --clear-cache  \e[0;32m(safe)\e[0m clears the cache folders
 
 EOF;
-
         $I->assertEquals($expected, $actual);
     }
 }

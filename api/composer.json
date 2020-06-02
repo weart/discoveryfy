@@ -13,18 +13,22 @@
     ],
     "require": {
         "php": ">=7.2",
-        "ext-pdo": "*",
-        "ext-openssl": "*",
         "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
         "ext-phalcon": "^4.0.0",
-        "dariuszp/cli-progress-bar": "^1.0",
+        "ext-redis": "*",
+        "ext-pcntl": "*",
+        "enqueue/monitoring": "^0.10.1",
+        "enqueue/redis": "^0.10.1",
+        "influxdb/influxdb-php": "^1.15",
+        "jwilsson/spotify-web-api-php": "^3.0",
         "lcobucci/jwt": "^3.2",
         "league/fractal": "^0.18.0",
         "monolog/monolog": "^1.23",
         "psr/log": "^1.0",
         "robmorgan/phinx": "^0.11",
-        "vlucas/phpdotenv": "^3.0",
-        "jwilsson/spotify-web-api-php": "^3.0"
+        "vlucas/phpdotenv": "^3.0"
     },
     "require-dev": {
         "codeception/c3": "^2.4",

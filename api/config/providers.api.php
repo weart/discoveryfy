@@ -23,7 +23,9 @@ use Phalcon\Api\Providers\RouterProvider;
 use Phalcon\Api\Providers\FiltersProvider;
 use Phalcon\Api\Providers\SecurityProvider;
 use Phalcon\Api\Providers\AuthProvider;
-use Phalcon\Api\Providers\SpotifyProvider;
+use Phalcon\Api\Providers\QueueProvider;
+use Phalcon\Api\Providers\JobsProvider;
+use Discoveryfy\Providers\SpotifyProvider;
 
 /**
  * Enabled providers. Order does matter
@@ -42,5 +44,7 @@ return [
     FiltersProvider::class,
     SecurityProvider::class,
     AuthProvider::class,
-    SpotifyProvider::class
+    SpotifyProvider::class,
+    QueueProvider::class,
+    JobsProvider::class
 ];

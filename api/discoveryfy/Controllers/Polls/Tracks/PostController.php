@@ -17,12 +17,15 @@ use Discoveryfy\Exceptions\UnauthorizedException;
 use Discoveryfy\Models\Memberships;
 use Discoveryfy\Models\Polls;
 use Discoveryfy\Models\Tracks;
+use Discoveryfy\Workers\NewTrackAddTrackSpotifyPlaylist;
 use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
+use Phalcon\Api\Providers\JobsProvider;
+use Phalcon\Api\Queue\JobManager;
 use Phalcon\Api\Traits\FractalTrait;
-use Phalcon\Api\Transformers\BaseTransformer;
+//use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Db\Column;
 use Phalcon\Filter;
 use Phalcon\Http\ResponseInterface;
@@ -58,6 +61,9 @@ class PostController extends BaseItemApiController
     /** @var string */
 //    protected $method = 'item';
 
+    /** @var Polls */
+    protected $poll;
+
     protected function checkSecurity(array $parameters): array
     {
 //        $user_uuid = $this->auth->getUser() ? $this->auth->getUser()->get('id') : null;
@@ -67,19 +73,19 @@ class PostController extends BaseItemApiController
 //        }
 //        $poll = $res->getFirst();
 
-        $poll = $this->getPoll($parameters['id']);
+        $this->poll = $this->getPoll($parameters['id']);
         if (!$this->auth->getUser()) {
-            if ($poll->get('who_can_add_track') !== 'ANYONE') {
+            if ($this->poll->get('who_can_add_track') !== 'ANYONE') {
                 throw new UnauthorizedException('Only available to registered users');
             }
-        } elseif ($poll->get('who_can_add_track') !== 'USERS') {
-            $membership = $this->getMembership($poll->get('organization_id'), $this->auth->getUser()->get('id'));
+        } elseif ($this->poll->get('who_can_add_track') !== 'USERS') {
+            $membership = $this->getMembership($this->poll->get('organization_id'), $this->auth->getUser()->get('id'));
             if (!$membership) {
                 throw new UnauthorizedException('Only available when you belong to the group');
             }
-            if ($poll->get('who_can_add_track') === 'ADMINS' && !in_array($membership->get('rol'), ['ROLE_OWNER', 'ROLE_ADMIN'])) {
+            if ($this->poll->get('who_can_add_track') === 'ADMINS' && !in_array($membership->get('rol'), ['ROLE_OWNER', 'ROLE_ADMIN'])) {
                 throw new UnauthorizedException('Only available to group admins and owner');
-            } else if ($poll->get('who_can_add_track') === 'OWNERS' && $membership->get('rol') !== 'ROLE_OWNER') {
+            } else if ($this->poll->get('who_can_add_track') === 'OWNERS' && $membership->get('rol') !== 'ROLE_OWNER') {
                 throw new UnauthorizedException('Only available to group owner');
             }
         }
@@ -113,6 +119,20 @@ class PostController extends BaseItemApiController
             return $this->response->sendApiErrors($this->request->getContentType(), $track->getMessages());
         }
 
+//        $this->eventsManager->fire('track:create', $this, $track);
+//        $this->getJobManager()->addJob(NewTrackAddTrackSpotifyPlaylist::class,
+//            array_merge(
+//                $track->toArray(),
+//                [ 'spotify_playlist_uri' => $this->poll->get('spotify_playlist_uri') ]
+//            )
+//        );
+        $this->getJobManager()->addJob(NewTrackAddTrackSpotifyPlaylist::class, [
+//            'poll_id' => $parameters['id'],
+//            'track_id' => $track->get('id'),
+            'spotify_playlist_uri' => $this->poll->get('spotify_playlist_uri'),
+            'spotify_uri' => $track->get('spotify_uri')
+        ]);
+
         return $this->response->sendApiContentCreated(
             $this->request->getContentType(),
             $this->format($this->method, $track, $this->transformer, $this->resource)
@@ -145,5 +165,11 @@ class PostController extends BaseItemApiController
             'bind'       => [ 'poll_uuid' => $poll_uuid ],
             'bindTypes'  => [ 'poll_uuid' => Column::BIND_PARAM_STR ],
         ]);
+    }
+
+    protected function getJobManager(): JobManager
+    {
+        return $this->getDI()->getShared(JobsProvider::NAME);
+//        return $this->jobs;
     }
 }

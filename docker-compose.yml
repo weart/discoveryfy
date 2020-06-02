@@ -19,9 +19,11 @@ services:
     depends_on:
       - db
       - cache
+      - monitor-data
 #    links:
 #      - db
 #      - cache
+#      - monitor-data
     network_mode: "host"
 #    networks:
 #      - discoveryfy
@@ -44,6 +46,7 @@ services:
 #      - ./docker/db/data:/var/lib/postgresql:rw
       # Mysql
       - db_data:/var/lib/mysql
+#      - ./api/storage/db/data:/var/lib/mysql
     env_file:
       - ./.env
       - ./.env.local
@@ -65,6 +68,46 @@ services:
     restart: always
     ports:
       - "6379:6379"
+
+  monitor-data:
+    container_name: monitor-data
+    image: "influxdb:1.8-alpine"
+    restart: always
+    ports:
+    - 8086:8086 # HTTP API port
+#    - 2003:2003 # Graphite support, if it is enabled
+    expose: # Opens port 8086 on the container
+      - '8086'
+#    build:
+#      context: ./api/storage/monitor/influxdb
+    volumes:
+      - ./api/storage/monitor/influxdb/etc:/etc/influxdb
+      - ./api/storage/monitor/influxdb/lib:/var/lib/influxdb
+    env_file:
+      - ./.env
+      - ./.env.local
+
+  monitor-web:
+    container_name: monitor-web
+    image: "grafana/grafana:7.0.1" # By default is alpine, add -ubuntu for a ubuntu based image
+    restart: always
+    ports:
+      - 3000:3000
+    expose: # Opens port 3000 on the container
+      - '3000'
+#    build:
+#      context: ./api/storage/monitor/grafana
+    volumes:
+      - ./api/storage/monitor/grafana/etc:/etc/grafana:ro
+      - ./api/storage/monitor/grafana/lib:/var/lib/grafana
+      - ./api/storage/monitor/grafana/log:/var/log/grafana
+    links:
+      - monitor-data:monitor-data
+    env_file:
+      - ./.env
+      - ./.env.local
+    depends_on:
+      - monitor-data
 
 volumes:
   db_data: {}

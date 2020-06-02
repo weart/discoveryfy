@@ -13,10 +13,15 @@ namespace Discoveryfy\Controllers\Polls;
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
 use Discoveryfy\Models\Polls;
+use Discoveryfy\Workers\DeletePollDeleteSpotifyPlaylistHistoricWorker;
+use Discoveryfy\Workers\DeletePollDeleteSpotifyPlaylistWinnerWorker;
+use Discoveryfy\Workers\DeletePollDeleteSpotifyPlaylistWorker;
 use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
+use Phalcon\Api\Providers\JobsProvider;
+use Phalcon\Api\Queue\JobManager;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\Model\Row;
 
@@ -57,6 +62,15 @@ class DeleteController extends BaseItemApiController
             throw new InternalServerErrorException('Error deleting the poll');
         }
 
+//        $this->eventsManager->fire('poll:delete', $this, $poll);
+        $this->getJobManager()->addJob(DeletePollDeleteSpotifyPlaylistWorker::class, $poll->toArray());
+        if (!empty($poll->get('spotify_playlist_winner_uri'))) {
+            $this->getJobManager()->addJob(DeletePollDeleteSpotifyPlaylistWinnerWorker::class, $poll->toArray());
+        }
+        if (!empty($poll->get('spotify_playlist_historic_uri'))) {
+            $this->getJobManager()->addJob(DeletePollDeleteSpotifyPlaylistHistoricWorker::class, $poll->toArray());
+        }
+
         return $this->response->sendNoContent();
     }
 
@@ -66,5 +80,11 @@ class DeleteController extends BaseItemApiController
             throw new UnauthorizedException('Only owners can delete a poll');
         }
         return $rtn->poll;
+    }
+
+    protected function getJobManager(): JobManager
+    {
+        return $this->getDI()->getShared(JobsProvider::NAME);
+//        return $this->jobs;
     }
 }

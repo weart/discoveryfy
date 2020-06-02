@@ -15,11 +15,16 @@ use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
 use Discoveryfy\Models\Organizations;
 use Discoveryfy\Models\Polls;
+use Discoveryfy\Workers\UpdatePollUpdateSpotifyPlaylistHistoricWorker;
+use Discoveryfy\Workers\UpdatePollUpdateSpotifyPlaylistWinnerWorker;
+use Discoveryfy\Workers\UpdatePollUpdateSpotifyPlaylistWorker;
 use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 //use Phalcon\Api\Transformers\BaseTransformer;
+use Phalcon\Api\Providers\JobsProvider;
+use Phalcon\Api\Queue\JobManager;
 use Phalcon\Filter;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\Model\Resultset\Complex;
@@ -70,7 +75,20 @@ class PutController extends BaseItemApiController
         $poll = $this->checkUserMembership($rtn);
 
         // Update poll information
-        $this->updatePoll($poll);
+        $changedFields = $this->updatePoll($poll);
+
+//        $this->eventsManager->fire('poll:modify', $this, $poll);
+        if (array_intersect($changedFields, [ 'name', 'description', 'spotify_playlist_public', 'spotify_playlist_collaborative' ])) {
+            $this->getJobManager()->addJob(UpdatePollUpdateSpotifyPlaylistWorker::class, $poll->toArray());
+        }
+        if (array_intersect($changedFields, [ 'name', 'description' ])) {
+            if (!empty($poll->get('spotify_playlist_winner_uri'))) {
+                $this->getJobManager()->addJob(UpdatePollUpdateSpotifyPlaylistWinnerWorker::class, $poll->toArray());
+            }
+            if (!empty($poll->get('spotify_playlist_historic_uri'))) {
+                $this->getJobManager()->addJob(UpdatePollUpdateSpotifyPlaylistHistoricWorker::class, $poll->toArray());
+            }
+        }
 
         // Return the object
         return $this->sendApiData($poll);
@@ -84,14 +102,14 @@ class PutController extends BaseItemApiController
         return $rtn->poll;
     }
 
-    private function updatePoll(Polls $poll): Polls
+    private function updatePoll(Polls $poll): array
     {
         $attrs = [
             'name'                              => Filter::FILTER_STRING,
             'description'                       => Filter::FILTER_STRING,
             'spotify_playlist_images'           => Filter::FILTER_STRING, //array, saved in json
             'spotify_playlist_public'           => Filter::FILTER_BOOL,
-            'spotify_playlist_collaborative'    => Filter::FILTER_BOOL,
+//            'spotify_playlist_collaborative'    => Filter::FILTER_BOOL, //Disable by now until sync Task is created
             'spotify_playlist_uri'              => Filter::FILTER_STRING,
             'spotify_playlist_winner_uri'       => Filter::FILTER_STRING,
             'spotify_playlist_historic_uri'     => Filter::FILTER_STRING,
@@ -115,6 +133,8 @@ class PutController extends BaseItemApiController
             }
         }
 
+        $changedFields = $poll->getChangedFields();
+
         if (true !== $poll->validation() || true !== $poll->save()) {
             if (false === $poll->validationHasFailed()) {
                 throw new InternalServerErrorException('Error changing poll');
@@ -122,6 +142,12 @@ class PutController extends BaseItemApiController
             return $this->response->sendApiErrors($this->request->getContentType(), $poll->getMessages());
         }
 
-        return $poll;
+        return $changedFields;
+    }
+
+    protected function getJobManager(): JobManager
+    {
+        return $this->getDI()->getShared(JobsProvider::NAME);
+//        return $this->jobs;
     }
 }

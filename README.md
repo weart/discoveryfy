@@ -30,8 +30,8 @@ Client / Frontend:
   * [JSON:API vuex adapter?](https://mrichar1.github.io/jsonapi-vuex/)
 
 DevOps:
-  * Docker, and GitPod
-  * Kibana?
+  * Docker
+  * GitPod? Kibana? Graphite?
   * https://github.com/jesseduffield/lazydocker
 
 ## Requirements
@@ -49,7 +49,7 @@ cp .env .env.local
 ```
 And modify `.env.local` with your values.
 
-Build &  start all containers:
+Build & start all containers:
 ```bash
 docker-compose up -d
 docker-compose up --force-recreate -d
@@ -83,22 +83,12 @@ And launch the daemon:
 
 ## Useful commands
 
-Check machine ip:
+Execute Discoveryfy Tasks:
 ```bash
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' api
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cache
-```
-
-Check docker installed php version:
-```bash
-docker run --rm -it api php -v
-```
-
-Execute phalcon or composer commands:
-```shell
-docker-compose exec api phalcon
-docker-compose exec api composer
+docker-compose exec api ./runCli
+docker-compose exec api ./runCli ClearCache
+docker-compose exec api ./runCli JobStats
+docker-compose exec api ./runCli JobWorker
 ```
 
 Execute migration:
@@ -111,10 +101,34 @@ Execute seeding:
 docker-compose exec api vendor/bin/phinx seed:run
 ```
 
+Execute phalcon or composer commands:
+```shell
+docker-compose exec api phalcon
+docker-compose exec api composer
+```
+
 Enter command in database:
 ```shell
 docker exec -ti db /bin/bash
 mysql -u leninux -p discoveryfydb
+```
+
+Enter command in redis:
+```shell
+docker exec -ti cache /bin/sh
+redis-cli
+```
+
+Check docker installed php version:
+```bash
+docker run --rm -it api php -v
+```
+
+Check machine ip:
+```bash
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' api
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cache
 ```
 
 ## Backers

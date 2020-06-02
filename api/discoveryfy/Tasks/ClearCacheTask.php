@@ -12,9 +12,11 @@ declare(strict_types=1);
 
 namespace Discoveryfy\Tasks;
 
+use Discoveryfy\Constants\CacheKeys;
+use Phalcon\Api\Tasks\BaseTask;
 use Phalcon\Cache;
-use Phalcon\Cli\Task as PhTask;
 use Phalcon\Config;
+use Phalcon\Cache\Adapter\Redis as RedisCacheAdapter;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use function in_array;
@@ -27,16 +29,41 @@ use const PHP_EOL;
  * @property Cache $cache
  * @property Config $config
  */
-class ClearCacheTask extends PhTask
+class ClearCacheTask extends BaseTask
 {
+    protected $options = [
+        'files', 'redis', 'redis-flush', 'default', 'all' //, 'memcached'
+    ];
+
+    public function helpAction()
+    {
+        echo $this->formatTitle('Clear Cache');
+        echo 'Available options: ' . implode(', ', $this->options) . PHP_EOL;
+        parent::helpAction();
+    }
+
     /**
      * Clears the data cache from the application
      */
-    public function mainAction()
+    public function runAction(string $option = 'default')
     {
-        $this->clearFileCache();
-        $this->clearRedis();
-//        $this->clearMemCached();
+        echo $this->formatTitle('Running Clear Cache');
+
+        if (!in_array($option, $this->options)) {
+            throw new \InvalidArgumentException(sprintf('Invalid option %s. Valid Options: %s', $option, implode(', ', $this->options)));
+        }
+        if (in_array($option, ['files', 'default', 'all'])) {
+            $this->clearFileCache();
+        }
+        if (in_array($option, ['redis', 'default', 'all'])) {
+            $this->clearRedis();
+        }
+        if (in_array($option, ['redis-flush', 'all'])) {
+            $this->flushRedis();
+        }
+//        if (in_array($option, ['memcached', 'all'])) {
+//            $this->clearMemCached();
+//        }
     }
 
     /**
@@ -44,7 +71,7 @@ class ClearCacheTask extends PhTask
      */
     private function clearFileCache()
     {
-        echo 'Clearing Cache folders' . PHP_EOL;
+        echo $this->format('Deleting files in Cache folder', 'yellow') . PHP_EOL;
 
         $fileList    = [];
         $whitelist   = ['.', '..', '.gitignore'];
@@ -64,19 +91,54 @@ class ClearCacheTask extends PhTask
             }
         }
 
-        echo sprintf('Found %s files', count($fileList)) . PHP_EOL;
-        foreach ($fileList as $file) {
-            echo '.';
-            unlink($file);
+        echo $this->format(sprintf('Found %s files: ', count($fileList)), 'yellow');
+        if (count($fileList) > 0) {
+            foreach ($fileList as $file) {
+                $this->formatResult(unlink($file));
+            }
+            echo PHP_EOL;
         }
 
-        echo PHP_EOL . 'Cleared Cache folders' . PHP_EOL;
+        echo $this->format('All cache files deleted', 'green') . PHP_EOL . PHP_EOL;
     }
 
     private function clearRedis()
     {
-        echo 'Clearing Redis cache' . PHP_EOL;
-        echo '@ToDo' . PHP_EOL;
+        echo $this->format('Clearing Redis cache', 'yellow') . PHP_EOL;
+
+        // Remove only some keys
+        $keys_prefix = [
+            CacheKeys::LOGIN_CSRF,
+            CacheKeys::REGISTER_CSRF,
+            CacheKeys::JWT,
+            CacheKeys::MODEL,
+            CacheKeys::QUERY
+        ];
+        $adapter = $this->cache->getAdapter();
+        if (!($adapter instanceof RedisCacheAdapter)) {
+            throw new \Exception('The Phalcon Cache is not based in Redis');
+        }
+        foreach ($keys_prefix as $key_prefix) {
+            $keys = $adapter->getKeys($key_prefix);
+            echo $this->format(sprintf('The prefix %s has %s keys: ', $key_prefix, count($keys)), 'yellow');
+            foreach ($keys as $key) {
+                echo $key.PHP_EOL;
+                $this->formatResult($adapter->delete($key));
+                $this->formatResult($this->cache->delete($key));
+            }
+            echo PHP_EOL;
+        }
+
+        echo $this->format('Redis cache cleared', 'green') . PHP_EOL . PHP_EOL;
+    }
+
+    private function flushRedis()
+    {
+        echo $this->format('Flushing Redis cache', 'yellow') . PHP_EOL;
+        echo 'Removing all content from redis: ' . $this->formatResult(
+            $this->cache->clear()
+        );
+        echo $this->format('Redis cache flushed', 'green') . PHP_EOL . PHP_EOL;
     }
 
     /**
@@ -84,7 +146,7 @@ class ClearCacheTask extends PhTask
      */
     private function clearMemCached()
     {
-        echo 'Clearing data cache' . PHP_EOL;
+        echo $this->format('Deleting all MemCached content', 'yellow') . PHP_EOL;
 
         $default = [
             'servers'  => [
@@ -118,19 +180,19 @@ class ClearCacheTask extends PhTask
         // 7.2 countable
         $keys = $keys ?: [];
         echo sprintf('Found %s keys', count($keys)) . PHP_EOL;
-        foreach ($keys as $key) {
-            if ('api-data' === substr($key, 0, 8)) {
-                $server     = $memcached->getServerByKey($key);
-                $result     = $memcached->deleteByKey($server['host'], $key);
-                $resultCode = $memcached->getResultCode();
-                if (true === $result && $resultCode !== \Memcached::RES_NOTFOUND) {
-                    echo '.';
-                } else {
-                    echo 'F';
+        if (count($keys) > 0) {
+            foreach ($keys as $key) {
+                if ('api-data' === substr($key, 0, 8)) {
+                    $server     = $memcached->getServerByKey($key);
+                    $result     = $memcached->deleteByKey($server['host'], $key);
+                    $resultCode = $memcached->getResultCode();
+                    $resultTest = (true === $result && $resultCode !== \Memcached::RES_NOTFOUND);
+                    $this->formatResult($resultTest);
                 }
             }
+            echo PHP_EOL;
         }
 
-        echo  PHP_EOL . 'Cleared data cache'  . PHP_EOL;
+        echo $this->format('Cleared MemCached content', 'green') . PHP_EOL . PHP_EOL;
     }
 }

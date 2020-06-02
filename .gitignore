@@ -9,3 +9,11 @@
 /.env.local
 /.env.local.php
 /.env.*.local
+
+# Influxdb
+api/storage/monitor/influxdb/lib/*
+
+# Grafana
+api/storage/monitor/grafana/etc/provisioning/datasources/datasource.yaml
+api/storage/monitor/grafana/lib/*
+api/storage/monitor/grafana/log/*

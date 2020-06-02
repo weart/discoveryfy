@@ -36,6 +36,7 @@ RUN apt-get upgrade -y && apt-get update -y \
     && docker-php-ext-install pdo_mysql \
     && docker-php-ext-install mysqli \
     && docker-php-ext-enable mysqli \
+
     # install postgres
 #        libpq-dev \
 ##        libpq-dev postgresql-dev \
@@ -62,6 +63,10 @@ RUN apt-get upgrade -y && apt-get update -y \
     && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
+
+    # install pcntl
+    && docker-php-ext-configure pcntl --enable-pcntl \
+    && docker-php-ext-install pcntl \
 
     # Change this
     && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ssl-cert-snakeoil.key \

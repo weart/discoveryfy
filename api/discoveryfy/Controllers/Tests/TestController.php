@@ -24,7 +24,7 @@ use Phalcon\Mvc\Controller;
 /**
  * Class TestController
  *
- * @property Cache $cache
+ * @property Cache        $cache
  * @property Config       $config
  * @property Request      $request
  * @property Response     $response

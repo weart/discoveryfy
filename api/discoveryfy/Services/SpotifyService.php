@@ -169,6 +169,11 @@ class SpotifyService extends Injectable // extends AbstractInjectionAware
         return implode(', ', array_column($artists, 'name'));
     }
 
+    public function getApi(): SpotifyWebAPI
+    {
+        return $this->api;
+    }
+
     //getTrackInfo
     //getPlaylistInfo
     //createPlaylist

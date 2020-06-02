@@ -35,6 +35,16 @@ class Tracks extends TimestampableModel
     {
         $this->setSource('tracks');
 
+//        $this->belongsTo('poll_id', Polls::class, 'id', [
+//            'alias' => 'poll',
+//        ]);
+//        $this->belongsTo('session_id', Sessions::class, 'id', [
+//            'alias' => 'session',
+//        ]);
+//        $this->belongsTo('user_id', Users::class, 'id', [
+//            'alias' => 'user',
+//        ]);
+
         parent::initialize();
     }
 

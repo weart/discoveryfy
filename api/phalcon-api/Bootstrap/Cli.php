@@ -62,21 +62,60 @@ class Cli extends AbstractBootstrap
      */
     private function processArguments()
     {
+        // By Default the task is Main and the action is help
+        $this->options = [
+            'task'          => 'Welcome',
+            'action'        => 'help',
+        ];
+        $cmd_args = $_SERVER['argv'];
+        foreach ($cmd_args as $k => $arg) {
+            if ($k === 1) { //First param is the task
+                $this->options['task'] = $arg;
+            } elseif ($k === 2) { //Second param is the action
+                $this->options['action'] = $arg;
+            } elseif ($k >= 3) { //Others params are args to the action
+                $this->options['params'][] = $arg;
+            }
+        }
+    }
+
+    /*
+    private function processArgumentsPhalconApi()
+    {
         $this->options = [
             'task' => 'Main',
         ];
-
         $options = [
             'clear-cache' => 'ClearCache',
             'help'        => 'Main',
         ];
 
         $arguments = getopt('', array_keys($options));
-
         foreach ($options as $option => $task) {
             if (true === isset($arguments[$option])) {
                 $this->options['task'] = $task;
             }
         }
+    }
+    */
+
+    public static function formatExceptions($e)
+    {
+        $errorString = "+---------------------+\n| \e[31mUNHANDLED EXCEPTION\e[39m |\n+---------------------+\n";
+        $errorString .= "Fatal error: Uncaught exception '%s' %s with message '%s' in %s on line %d\n\n";
+        $errorString .= "Stack Trace:\n%s\n";
+
+        $type = get_class($e);
+        $message = $e->getMessage();
+        $file = $e->getFile();
+        $line = $e->getLine();
+        $trace = $e->getTraceAsString();
+        $code = null;
+        if ($e->getCode()) {
+            $code = '(' . $e->getCode() . ')';
+        }
+
+        $error = sprintf($errorString, $type, $code, $message, $file, $line, $trace);
+        return $error;
     }
 }

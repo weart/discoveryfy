@@ -29,6 +29,10 @@ return [
     'db'         => [
         'timestamps_from_db' => false
     ],
+    'queue' => [
+        'host' => envValue('REDIS_HOST', 'cache'),
+        'port' => envValue('REDIS_PORT', 6379),
+    ],
     'cache'      => [
         'adapter' => 'redis',
         'options' => [

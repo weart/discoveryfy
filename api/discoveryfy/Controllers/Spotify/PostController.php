@@ -12,14 +12,14 @@ namespace Discoveryfy\Controllers\Spotify;
 
 use Discoveryfy\Constants\Relationships;
 //use Discoveryfy\Exceptions\BadRequestException;
+use Discoveryfy\Providers\SpotifyProvider;
+use Discoveryfy\Services\SpotifyService as Spotify;
 use Discoveryfy\Transformers\SearchTransformer;
 use Phalcon\Api\Controllers\BaseCollectionApiController;
-use Phalcon\Api\Providers\SpotifyProvider;
-use Phalcon\Filter;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
-use Discoveryfy\Services\SpotifyService as Spotify;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
+use Phalcon\Filter;
 use Phalcon\Http\ResponseInterface;
 
 /**

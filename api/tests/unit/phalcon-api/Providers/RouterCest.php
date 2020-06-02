@@ -53,21 +53,26 @@ class RouterCest
             ['GET', '/groups/{group_uuid}/members/{user_uuid}'],
             ['PUT', '/groups/{group_uuid}/members/{user_uuid}'],
 
-            ['PUT', '/groups/{group_uuid}/polls'],
+            ['GET', '/groups/{group_uuid}/polls'],
             ['POST', '/groups/{group_uuid}/polls'],
 
             // Polls Routes
-//            ['GET', '/polls'],
-//            ['GET', '/polls/{poll_uuid}'],
-//            ['PUT', '/polls/{poll_uuid}'],
-//            ['DELETE', '/polls/{poll_uuid}'],
-//
-//            ['POST', '/polls/{poll_uuid}/tracks'],
-//            ['PUT', '/polls/{poll_uuid}/tracks/{track_uuid}'],
-//            ['DELETE', '/polls/{poll_uuid}/tracks/{track_uuid}'],
-//
-//            ['PUT', '/polls/{poll_uuid}/tracks/{track_uuid}/rate'],
-//            ['DELETE', '/polls/{poll_uuid}/tracks/{track_uuid}/rate'],
+            ['GET', '/polls'],
+            ['GET', '/polls/{poll_uuid}'],
+            ['PUT', '/polls/{poll_uuid}'],
+            ['DELETE', '/polls/{poll_uuid}'],
+
+            ['GET', '/polls/{poll_uuid}/tracks'],
+            ['POST', '/polls/{poll_uuid}/tracks'],
+            ['GET', '/polls/{poll_uuid}/tracks/{track_uuid}'],
+            ['PUT', '/polls/{poll_uuid}/tracks/{track_uuid}'],
+            ['DELETE', '/polls/{poll_uuid}/tracks/{track_uuid}'],
+
+            ['PUT', '/polls/{poll_uuid}/tracks/{track_uuid}/rate'],
+            ['DELETE', '/polls/{poll_uuid}/tracks/{track_uuid}/rate'],
+
+            // Spotify Routes
+            ['POST', '/spotify'],
 
             // Test Routes
             ['GET', '/test'],

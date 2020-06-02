@@ -16,11 +16,14 @@ use Discoveryfy\Exceptions\UnauthorizedException;
 use Discoveryfy\Models\Organizations;
 use Discoveryfy\Models\Polls;
 use Discoveryfy\Models\Tracks;
+use Discoveryfy\Workers\UpdateTrackUpdateTrackSpotifyPlaylist;
 use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
 //use Phalcon\Api\Transformers\BaseTransformer;
+use Phalcon\Api\Providers\JobsProvider;
+use Phalcon\Api\Queue\JobManager;
 use Phalcon\Db\Column;
 use Phalcon\Filter;
 use Phalcon\Http\ResponseInterface;
@@ -90,15 +93,11 @@ class PutController extends BaseItemApiController
 
     public function coreAction(array $parameters): ResponseInterface
     {
-        // Update poll information
-        $this->updateTrack($this->track);
+        $remove_spotify_uri = (
+            $this->request->hasPut('spotify_uri') &&
+            $this->track->get('spotify_uri') !== $this->request->getPut('spotify_uri', Filter::FILTER_STRING)
+        ) ?  $this->track->get('spotify_uri') : false;
 
-        // Return the object
-        return $this->sendApiData($this->track);
-    }
-
-    private function updateTrack(Tracks $track): Tracks
-    {
         $attrs = [
             'artist'            => Filter::FILTER_STRING,
             'name'              => Filter::FILTER_STRING,
@@ -106,19 +105,49 @@ class PutController extends BaseItemApiController
             'youtube_uri'       => Filter::FILTER_STRING
         ];
 
+        // Update poll information
         foreach ($attrs as $attr => $filter) {
             if ($this->request->hasPut($attr)) {
-                $track->set($attr, $this->request->getPut($attr, $filter));
+                $this->track->set($attr, $this->request->getPut($attr, $filter));
             }
         }
 
-        if (true !== $track->validation() || true !== $track->save()) {
-            if (false === $track->validationHasFailed()) {
+        if (true !== $this->track->validation() || true !== $this->track->save()) {
+            if (false === $this->track->validationHasFailed()) {
                 throw new InternalServerErrorException('Error changing track');
             }
-            return $this->response->sendApiErrors($this->request->getContentType(), $track->getMessages());
+            return $this->response->sendApiErrors($this->request->getContentType(), $this->track->getMessages());
         }
 
-        return $track;
+//        $this->eventsManager->fire('track:modify', $this, $this->track);
+        $poll = $this->getPoll($this->track->get('poll_id'));
+        $args = $this->track->toArray();
+        $args['spotify_playlist_uri'] = $poll->get('spotify_playlist_uri');
+        if ($remove_spotify_uri) {
+            $args['remove_spotify_uri'] = $remove_spotify_uri;
+        }
+        $this->getJobManager()->addJob(UpdateTrackUpdateTrackSpotifyPlaylist::class, $args);
+
+        // Return the object
+        return $this->sendApiData($this->track);
+    }
+
+    /**
+     * @param string $poll_uuid
+     * @return mixed
+     */
+    private function getPoll(string $poll_uuid)
+    {
+        return Polls::findFirst([
+            'conditions' => 'id = :poll_uuid:',
+            'bind'       => [ 'poll_uuid' => $poll_uuid ],
+            'bindTypes'  => [ 'poll_uuid' => Column::BIND_PARAM_STR ],
+        ]);
+    }
+
+    protected function getJobManager(): JobManager
+    {
+        return $this->getDI()->getShared(JobsProvider::NAME);
+//        return $this->jobs;
     }
 }

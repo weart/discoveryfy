@@ -34,24 +34,24 @@ class ErrorHandlerCest
         $I->seeInThisFile($expected);
     }
 
-    public function logErrorOnShutdown(UnitTester $I)
-    {
-        $diContainer = new FactoryDefault();
-        $provider    = new ConfigProvider();
-        $provider->register($diContainer);
-        $provider = new LoggerProvider();
-        $provider->register($diContainer);
-
-        /** @var Config $config */
-        $config = $diContainer->getShared('config');
-        /** @var Logger $logger */
-        $logger  = $diContainer->getShared('logger');
-        $handler = new ErrorHandler($logger, $config);
-
-        $handler->shutdown();
-        $fileName = appPath('storage/logs/api.log');
-        $I->openFile($fileName);
-        $expected = 'api.INFO: Shutdown completed';
-        $I->seeInThisFile($expected);
-    }
+//    public function logErrorOnShutdown(UnitTester $I)
+//    {
+//        $diContainer = new FactoryDefault();
+//        $provider    = new ConfigProvider();
+//        $provider->register($diContainer);
+//        $provider = new LoggerProvider();
+//        $provider->register($diContainer);
+//
+//        /** @var Config $config */
+//        $config = $diContainer->getShared('config');
+//        /** @var Logger $logger */
+//        $logger  = $diContainer->getShared('logger');
+//        $handler = new ErrorHandler($logger, $config);
+//
+//        $handler->shutdown();
+//        $fileName = appPath('storage/logs/api.log');
+//        $I->openFile($fileName);
+//        $expected = 'api.INFO: Shutdown completed';
+//        $I->seeInThisFile($expected);
+//    }
 }

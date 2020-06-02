@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Discoveryfy\Models;
 
 use Discoveryfy\Exceptions\InternalServerErrorException;
+use Discoveryfy\Exceptions\NotImplementedException;
 use Discoveryfy\Exceptions\UnauthorizedException;
 use Phalcon\Api\Filters\UUIDFilter;
 use Phalcon\Api\Mvc\Model\TimestampableModel;
@@ -105,6 +106,26 @@ class Polls extends TimestampableModel
             return null;
         }
         return new \DateTime($this->end_date);
+    }
+
+    public function getHistoricPlaylistName(): string
+    {
+        return $this->get('name').' - Historic';
+    }
+
+    public function getHistoricPlaylistDescription(): string
+    {
+        return 'Playlist with all songs added to the playlist: "' . $this->get('name').'"';
+    }
+
+    public function getWinnerPlaylistName(): string
+    {
+        return $this->get('name').' - Winners';
+    }
+
+    public function getWinnerPlaylistDescription(): string
+    {
+        return 'Playlist with best songs of the playlist: "' . $this->get('name') . '"';
     }
 
     /**
@@ -235,6 +256,11 @@ class Polls extends TimestampableModel
             $q->limit($pagination['limit'], $pagination['offset']);
         }
         return $q->getQuery()->execute();
+    }
+
+    public static function getTrackWinners()
+    {
+        throw new NotImplementedException('@ToDo');
     }
 
     // In non static context this function can be called directly this way: $this->modelsManager->createBuilder()

@@ -19,11 +19,16 @@ use Discoveryfy\Models\Organizations;
 //use Phalcon\Api\Controllers\BaseController;
 use Discoveryfy\Models\Polls;
 //use Discoveryfy\Models\Users;
+use Discoveryfy\Workers\NewPollCreateSpotifyPlaylistHistoricWorker;
+use Discoveryfy\Workers\NewPollCreateSpotifyPlaylistWinnerWorker;
+use Discoveryfy\Workers\NewPollCreateSpotifyPlaylistWorker;
 //use Phalcon\Mvc\Controller;
 use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
+use Phalcon\Api\Providers\JobsProvider;
+use Phalcon\Api\Queue\JobManager;
 use Phalcon\Api\Traits\FractalTrait;
 //use Phalcon\Api\Transformers\BaseTransformer;
 use Phalcon\Filter;
@@ -106,7 +111,8 @@ class PostController extends BaseItemApiController
             ->set('multiple_anon_tracks', $this->request->getPost('multiple_anon_tracks', Filter::FILTER_BOOL, false))
             // @ToDo: Call the spotify service?
             ->set('spotify_playlist_public', $this->request->getPost('spotify_playlist_public', Filter::FILTER_BOOL, false))
-            ->set('spotify_playlist_collaborative', $this->request->getPost('spotify_playlist_collaborative', Filter::FILTER_BOOL, false))
+            ->set('spotify_playlist_collaborative', false) //Disable by now until sync Task is created
+//            ->set('spotify_playlist_collaborative', $this->request->getPost('spotify_playlist_collaborative', Filter::FILTER_BOOL, false)) //Disable by now until sync Task is created
             ->set('spotify_playlist_uri', $this->request->getPost('spotify_playlist_uri', Filter::FILTER_STRING, ''))
             ->set('spotify_playlist_winner_uri', $this->request->getPost('spotify_playlist_winner_uri', Filter::FILTER_STRING, ''))
             ->set('spotify_playlist_historic_uri', $this->request->getPost('spotify_playlist_historic_uri', Filter::FILTER_STRING, ''))
@@ -118,6 +124,20 @@ class PostController extends BaseItemApiController
             }
             return $this->response->sendApiErrors($this->request->getContentType(), $poll->getMessages());
         }
+
+        // Async actions
+//        $this->eventsManager->fire('poll:create', $this, $poll);
+
+        if (empty($poll->get('spotify_playlist_uri'))) {
+            $this->getJobManager()->addJob(NewPollCreateSpotifyPlaylistWorker::class, $poll->toArray());
+        }
+        // Create this on the first poll reset
+//        if (empty($poll->get('spotify_playlist_winner_uri'))) {
+//            $this->getJobManager()->addJob(NewPollCreateSpotifyPlaylistWinnerWorker::class, $poll->toArray());
+//        }
+//        if (empty($poll->get('spotify_playlist_historic_uri'))) {
+//            $this->getJobManager()->addJob(NewPollCreateSpotifyPlaylistHistoricWorker::class, $poll->toArray());
+//        }
 
         return $this->response->sendApiContentCreated(
             $this->request->getContentType(),
@@ -144,5 +164,11 @@ class PostController extends BaseItemApiController
             throw new InternalServerErrorException('Invalid role');
         }
         return $rtn->org;
+    }
+
+    protected function getJobManager(): JobManager
+    {
+        return $this->getDI()->getShared(JobsProvider::NAME);
+//        return $this->jobs;
     }
 }

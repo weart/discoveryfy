@@ -12,10 +12,14 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Providers;
 
+use Monolog\Logger;
+use Phalcon\Config;
 use Phalcon\Db\Adapter\Pdo\Mysql;
 //use Phalcon\Db\Adapter\Pdo\Postgresql;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
+use Phalcon\Events\Event;
+use Phalcon\Events\Manager;
 use function Phalcon\Api\Core\envValue;
 
 class DatabaseProvider implements ServiceProviderInterface
@@ -30,7 +34,10 @@ class DatabaseProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container): void
     {
-        $container->setShared(self::NAME, function () {
+        /** @var Manager $eventsManager */
+        $eventsManager = $container->getShared('eventsManager');
+
+        $container->setShared(self::NAME, function () use ($eventsManager) {
             //MySQL
             $connection = new Mysql([
                 'host'       => envValue('MYSQL_HOST', 'localhost'),
@@ -48,7 +55,20 @@ class DatabaseProvider implements ServiceProviderInterface
 //                'password'   => envValue('POSTGRES_PASSWORD', 'db_password'),
 //            ]);
 
+            $connection->setEventsManager($eventsManager);
             return $connection;
         });
+
+        /** @var Config $config */
+        $config = $container->getShared('config');
+        $debug = (bool) $config->path('app.debug');
+        if ($debug) {
+            /** @var Logger $logger */
+            $logger = $container->getShared(LoggerProvider::NAME);
+            $eventsManager->attach('db:afterQuery', function (Event $event, $connection) use ($logger) {
+                $logger->debug('SQL: '.$connection->getSQLStatement());
+                $logger->debug(var_export($connection->getSQLVariables(), true));
+            });
+        }
     }
 }

@@ -12,16 +12,15 @@ namespace Discoveryfy\Controllers\Polls\Tracks;
 
 use Discoveryfy\Exceptions\InternalServerErrorException;
 use Discoveryfy\Exceptions\UnauthorizedException;
-use Discoveryfy\Models\Memberships;
-use Discoveryfy\Models\Organizations;
 use Discoveryfy\Models\Polls;
 use Discoveryfy\Models\Tracks;
-use Discoveryfy\Models\Users;
-use Phalcon\Api\Controllers\BaseController;
+use Discoveryfy\Workers\DeleteTrackDeleteTrackSpotifyPlaylist;
 use Phalcon\Api\Controllers\BaseItemApiController;
 use Phalcon\Api\Http\Request;
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Plugins\Auth\AuthPlugin as Auth;
+use Phalcon\Api\Providers\JobsProvider;
+use Phalcon\Api\Queue\JobManager;
 use Phalcon\Db\Column;
 use Phalcon\Http\ResponseInterface;
 
@@ -77,12 +76,46 @@ class DeleteController extends BaseItemApiController
 
     public function coreAction(array $parameters): ResponseInterface
     {
-        // SoftDelete the organization
+        /** @var Polls $poll */
+        if (false === ($poll = Polls::findFirst([
+            'conditions' => 'id = :id:',
+            'bind' => [ 'id' => $parameters['id'] ],
+            'bindTypes' => [ 'id' => Column::BIND_PARAM_STR ],
+        ]))) {
+            throw new InternalServerErrorException('Invalid poll uuid');
+        }
+        if (null === $poll) {
+            throw new InternalServerErrorException('Invalid poll uuid null');
+        }
+//        $poll = $this->track->getRelated('poll');
+        $spotify_playlist_uri = $poll->get('spotify_playlist_uri');
+
+        // @ToDo: Race problem here... the playlist hasnt been created already
+        if (empty($spotify_playlist_uri)) {
+            return $this->response->sendNoContent();
+        }
+        $spotify_uri = $this->track->get('spotify_uri');
+
+        // Delete the track
         $rtn = $this->track->delete();
         if (true !== $rtn) {
             throw new InternalServerErrorException('Error deleting the track');
         }
 
+//        $this->eventsManager->fire('track:delete', $this, $this->track);
+        $this->getJobManager()->addJob(DeleteTrackDeleteTrackSpotifyPlaylist::class, [
+//            'poll_id' => $poll->get('id'),
+//            'track_id' => $this->track->get('id'),
+            'spotify_playlist_uri' => $spotify_playlist_uri,
+            'spotify_uri' => $spotify_uri
+        ]);
+
         return $this->response->sendNoContent();
+    }
+
+    protected function getJobManager(): JobManager
+    {
+        return $this->getDI()->getShared(JobsProvider::NAME);
+//        return $this->jobs;
     }
 }

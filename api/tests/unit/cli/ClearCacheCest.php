@@ -43,12 +43,14 @@ class ClearCacheCest
         $I->assertEquals($count + 4, iterator_count($iterator));
 
         ob_start();
-        $task->mainAction();
+        $task->runAction();
         $actual = ob_get_contents();
         ob_end_clean();
 
-        $I->assertGreaterOrEquals(0, strpos($actual, 'Clearing Cache folders'));
-        $I->assertGreaterOrEquals(0, strpos($actual, 'Cleared Cache folders'));
+        $I->assertStringContainsString('Deleting files in Cache folder', $actual);
+        $I->assertStringContainsString('All cache files deleted', $actual);
+//        $I->assertGreaterOrEquals(0, strpos($actual, 'Deleting files in Cache folder'));
+//        $I->assertGreaterOrEquals(0, strpos($actual, 'All cache files deleted'));
 
         $iterator = new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
         $I->assertEquals(1, iterator_count($iterator));
@@ -56,6 +58,7 @@ class ClearCacheCest
 
     private function createFile()
     {
+        /** @noinspection NonSecureUniqidUsageInspection */
         $name    = appPath('/storage/cache/data/') . uniqid('tmp_') . '.cache';
         $pointer = fopen($name, 'wb');
         fwrite($pointer, 'test');

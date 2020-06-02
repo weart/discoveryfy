@@ -29,9 +29,9 @@ class ErrorHandlerCest
         $I->assertEquals(date_default_timezone_get(), $config->path('app.timezone'));
         $I->assertEquals(E_ALL, ini_get('error_reporting'));
         if ($config->path('app.debug')) {
-            $I->assertEquals(ini_get('display_errors'), 'On');
+            $I->assertEquals(ini_get('display_errors'), 'On', 'In debug mode, display_errors should be true');
         } else {
-            $I->assertEquals(ini_get('display_errors'), 'Off');
+            $I->assertEquals(ini_get('display_errors'), 'Off', 'If not in debug mode, display_errors should be false');
         }
     }
 }
