@@ -75,7 +75,7 @@ RUN apk update && apk add --no-cache \
 	libzip-dev
 #	php-zlib
 # Timezones
-	tzdata
+#	tzdata
 # Already installed / https://github.com/jbboehr/php-psr
 #	php-phalcon \
 #	php-psr \
