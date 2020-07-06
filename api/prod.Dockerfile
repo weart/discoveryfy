@@ -61,33 +61,33 @@ RUN cp /usr/share/zoneinfo/$OS_TIMEZONE /etc/localtime && echo $OS_TIMEZONE > /e
 RUN apk del tzdata
 
 RUN apk update && apk add --no-cache \
-#	wget
-#	curl
-#	git
+#	wget \
+#	curl \
+#	git \
 #	php-gd \
 #	php-fpm
 # Redis
-#	php-pdo
+#	php-pdo \
 	php-redis \
 # MySQL
 	php-mysql \
 # ZIP
-	libzip-dev
-#	php-zlib
+	libzip-dev \
+#	php-zlib \
 # Timezones
-#	tzdata
+#	tzdata \
 # Already installed / https://github.com/jbboehr/php-psr
 #	php-phalcon \
 #	php-psr \
-	&& rm -rf /var/cache/apk/*
+	&& rm -rf /var/cache/apk/*  \
 # https://github.com/mlocati/docker-php-extension-installer
 # ZIP & pcntl
-	&& docker-php-ext-configure pcntl --enable-pcntl
-	&& docker-php-ext-configure zip --with-libzip=/usr/include
+	&& docker-php-ext-configure pcntl --enable-pcntl \
+	&& docker-php-ext-configure zip --with-libzip=/usr/include \
 	&& docker-php-ext-install \
-#	curl
+#	curl \
 	redis \
-#	mysqli
+#	mysqli \
 #	pdo_mysql \
 	zip \
 	pcntl
@@ -148,6 +148,7 @@ RUN apk update && apk add --no-cache \
 RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
 
 #RUN mkdir -p /var/www/public
+# /usr/share/nginx/html
 COPY /api /var/www
 
 WORKDIR /var/www
