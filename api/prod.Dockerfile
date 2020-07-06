@@ -13,6 +13,15 @@ ARG OS_TIMEZONE="Europe/Andorra"
 ARG PHP_VERSION=7.4
 ARG PHP_VARIANT=-fpm-alpine
 
+# OS alpine 3.11
+#FROM nginx:1.19-alpine
+
+# Based on official PHP image with Phalcon ( php:7.4-fpm-alpine + Phalcon + Psr )
+FROM mileschou/phalcon:${PHP_VERSION}${PHP_VARIANT}
+
+# Alpine & nginx version
+RUN cat /etc/os-release | grep PRETTY_NAME && nginx -v
+
 # Environment vars
 ENV OS_TIMEZONE=$OS_TIMEZONE
 #ENV FCGI_CONNECT=/var/run/php-fpm.sock \
@@ -44,15 +53,6 @@ ENV APP_ENV=production \
 	SEED_ROOT_USER=user \
 	SEED_ROOT_PASS=pass \
 	SEED_ROOT_MAIL=user@dom.ain
-
-# OS alpine 3.11
-#FROM nginx:1.19-alpine
-
-# Based on official PHP image with Phalcon ( php:7.4-fpm-alpine + Phalcon + Psr )
-FROM mileschou/phalcon:${PHP_VERSION}${PHP_VARIANT}
-
-# Alpine & nginx version
-RUN cat /etc/os-release | grep PRETTY_NAME && nginx -v
 
 # Timezone
 RUN cp /usr/share/zoneinfo/$OS_TIMEZONE /etc/localtime && echo $OS_TIMEZONE > /etc/timezone && date
