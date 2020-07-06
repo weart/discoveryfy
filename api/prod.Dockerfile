@@ -5,22 +5,22 @@
 # https://github.com/phalcon/vokuro/blob/master/resources/Dockerfile
 # https://hub.docker.com/r/kiksaus/kikdev/dockerfile
 
-LABEL maintainer="Leninux <leninux@fabri.cat>" \
-      description="The backend for Discoveryfy"
-
 # Build arguments
 ARG OS_TIMEZONE="Europe/Andorra"
 ARG PHP_VERSION=7.4
 ARG PHP_VARIANT=-fpm-alpine
 
-# OS alpine 3.11
-#FROM nginx:1.19-alpine
-
 # Based on official PHP image with Phalcon ( php:7.4-fpm-alpine + Phalcon + Psr )
 FROM mileschou/phalcon:${PHP_VERSION}${PHP_VARIANT}
 
+# OS alpine 3.11
+#FROM nginx:1.19-alpine
+
 # Alpine & nginx version
 RUN cat /etc/os-release | grep PRETTY_NAME && nginx -v
+
+LABEL maintainer="Leninux <leninux@fabri.cat>" \
+      description="The backend for Discoveryfy"
 
 # Environment vars
 ENV OS_TIMEZONE=$OS_TIMEZONE
