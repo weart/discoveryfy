@@ -48,16 +48,16 @@ $ mv config/jwt/private2.pem config/jwt/private.pem
 More info: https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/index.md#generate-the-ssh-keys
 
 ### Roadmap
-* Define Spotify endpoints for get information
-* Scheduled agent for autofinish polls & grab information from SpotifyService
-* Finish api test -> api/tests/api/ToDo.md
-* Sysadmin: Define domain, deploy (Ansible?) and define backup strategy.
-* CORS - Uncomment middleware in RouterProvider
-* [Lost password](https://github.com/phalcon/vokuro/blob/4.0.x/src/Models/ResetPasswords.php) & Logout
-* Test against schema: https://github.com/aWuttig/codeception-api-validator / https://github.com/mlambley/swagception
-* JSON-LD Schema. First define the specs in OpenApi file, after that write the code
+ * Scheduled agent for autofinish polls & grab information from SpotifyService
+    * [Comrade is a job scheduler & manager service](https://github.com/php-comrade/comrade-dev)
+ * Finish api test -> api/tests/api/ToDo.md
+ * Sysadmin: Define domain, deploy (Ansible?) and define backup strategy.
+ * CORS - Uncomment middleware in RouterProvider
+ * [Lost password](https://github.com/phalcon/vokuro/blob/4.0.x/src/Models/ResetPasswords.php) & Logout
+ * Test against schema: https://github.com/aWuttig/codeception-api-validator / https://github.com/mlambley/swagception
+ * JSON-LD Schema. First define the specs in OpenApi file, after that write the code
     * https://ca.wikipedia.org/wiki/JSON-LD
-* Pull request to the main phalcon/json-api project:
+ * Pull request to the main phalcon/json-api project:
     * https://github.com/PhilippBaschke/acf-pro-installer/pull/35/files
 
 ### Based on the following projects:

@@ -1,0 +1,96 @@
+#Based on:
+# https://hub.docker.com/r/kiksaus/kikdev/dockerfile
+# https://github.com/npulidom/alpine-nginx-php/blob/master/Dockerfile
+# https://github.com/npulidom/alpine-phalcon/blob/master/Dockerfile
+# https://github.com/phalcon/vokuro/blob/master/resources/Dockerfile
+
+LABEL maintainer="Leninux <leninux@fabri.cat>" \
+      description="The backend for Discoveryfy"
+
+# Build arguments
+ARG OS_TIMEZONE="Europe/Andorra"
+ARG PHP_VERSION=7.4
+ARG PHP_VARIANT=-fpm-alpine
+
+# Environment vars
+ENV OS_TIMEZONE=$OS_TIMEZONE \
+	PHP_WORKDIR=/code \
+	APP_ENV=production \
+	APP_DEBUG=false \
+	APP_URL=https://api.discoveryfy.fabri.cat \
+	REDIS_HOST=discoveryfy_redis \
+	MYSQL_HOST=discoveryfy_sql \
+	MYSQL_DB=discoveryfy \
+	MYSQL_USER=user \
+	MYSQL_PASS=pass \
+	INFLUXDB_HOST=discoveryfy_monitor \
+	INFLUXDB_DB=discoveryfy \
+	INFLUXDB_USER=user \
+	INFLUXDB_PASS=pass \
+	SEED_ROOT_USER=user \
+	SEED_ROOT_PASS=pass \
+	SEED_ROOT_MAIL=user@dom.ain
+
+# OS alpine 3.11
+#FROM nginx:1.19-alpine
+
+# Based on official PHP image with Phalcon ( php:7.4-fpm-alpine + Phalcon + Psr )
+FROM mileschou/phalcon:${PHP_VERSION}${PHP_VARIANT}
+
+# Alpine & nginx version
+RUN cat /etc/os-release | grep PRETTY_NAME && nginx -v
+
+# Timezone
+RUN cp /usr/share/zoneinfo/$OS_TIMEZONE /etc/localtime && echo $OS_TIMEZONE > /etc/timezone && date
+
+# Remove other timezones
+RUN apk del tzdata
+
+RUN apk update && apk add --no-cache \
+#	wget
+#	curl
+#	git
+#	php-gd \
+# Redis
+	php-redis \
+# MySQL
+	php-mysql \
+# ZIP
+	libzip-dev
+# Already installed / https://github.com/jbboehr/php-psr
+#	php-phalcon \
+#	php-psr \
+	tzdata
+	&& rm -rf /var/cache/apk/*
+# https://github.com/mlocati/docker-php-extension-installer
+# ZIP & pcntl
+    && docker-php-ext-configure pcntl --enable-pcntl
+	&& docker-php-ext-configure zip --with-libzip=/usr/include
+	&& docker-php-ext-install \
+#	curl
+	redis \
+#	mysqli
+#	pdo_mysql \
+	zip \
+	pcntl
+#	&& docker-php-ext-enable \
+
+# Composer
+# https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
+#ENV COMPOSER_ALLOW_SUPERUSER=1
+# Method 1: Download & copy the binary
+#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Method 2: Grab composer image
+#COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+#ENV PATH="${PATH}:/root/.composer/vendor/bin:/var/www/vendor/bin" #Change /var/www for PHP_WORKDIR
+
+# install composer dependencies
+#RUN set -eux; \
+#    composer install --prefer-dist --no-scripts --no-progress --no-suggest; \
+#    composer clear-cache; \
+#    composer dump-autoload --classmap-authoritative --no-dev
+##    ; \
+##    composer run-script --no-dev post-install-cmd
+
+EXPOSE 80
