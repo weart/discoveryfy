@@ -137,22 +137,19 @@ RUN apk update && apk add --no-cache \
 #	addgroup -g 82 -S www-data; \
 #	adduser -u 82 -D -S -G www-data www-data && exit 0; exit 1
 
-#RUN rm /etc/nginx/conf.d/default.conf
+COPY /api /var/www
 
-# Use configuration custom files
-#COPY /storage/nginx/nginx.conf /etc/nginx/nginx.conf
-#COPY /storage/nginx/vhost.conf /etc/nginx/sites-enabled/default
-#COPY /storage/nginx/php-fpm.conf /etc/php7/php-fpm.d/www.conf
+# Use nginx custom configuration files
+#RUN rm /etc/nginx/conf.d/default.conf
+COPY /api/storage/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY /api/storage/nginx/vhost.conf /etc/nginx/sites-enabled/default
+COPY /api/storage/nginx/php-fpm.conf /etc/php7/php-fpm.d/www.conf
 
 # Create a symlink to the recommended production configuration
 # ref: https://github.com/docker-library/docs/tree/master/php#configuration
 RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
 
-#RUN mkdir -p /var/www/public
-# /usr/share/nginx/html
-COPY /api /var/www
-
 WORKDIR /var/www
-#ENTRYPOINT ["/var/www/storage/nginx/docker-nginx-entrypoint"]
+ENTRYPOINT ["/var/www/storage/nginx/docker-nginx-entrypoint"]
 
 #EXPOSE 80
