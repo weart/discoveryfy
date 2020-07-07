@@ -90,7 +90,7 @@ RUN apk update && apk add --no-cache \
 #	mysqli \
 	pdo_mysql \
 	zip \
-	pcntl
+	pcntl \
 	&& docker-php-ext-enable \
     redis
 
