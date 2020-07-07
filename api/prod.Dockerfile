@@ -118,15 +118,16 @@ RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
 USER www-data
 
 WORKDIR /var/www
-COPY --chown=www-data:www-data ./bin ./bin
-COPY --chown=www-data:www-data ./config ./config
-COPY --chown=www-data:www-data ./discoveryfy ./discoveryfy
-COPY --chown=www-data:www-data ./phalcon-api ./phalcon-api
-COPY --chown=www-data:www-data ./public ./public
-COPY --chown=www-data:www-data ./vendor ./vendor
-COPY --chown=www-data:www-data ./tests ./tests
-COPY --chown=www-data:www-data composer.json composer.lock codeception.yml ./
-COPY --chown=www-data:www-data .htaccess index.html .env phinx.php psalm.xml.dist ./
+COPY --chown=www-data:www-data ./api/bin ./bin
+COPY --chown=www-data:www-data ./api/config ./config
+COPY --chown=www-data:www-data ./api/discoveryfy ./discoveryfy
+COPY --chown=www-data:www-data ./api/phalcon-api ./phalcon-api
+COPY --chown=www-data:www-data ./api/public ./public
+#COPY --chown=www-data:www-data ./api/vendor ./vendor
+#COPY --chown=www-data:www-data ./tests ./tests
+COPY --chown=www-data:www-data ./api/composer.json ./api/composer.lock ./
+COPY --chown=www-data:www-data ./api/.htaccess ./api/index.html ./api/.env ./api/phinx.php ./
+#COPY --chown=www-data:www-data codeception.yml psalm.xml.dist ./
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
