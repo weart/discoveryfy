@@ -141,12 +141,13 @@ COPY /api /var/www
 
 WORKDIR /var/www
 ENTRYPOINT ["/var/www/storage/nginx/docker-nginx-entrypoint"]
+RUN /var/www/storage/nginx/docker-nginx-entrypoint
 
 # Use nginx custom configuration files
 #RUN rm /etc/nginx/conf.d/default.conf
-COPY /api/storage/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY /api/storage/nginx/vhost.conf /etc/nginx/sites-enabled/default
-COPY /api/storage/nginx/php-fpm.conf /etc/php7/php-fpm.d/www.conf
+COPY /var/www/storage/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY /var/www/storage/nginx/vhost.conf /etc/nginx/sites-enabled/default
+COPY /var/www/storage/nginx/php-fpm.conf /etc/php7/php-fpm.d/www.conf
 
 # Create a symlink to the recommended production configuration
 # ref: https://github.com/docker-library/docs/tree/master/php#configuration
