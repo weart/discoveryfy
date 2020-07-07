@@ -151,5 +151,6 @@ COPY /api /var/www
 RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
 
 WORKDIR /var/www
-ENTRYPOINT ["/var/www/storage/nginx/docker-nginx-entrypoint"]
+#ENTRYPOINT ["/var/www/storage/nginx/docker-nginx-entrypoint"]
+ENTRYPOINT ["docker-php-entrypoint"]
 EXPOSE 80
