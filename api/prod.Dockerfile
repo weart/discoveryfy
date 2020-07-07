@@ -17,7 +17,8 @@ FROM mileschou/phalcon:${PHP_VERSION}${PHP_VARIANT}
 #FROM nginx:1.19-alpine
 
 # Alpine & nginx version
-RUN cat /etc/os-release | grep PRETTY_NAME && nginx -v
+RUN cat /etc/os-release | grep PRETTY_NAME
+# && nginx -v
 
 LABEL maintainer="Leninux <leninux@fabri.cat>" \
       description="The backend for Discoveryfy"
