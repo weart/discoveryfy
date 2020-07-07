@@ -94,44 +94,6 @@ RUN apk update && apk add --no-cache \
 	&& docker-php-ext-enable \
     redis
 
-# directory links (needed?)
-#RUN ln -sf /etc/php7 /etc/php && \
-#	ln -sf /usr/bin/php7 /usr/bin/php && \
-#	ln -sf /usr/sbin/php-fpm7 /usr/bin/php-fpm && \
-#	ln -sf /usr/lib/php7 /usr/lib/php
-
-# Composer
-# https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
-#ENV COMPOSER_ALLOW_SUPERUSER=1
-# Method 1: Download & copy the binary
-#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
-#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-# Method 2: Grab composer image
-#COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-#ENV PATH="${PATH}:/root/.composer/vendor/bin:/var/www/vendor/bin"
-# Method 3: Only copy vendors
-#FROM composer/composer:php7 as vendor
-#WORKDIR /tmp/
-#COPY composer.json composer.json
-#COPY composer.lock composer.lock
-#RUN composer install \
-#    --ignore-platform-reqs \
-#    --no-interaction \
-#    --no-plugins \
-#    --no-scripts \
-#    --prefer-dist
-#FROM php:7.2-apache-stretch
-#COPY . /var/www/html
-#COPY --from=vendor /tmp/vendor/ /var/www/html/vendor/
-
-# install composer dependencies
-#RUN set -eux; \
-#    composer install --prefer-dist --no-scripts --no-progress --no-suggest; \
-#    composer clear-cache; \
-#    composer dump-autoload --classmap-authoritative --no-dev
-##    ; \
-##    composer run-script --no-dev post-install-cmd
-
 # set www-data group (82 is the standard uid/gid for www-data in Alpine)
 #RUN set -x; \
 #	addgroup -g 82 -S www-data; \
@@ -142,14 +104,9 @@ RUN set -x; \
 	adduser -u 666 -D -S -G vmuser vmuser && exit 0; exit 1
 #	adduser --disabled-password --no-create-home --shell /sbin/nologin --uid 666 --ingroup vmuser vmuser
 
-
 # Create a symlink to the recommended production configuration
 # ref: https://github.com/docker-library/docs/tree/master/php#configuration
 RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
-
-USER www-data
-
-COPY /api /var/www
 
 # Use nginx custom configuration files
 # Done in docker-nginx-entrypoint
@@ -158,7 +115,28 @@ COPY /api /var/www
 #COPY /var/www/storage/nginx/vhost.conf /etc/nginx/sites-enabled/default
 #COPY /var/www/storage/nginx/php-fpm.conf /etc/php7/php-fpm.d/www.conf
 
+USER www-data
+
 WORKDIR /var/www
+COPY --chown=www-data:www-data ./bin ./bin
+COPY --chown=www-data:www-data ./config ./config
+COPY --chown=www-data:www-data ./discoveryfy ./discoveryfy
+COPY --chown=www-data:www-data ./phalcon-api ./phalcon-api
+COPY --chown=www-data:www-data ./public ./public
+COPY --chown=www-data:www-data ./vendor ./vendor
+COPY --chown=www-data:www-data ./tests ./tests
+COPY --chown=www-data:www-data composer.json composer.lock codeception.yml ./
+COPY --chown=www-data:www-data .htaccess index.html .env phinx.php psalm.xml.dist ./
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV PATH="${PATH}:/root/.composer/vendor/bin:/var/www/vendor/bin"
+RUN set -eux; \
+    composer install --prefer-dist --no-scripts --no-progress --no-suggest; \
+    composer clear-cache; \
+    composer dump-autoload --classmap-authoritative --no-dev
+
 #ENTRYPOINT ["/var/www/storage/nginx/docker-nginx-entrypoint"]
 ENTRYPOINT ["docker-php-entrypoint"]
 EXPOSE 9000
