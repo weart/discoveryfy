@@ -82,7 +82,7 @@ RUN apk update && apk add --no-cache \
 # https://github.com/mlocati/docker-php-extension-installer
 # ZIP & pcntl
 	&& docker-php-ext-configure pcntl --enable-pcntl \
-	&& docker-php-ext-configure zip --with-libzip=/usr/include \
+#	&& docker-php-ext-configure zip --with-libzip=/usr/include \
 	&& docker-php-ext-install \
 #	curl \
 	redis \
