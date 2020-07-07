@@ -24,7 +24,7 @@ LABEL maintainer="Leninux <leninux@fabri.cat>" \
       description="The backend for Discoveryfy"
 
 # Environment vars
-ENV OS_TIMEZONE=$OS_TIMEZONE
+#ENV OS_TIMEZONE=$OS_TIMEZONE
 #ENV FCGI_CONNECT=/var/run/php-fpm.sock \
 #	PHP_FPM_PM=dynamic \
 #	PHP_FPM_PM_MAX_CHILDREN=5 \
@@ -55,11 +55,11 @@ ENV APP_ENV=production \
 	SEED_ROOT_PASS=pass \
 	SEED_ROOT_MAIL=user@dom.ain
 
-# Timezone
-RUN cp /usr/share/zoneinfo/$OS_TIMEZONE /etc/localtime && echo $OS_TIMEZONE > /etc/timezone && date
-
+# Define /etc/localtime && /etc/timezone
+#RUN apk update && apk add tzdata
+#RUN cp /usr/share/zoneinfo/$OS_TIMEZONE /etc/localtime && echo $OS_TIMEZONE > /etc/timezone && date
 # Remove other timezones
-RUN apk del tzdata
+#RUN apk del tzdata
 
 RUN apk update && apk add --no-cache \
 #	wget \
@@ -75,8 +75,6 @@ RUN apk update && apk add --no-cache \
 # ZIP
 	libzip-dev \
 #	php-zlib \
-# Timezones
-#	tzdata \
 # Already installed / https://github.com/jbboehr/php-psr
 #	php-phalcon \
 #	php-psr \
