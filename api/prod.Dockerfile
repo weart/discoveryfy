@@ -83,14 +83,16 @@ RUN apk update && apk add --no-cache \
 # ZIP & pcntl
 	&& docker-php-ext-configure pcntl --enable-pcntl \
 #	&& docker-php-ext-configure zip --with-libzip=/usr/include \
+    && pecl install redis \
 	&& docker-php-ext-install \
 #	curl \
-	redis \
+#	redis \
 #	mysqli \
 	pdo_mysql \
 	zip \
 	pcntl
-#	&& docker-php-ext-enable \
+	&& docker-php-ext-enable \
+    redis
 
 # directory links (needed?)
 #RUN ln -sf /etc/php7 /etc/php && \
