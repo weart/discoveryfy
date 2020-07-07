@@ -124,6 +124,7 @@ COPY --chown=www-data:www-data ./api/discoveryfy ./discoveryfy
 COPY --chown=www-data:www-data ./api/phalcon-api ./phalcon-api
 COPY --chown=www-data:www-data ./api/public ./public
 #COPY --chown=www-data:www-data ./api/vendor ./vendor
+RUN mkdir -p ./vendor
 #COPY --chown=www-data:www-data ./tests ./tests
 COPY --chown=www-data:www-data ./api/composer.json ./api/composer.lock ./
 COPY --chown=www-data:www-data ./api/.htaccess ./api/index.html ./api/.env ./api/phinx.php ./
