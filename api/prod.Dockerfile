@@ -63,22 +63,22 @@ ENV APP_ENV=production \
 
 RUN apk update && apk add --no-cache \
 #	wget \
-#	curl \
+	curl \
 #	git \
 #	php-gd \
 #	php-fpm
 # Redis
 #	php-pdo \
-	php-redis \
+#	php-redis \
 # MySQL
-	php-mysql \
+#	php-mysql \
 # ZIP
 	libzip-dev \
 #	php-zlib \
 # Already installed / https://github.com/jbboehr/php-psr
 #	php-phalcon \
 #	php-psr \
-	&& rm -rf /var/cache/apk/*  \
+#	&& rm -rf /var/cache/apk/*  \
 # https://github.com/mlocati/docker-php-extension-installer
 # ZIP & pcntl
 	&& docker-php-ext-configure pcntl --enable-pcntl \
@@ -87,7 +87,7 @@ RUN apk update && apk add --no-cache \
 #	curl \
 	redis \
 #	mysqli \
-#	pdo_mysql \
+	pdo_mysql \
 	zip \
 	pcntl
 #	&& docker-php-ext-enable \
