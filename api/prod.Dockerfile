@@ -133,9 +133,21 @@ RUN apk update && apk add --no-cache \
 ##    composer run-script --no-dev post-install-cmd
 
 # set www-data group (82 is the standard uid/gid for www-data in Alpine)
-#RUN set -x; \
-#	addgroup -g 82 -S www-data; \
-#	adduser -u 82 -D -S -G www-data www-data && exit 0; exit 1
+RUN set -x; \
+	addgroup -g 82 -S www-data; \
+	adduser -u 82 -D -S -G www-data www-data && exit 0; exit 1
+# Add vmuser user & group
+RUN set -x; \
+	addgroup -g 922 -S vmuser; \
+	adduser -u 666 -D -S -G vmuser vmuser && exit 0; exit 1
+#	adduser --disabled-password --no-create-home --shell /sbin/nologin --uid 666 --ingroup vmuser vmuser
+
+
+# Create a symlink to the recommended production configuration
+# ref: https://github.com/docker-library/docs/tree/master/php#configuration
+RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
+
+USER www-data
 
 COPY /api /var/www
 
@@ -146,11 +158,7 @@ COPY /api /var/www
 #COPY /var/www/storage/nginx/vhost.conf /etc/nginx/sites-enabled/default
 #COPY /var/www/storage/nginx/php-fpm.conf /etc/php7/php-fpm.d/www.conf
 
-# Create a symlink to the recommended production configuration
-# ref: https://github.com/docker-library/docs/tree/master/php#configuration
-RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
-
 WORKDIR /var/www
 #ENTRYPOINT ["/var/www/storage/nginx/docker-nginx-entrypoint"]
 ENTRYPOINT ["docker-php-entrypoint"]
-EXPOSE 80
+EXPOSE 9000
