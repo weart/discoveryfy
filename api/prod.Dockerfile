@@ -133,9 +133,9 @@ RUN apk update && apk add --no-cache \
 ##    composer run-script --no-dev post-install-cmd
 
 # set www-data group (82 is the standard uid/gid for www-data in Alpine)
-RUN set -x; \
-	addgroup -g 82 -S www-data; \
-	adduser -u 82 -D -S -G www-data www-data && exit 0; exit 1
+#RUN set -x; \
+#	addgroup -g 82 -S www-data; \
+#	adduser -u 82 -D -S -G www-data www-data && exit 0; exit 1
 # Add vmuser user & group
 RUN set -x; \
 	addgroup -g 922 -S vmuser; \
