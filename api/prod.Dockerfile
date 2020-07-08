@@ -44,9 +44,9 @@ ENV APP_ENV=production \
 	APP_URL=https://api.discoveryfy.fabri.cat \
 	REDIS_HOST=discoveryfy_redis \
 	MYSQL_HOST=discoveryfy_sql \
-	MYSQL_DB=discoveryfy \
+	MYSQL_DATABASE=discoveryfy \
 	MYSQL_USER=user \
-	MYSQL_PASS=pass \
+	MYSQL_PASSWORD=pass \
 	INFLUXDB_HOST=discoveryfy_monitor \
 	INFLUXDB_DB=discoveryfy \
 	INFLUXDB_USER=user \
@@ -129,7 +129,8 @@ COPY --chown=www-data:www-data ./api/vendor ./vendor
 COPY --chown=www-data:www-data ./api/composer.json ./api/composer.lock ./
 COPY --chown=www-data:www-data ./api/.htaccess ./api/index.html ./api/.env ./api/phinx.php ./
 #COPY --chown=www-data:www-data codeception.yml psalm.xml.dist ./
-COPY --chown=www-data:www-data ./api/.env ./.env.local
+COPY --chown=www-data:www-data ./api/.env.prod.local ./.env.local
+COPY --chown=www-data:www-data ./storage/db/migrations ./db_migrations
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
