@@ -129,6 +129,7 @@ COPY --chown=www-data:www-data ./api/vendor ./vendor
 COPY --chown=www-data:www-data ./api/composer.json ./api/composer.lock ./
 COPY --chown=www-data:www-data ./api/.htaccess ./api/index.html ./api/.env ./api/phinx.php ./
 #COPY --chown=www-data:www-data codeception.yml psalm.xml.dist ./
+COPY --chown=www-data:www-data ./api/.env ./.env.local
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
