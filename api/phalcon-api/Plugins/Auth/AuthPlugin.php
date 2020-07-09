@@ -255,7 +255,7 @@ class AuthPlugin extends Injectable
             ->canOnlyBeUsedAfter($this->getTokenTimeNotBefore()) //nbf
             ->expiresAt($this->getTokenTimeExpiration()) //exp
 //            ->identifiedBy($this->security->getToken(), false) //jti
-            ->getToken($signer, new Key($this->getPrivateKey()));
+            ->getToken($signer, new Key($this->getPrivateKey(), $this->getPrivateKeyPassword()));
 
         // Save Token in Cache
         if (true !== $this->cache->set(CacheKeys::getJWTCacheKey($token), null, $this->config->path('app.sessionTTL'))) {
@@ -316,7 +316,7 @@ class AuthPlugin extends Injectable
         if (false === $token->validate($this->getValidationData())) {
             return false;
         }
-        if (false === $token->verify((new Sha512()), new Key($this->getPrivateKey()))) {
+        if (false === $token->verify((new Sha512()), new Key($this->getPrivateKey(), $this->getPrivateKeyPassword()))) {
             return false;
         }
 
@@ -441,7 +441,7 @@ class AuthPlugin extends Injectable
      * @return string
      * @throws InternalServerErrorException
      */
-    protected function getPrivateKey() :string
+    protected function getPrivateKey(): string
     {
         if (true !== file_exists($this->config->path('app.privateKey'))) {
             throw new InternalServerErrorException('Private key file not found');
@@ -452,5 +452,15 @@ class AuthPlugin extends Injectable
         }
 
         return $rtn;
+    }
+
+    /**
+     * Returns the password of the private key, defined in `PRIVATE_KEY_PASSWORD` env value
+     *
+     * @return string|null
+     */
+    protected function getPrivateKeyPassword(): ?string
+    {
+        return envValue('PRIVATE_KEY_PASSWORD', null);
     }
 }

@@ -32,14 +32,14 @@ docker-compose exec api sh -c '
     set -e
     apk add openssl
     mkdir -p config/jwt
-    jwt_passhrase=$(grep ''^JWT_PASSPHRASE='' .env | cut -f 2 -d ''='')
+    jwt_passhrase=$(grep ''^PRIVATE_KEY_PASSWORD='' .env | cut -f 2 -d ''='')
     echo "$jwt_passhrase" | openssl genpkey -out config/jwt/private.pem -pass stdin -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096
     echo "$jwt_passhrase" | openssl pkey -in config/jwt/private.pem -passin stdin -out config/jwt/public.pem -pubout
     setfacl -R -m u:www-data:rX -m u:"$(whoami)":rwX config/jwt
     setfacl -dR -m u:www-data:rX -m u:"$(whoami)":rwX config/jwt
 '
 ```
-In case first openssl command forces you to input password use following to get the private key decrypted (https://emirkarsiyakali.com/implementing-jwt-authentication-to-your-api-platform-application-885f014d3358)
+If openssl command forces you to input password use following to get the private key decrypted (https://emirkarsiyakali.com/implementing-jwt-authentication-to-your-api-platform-application-885f014d3358)
 ```shell
 $ openssl rsa -in config/jwt/private.pem -out config/jwt/private2.pem
 $ mv config/jwt/private.pem config/jwt/private.pem-back

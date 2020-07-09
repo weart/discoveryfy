@@ -2,19 +2,20 @@
 
 use Dotenv\Dotenv;
 
-(Dotenv::create(__DIR__, '.env'))->load();
-(Dotenv::create(__DIR__, '.env.local'))->overload();
-//var_dump(
-//    __DIR__
-//    getenv('MYSQL_HOST'),getenv('MYSQL_DATABASE'),
-//    getenv('MYSQL_USER'),getenv('MYSQL_PASSWORD'),
-//    getenv('PHINX_CONFIG_DIR') . 'storage/db/seeds/BaseSeeder'
-//);
-//exit;
+if ('production' !== getenv('APP_ENV')) {
+    (Dotenv::create(__DIR__, '.env'))->load();
+    if (is_readable(rtrim(appPath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'.env.local')) {
+        (Dotenv::create(__DIR__, '.env.local'))->overload();
+    }
+    $migrations = getenv('PHINX_CONFIG_DIR') . 'storage/db/migrations';
+} else {
+    $migrations = 'db_migrations';
+}
+
 
 return [
     'paths'         => [
-        'migrations' => getenv('PHINX_CONFIG_DIR') . 'storage/db/migrations',
+        'migrations' => $migrations,
         'seeds'      => getenv('PHINX_CONFIG_DIR') . 'storage/db/seeds',
     ],
     'environments'  => [

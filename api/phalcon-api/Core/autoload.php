@@ -13,6 +13,7 @@ declare(strict_types=1);
 use Dotenv\Dotenv;
 use Phalcon\Loader;
 use function Phalcon\Api\Core\appPath;
+use function Phalcon\Api\Core\envValue;
 
 // Register the auto loader
 require __DIR__ . '/functions.php';
