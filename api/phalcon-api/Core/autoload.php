@@ -33,13 +33,11 @@ $loader->register();
 require appPath('/vendor/autoload.php');
 
 // Load environment vars
-$path = rtrim(appPath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-if (is_readable($path.'.env')) {
+if ('production' !== envValue('APP_ENV', 'development')) {
+    $path = rtrim(appPath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
     (Dotenv::create($path, '.env'))->overload();
-} else if ('development' === envValue('APP_ENV', 'development')) {
-    throw new \Exception('.env file not found');
-}
-if (is_readable($path.'.env.local')) {
-    (Dotenv::create($path, '.env.local'))->overload();
+    if (is_readable($path.'.env.local')) {
+        (Dotenv::create($path, '.env.local'))->overload();
+    }
 }
 

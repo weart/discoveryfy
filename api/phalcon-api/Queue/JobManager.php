@@ -229,8 +229,8 @@ class JobManager extends Injectable
                 envValue('INFLUXDB_PORT', '8086')
             ),
             'db' => envValue('INFLUXDB_DATABASE', 'discoveryfy'),
-            'user' => envValue('INFLUXDB_ADMIN_USER', 'root'),
-            'password' => envValue('INFLUXDB_ADMIN_PASSWORD', '5up3rS3cr3t'),
+            'user' => envValue('INFLUXDB_USER', 'root'),
+            'password' => envValue('INFLUXDB_PASSWORD', '5up3rS3cr3t'),
         ]);
     }
 

@@ -9,6 +9,12 @@
 ARG OS_TIMEZONE="Europe/Andorra"
 ARG PHP_VERSION=7.4
 ARG PHP_VARIANT=-fpm-alpine
+# https://medium.com/@chamilad/lets-make-your-docker-image-better-than-90-of-existing-ones-8b1e5de950d
+# --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+# --build-arg BUILD_VERSION=$(date -u +'%Y%m%d')
+# https://github.com/thibaultdelor/testAutobuildHooks/blob/master/hooks/build
+#ARG BUILD_DATE
+ARG BUILD_VERSION="20200709"
 
 # Based on official PHP image with Phalcon ( php:7.4-fpm-alpine + Phalcon + Psr )
 FROM mileschou/phalcon:${PHP_VERSION}${PHP_VARIANT}
@@ -22,6 +28,13 @@ RUN cat /etc/os-release | grep PRETTY_NAME
 
 LABEL maintainer="Leninux <leninux@fabri.cat>" \
       description="The backend for Discoveryfy"
+
+#LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+#      org.opencontainers.image.authors="Leninux"
+#      org.opencontainers.image.url="https://github.com/weart/discoveryfy"
+#      org.opencontainers.image.documentation="https://api.discoveryfy.fabri.cat/docs"
+#      org.opencontainers.image.version="${BUILD_VERSION}"
+#      org.opencontainers.image.licenses="GPL-3.0"
 
 # Environment vars
 #ENV OS_TIMEZONE=$OS_TIMEZONE
@@ -42,15 +55,30 @@ LABEL maintainer="Leninux <leninux@fabri.cat>" \
 ENV APP_ENV=production \
 	APP_DEBUG=false \
 	APP_URL=https://api.discoveryfy.fabri.cat \
+	APP_BASE_URI=/ \
+	APP_SUPPORT_EMAIL=user@dom.ain \
+	APP_TIMEZONE=UTC \
+	APP_VERSION=${BUILD_VERSION} \
+#	LOG_FILENAME=api.log \
+#	LOG_PATH=logs/ \
+#	LOG_FORMAT="[%datetime%] %channel%.%level_name%: %message%" \
+#	LOG_FORMAT_DATE=Y-m-d\TH:i:sP \
+#	LOG_CHANNEL=api \
+	TOKEN_ISS=dom.ain \
+	TOKEN_AUDIENCE=client.dom.ain \
+	TOKEN_NOT_BEFORE=10 \
+	TOKEN_EXPIRATION=86400 \
 	REDIS_HOST=discoveryfy_redis \
+	CACHE_PREFIX=api_cache_ \
+	CACHE_LIFETIME=86400 \
 	MYSQL_HOST=discoveryfy_sql \
 	MYSQL_DATABASE=discoveryfy \
 	MYSQL_USER=user \
 	MYSQL_PASSWORD=pass \
 	INFLUXDB_HOST=discoveryfy_monitor \
-	INFLUXDB_DB=discoveryfy \
+	INFLUXDB_DATABASE=discoveryfy \
 	INFLUXDB_USER=user \
-	INFLUXDB_PASS=pass \
+	INFLUXDB_PASSWORD=pass \
 	SEED_ROOT_USER=user \
 	SEED_ROOT_PASS=pass \
 	SEED_ROOT_MAIL=user@dom.ain
@@ -83,7 +111,7 @@ RUN apk update && apk add --no-cache \
 # ZIP & pcntl
 	&& docker-php-ext-configure pcntl --enable-pcntl \
 #	&& docker-php-ext-configure zip --with-libzip=/usr/include \
-    && pecl install redis \
+	&& pecl install redis \
 	&& docker-php-ext-install \
 #	curl \
 #	redis \
@@ -92,7 +120,7 @@ RUN apk update && apk add --no-cache \
 	zip \
 	pcntl \
 	&& docker-php-ext-enable \
-    redis
+	redis
 
 # set www-data group (82 is the standard uid/gid for www-data in Alpine)
 #RUN set -x; \
@@ -127,19 +155,20 @@ COPY --chown=www-data:www-data ./api/vendor ./vendor
 #RUN mkdir -p ./vendor
 #COPY --chown=www-data:www-data ./tests ./tests
 COPY --chown=www-data:www-data ./api/composer.json ./api/composer.lock ./
-COPY --chown=www-data:www-data ./api/.htaccess ./api/index.html ./api/.env ./api/phinx.php ./
+COPY --chown=www-data:www-data ./api/.htaccess ./api/index.html ./api/phinx.php ./
 #COPY --chown=www-data:www-data codeception.yml psalm.xml.dist ./
-COPY --chown=www-data:www-data ./api/.env.prod.local ./.env.local
-COPY --chown=www-data:www-data ./storage/db/migrations ./db_migrations
+# Avoid reading .env file in each request in prod
+#COPY --chown=www-data:www-data ./api/.env.prod ./.env
+COPY --chown=www-data:www-data ./api/storage/db/migrations ./db_migrations
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV PATH="${PATH}:/root/.composer/vendor/bin:/var/www/vendor/bin"
 RUN set -eux; \
-    composer install --prefer-dist --no-scripts --no-progress --no-suggest; \
-    composer clear-cache; \
-    composer dump-autoload --classmap-authoritative --no-dev
+	composer install --prefer-dist --no-scripts --no-progress --no-suggest; \
+	composer clear-cache; \
+	composer dump-autoload --classmap-authoritative --no-dev
 
 #ENTRYPOINT ["/var/www/storage/nginx/docker-nginx-entrypoint"]
 ENTRYPOINT ["docker-php-entrypoint"]
