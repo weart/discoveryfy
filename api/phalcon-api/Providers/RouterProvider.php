@@ -14,7 +14,7 @@ namespace Phalcon\Api\Providers;
 
 use Phalcon\Api\Http\Response;
 use Phalcon\Api\Middleware\AuthenticationMiddleware;
-//use Phalcon\Api\Middleware\CORSMiddleware;
+use Phalcon\Api\Middleware\CORSMiddleware;
 use Phalcon\Api\Middleware\NotFoundMiddleware;
 use Phalcon\Api\Middleware\ResponseMiddleware;
 //use Phalcon\Api\Middleware\TokenUserMiddleware;
@@ -128,7 +128,7 @@ class RouterProvider implements ServiceProviderInterface
     {
         return [
             NotFoundMiddleware::class           => 'before',
-//            CORSMiddleware::class               => 'before',
+            CORSMiddleware::class               => 'before',
             AuthenticationMiddleware::class     => 'before',
             //All this validations moved in AuthenticationMiddleware
 //            TokenUserMiddleware::class         => 'before',
