@@ -1,68 +1,54 @@
 # Discoveryfy
 
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/weart/discoveryfy)
-[![JWT Compatible](http://jwt.io/img/badge-compatible.svg)](https://jwt.io/)
-
 Tiny WebApp for Share & Rate Songs in Spotify.
 
 Create collaborative playlists in Spotify with your friends and colleagues and rate the songs.
 
-More information in api/README.md & client/README.md.
+More information in the base README and in api/README.md.
+
+Docs used
+-------
+* https://junghanns.it/posts/cqrs-and-eventsourcing-with-api-platform-ii/
+* https://www.nielsvandermolen.com/symfony-4-api-platform-application/
+
+* https://medium.com/@rebolon/how-to-bind-your-favorite-js-framework-with-symfony-4-8c9ba86e2b8d
+* https://www.myalerts.org/demo/quasar#/
+* https://github.com/Rebolon/php-sf-flex-webpack-encore-vuejs/blob/bff3370b3f98e87a008c1a5cf4a545ee8146433e/assets/js/form-quasar-vuejs/app.js
+* https://github.com/Rebolon/php-sf-flex-webpack-encore-vuejs/blob/bff3370b3f98e87a008c1a5cf4a545ee8146433e/assets/js/form-quasar-vuejs/components/Book.vue
+
+Useful documentation:
+-------
+* https://api-platform.com/docs/core/events/
+* https://symfony.com/doc/current/reference/events.html#kernel-events
+* https://quasar.dev/vue-components/
+
+Pending docs:
+-------
+* https://vue-apollo.netlify.com/
+* https://developer.okta.com/blog/2018/06/14/php-crud-app-symfony-vue
+* https://github.com/hasura/graphql-engine/tree/master/community/sample-apps/quasar-framework-vue-graphql
+* https://jasonwatmore.com/post/2018/07/06/vue-vuex-jwt-authentication-tutorial-example
 
 
-## Technology stack:
-
-Api / Backend:
-  * OpenApi specs available at ./api/public/openapi.yaml
-  * Phalcon: PHP framework for generate a [JSON:API](https://jsonapi.org/) compliant API, [OpenAPI Specification](/docs): [json definition](/openapi.json) & [yaml definition](/openapi.yaml).
-  * [jwilsson/spotify-web-api-php](https://github.com/jwilsson/spotify-web-api-php): PHP wrapper for Spotify's Web API. 
-  * JWT: Authentication engine
-  * MySQL: Database engine for persist data
-  * Redis: Database engine for cache
-  * Other possibilites:
-    * Django, Laravel, Flask
-    * Instead of JSON:API, use [any other hypermedia spec](https://www.nginx.com/blog/building-your-api-for-longevity-best-practices/), [2](https://sookocheff.com/post/api/on-choosing-a-hypermedia-format/):
-		* Hydra, HAL, [CPHL](https://github.com/mikestowe/CPHL)...
-
-Client / Frontend:
-  * Quasar? Ionic? Material UI? Flutter?
-  * Gravatar
-  * [JSON:API vuex adapter?](https://mrichar1.github.io/jsonapi-vuex/)
-
-DevOps:
-  * Docker
-  * GitPod? Kibana? Graphite?
-  * https://github.com/jesseduffield/lazydocker
-
-## Requirements
-* PHP 7.2 or later.
-* Phalcon 4.0
-* PHP [cURL extension](http://php.net/manual/en/book.curl.php) (Usually included with PHP).
-
-## Installation
-
-Install [docker](https://docs.docker.com/engine/install/) & [docker-compose](https://docs.docker.com/compose/install/).
-
-Create your own env file.
+Useful commands
+-------
+Build &  start all containers:
 ```bash
-cp .env .env.local
-```
-And modify `.env.local` with your values.
-
-Build & start all containers:
-```bash
-docker-compose up -d
 docker-compose up --force-recreate -d
-docker-compose up --force-recreate --build -d
 ```
 
-Execute migrations and seeding. (Commands below)
+Check machine ip:
+```bash
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' spotifydailylist_client-quasar_1
+```
 
-<!--
-### Configure ngrok
+Upgrade everything:
+```bash
+./update-deps.sh
+```
 
-Oauth providers require a public URL for the callback, ngrok expose the local web server into a public URL.
-
+Configure ngrok
+-------
 Create the file ~/.ngrok2/ngrok.yml with the follow content:
 ```yaml
 authtoken: CopySecretHere
@@ -73,66 +59,16 @@ tunnels:
     addr: 8080
   client-quasar:
     proto: http
-    addr: 80
+    addr: 82
 ```
 And launch the daemon:
 ```bash
 /opt/ngrok start --all
 ```
--->
 
-## Useful commands
 
-Execute Discoveryfy Tasks:
-```bash
-docker-compose exec api ./runCli
-docker-compose exec api ./runCli ClearCache
-docker-compose exec api ./runCli JobStats
-docker-compose exec api ./runCli JobWorker
-```
+Created using Api Platform
+-------
+<h1 align="center"><a href="https://api-platform.com"><img src="https://api-platform.com/logo-250x250.png" alt="API Platform"></a></h1>
 
-Execute migration:
-```shell
-docker-compose exec api vendor/bin/phinx migrate -e development
-```
-
-Execute seeding:
-```shell
-docker-compose exec api vendor/bin/phinx seed:run
-```
-
-Execute phalcon or composer commands:
-```shell
-docker-compose exec api phalcon
-docker-compose exec api composer
-```
-
-Enter command in database:
-```shell
-docker exec -ti db /bin/bash
-mysql -u leninux -p discoveryfydb
-```
-
-Enter command in redis:
-```shell
-docker exec -ti cache /bin/sh
-redis-cli
-```
-
-Check docker installed php version:
-```bash
-docker run --rm -it api php -v
-```
-
-Check machine ip:
-```bash
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' api
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cache
-```
-
-## Backers
-
-Discover awesome collectives to support in Open Collective:
-* [Phalcon](https://opencollective.com/phalcon#backer)
-* [Women Who Code](https://opencollective.com/wwcode)
+Created by [Kévin Dunglas](https://dunglas.fr). Commercial support available at [Les-Tilleuls.coop](https://les-tilleuls.coop).
