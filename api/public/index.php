@@ -24,7 +24,7 @@ if (substr($logPath, -1) !== '/') {
 }
 $appLogName = appPath($logPath.envValue('LOG_FILENAME', LoggerProvider::DEFAULT_LOG_FILENAME));
 
-if ((bool) envValue('APP_DEBUG', false)) {
+if ((bool) envValue('APP_DEBUG', false) && is_readable(appPath().'/c3.php')) {
     include appPath().'/c3.php';
     $testLogName = $logPath.'c3_error.log';
     define('C3_CODECOVERAGE_ERROR_LOG_FILE', $testLogName);

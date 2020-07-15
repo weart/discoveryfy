@@ -14,7 +14,7 @@ ARG PHP_VARIANT=-fpm-alpine
 # --build-arg BUILD_VERSION=$(date -u +'%Y%m%d')
 # https://github.com/thibaultdelor/testAutobuildHooks/blob/master/hooks/build
 #ARG BUILD_DATE
-ARG BUILD_VERSION="20200709"
+ARG BUILD_VERSION="20200715"
 
 # Based on official PHP image with Phalcon ( php:7.4-fpm-alpine + Phalcon + Psr )
 FROM mileschou/phalcon:${PHP_VERSION}${PHP_VARIANT}
@@ -27,7 +27,7 @@ RUN cat /etc/os-release | grep PRETTY_NAME
 # && nginx -v
 
 LABEL maintainer="Leninux <leninux@fabri.cat>" \
-      description="The backend for Discoveryfy"
+      description="Discoveryfy Backend"
 
 #LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 #      org.opencontainers.image.authors="Leninux"
@@ -149,6 +149,7 @@ RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
 USER www-data
 
 WORKDIR /var/www
+RUN rm ./html
 COPY --chown=www-data:www-data ./api/bin ./bin
 COPY --chown=www-data:www-data ./api/config ./config
 COPY --chown=www-data:www-data ./api/discoveryfy ./discoveryfy
@@ -163,6 +164,7 @@ COPY --chown=www-data:www-data ./api/.htaccess ./api/index.html ./api/phinx.php 
 # Avoid reading .env file in each request in prod
 #COPY --chown=www-data:www-data ./api/.env.prod ./.env
 COPY --chown=www-data:www-data ./api/storage/db/migrations ./db_migrations
+COPY --chown=www-data:www-data ./api/storage/db/seeds ./db_seeds
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
