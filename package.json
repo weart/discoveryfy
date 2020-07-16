@@ -37,5 +37,7 @@
     "npm": ">= 6.13.4",
     "yarn": ">= 1.19.1"
   },
-  "browserslist": ["last 1 version, not dead, ie >= 11"]
+  "browserslist": [
+    "last 1 version, not dead, ie >= 11"
+  ]
 }
